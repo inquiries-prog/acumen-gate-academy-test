@@ -58,9 +58,9 @@ export default function StickyMobileCta() {
         </a>
         <WhatsAppLink
           ariaLabel="Message us on WhatsApp"
-          className={`btn-secondary w-12 shrink-0 px-0 ${hidden ? "pointer-events-none" : ""}`}
+          className={`btn-whatsapp w-12 shrink-0 px-0 ${hidden ? "pointer-events-none" : ""}`}
         >
-          <WhatsAppIcon size={20} />
+          <WhatsAppIcon size={22} />
         </WhatsAppLink>
         <button
           type="button"

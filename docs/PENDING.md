@@ -172,6 +172,11 @@ fresh setup.
 `whatsapp_number` column plus a field on the settings form. Until then it is a
 one-line code change.
 
+The button is WhatsApp green (#25D366), a deliberate exception to the SRS 3.1
+palette on the same basis as the amber Google stars: it is another company's
+mark, and the client asked for it to stand out. The colour is defined once in
+`tailwind.config.ts` and used only on the WhatsApp control.
+
 ### C7. Newsletter of record for the announcement banner link
 The banner currently opens the seminar popup, per §6.2. It can also open the
 enquiry form, link to any page, or be plain text — all admin-controlled, no code

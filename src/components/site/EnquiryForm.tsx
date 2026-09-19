@@ -148,7 +148,7 @@ export default function EnquiryForm({
           <a href={telHref(settings.phone)} className="btn-secondary">
             Call {settings.phone}
           </a>
-          <WhatsAppLink className="btn-secondary">
+          <WhatsAppLink className="btn-whatsapp">
             <WhatsAppIcon /> WhatsApp
           </WhatsAppLink>
           {onDone && (

@@ -28,6 +28,12 @@ const config: Config = {
         body: "#5A5A5A",
         muted: "#767671",
         line: "#EDEBE9",
+        // WhatsApp's brand green. The one colour outside the SRS 3.1 palette,
+        // permitted on the same basis as the amber Google stars: it is another
+        // company's mark, and a green WhatsApp badge is recognised instantly
+        // where a red one reads as just another button. Used only on the
+        // WhatsApp control - never as a general accent.
+        whatsapp: { DEFAULT: "#25D366", dark: "#1DA851" },
       },
       fontFamily: {
         // Display face for headings, text face for everything else.
@@ -47,6 +53,7 @@ const config: Config = {
         "card-hover": "0 2px 4px rgba(35,31,32,0.05), 0 18px 40px -14px rgba(35,31,32,0.18)",
         lifted: "0 20px 55px -20px rgba(35,31,32,0.28)",
         "red-glow": "0 10px 30px -10px rgba(227,30,36,0.45)",
+        "whatsapp-glow": "0 8px 22px -6px rgba(37,211,102,0.55)",
         chip: "0 1px 2px rgba(35,31,32,0.06)",
       },
       backgroundImage: {
@@ -131,6 +138,11 @@ const config: Config = {
           "0%": { transform: "scale(1)", opacity: ".45" },
           "100%": { transform: "scale(1.9)", opacity: "0" },
         },
+        /* The arrow in a "swipe" cue, beckoning sideways. */
+        nudgeX: {
+          "0%, 100%": { transform: "translateX(0)" },
+          "50%": { transform: "translateX(4px)" },
+        },
       },
       animation: {
         // Slow + continuous per SRS 7.1.2 - the client explicitly asked for this
@@ -158,6 +170,7 @@ const config: Config = {
         pop: "pop .5s cubic-bezier(0.16,1,0.3,1) both",
         burst: "burst .7s cubic-bezier(0.16,1,0.3,1) .2s both",
         "pulse-ring": "pulseRing 2.2s cubic-bezier(0.16,1,0.3,1) infinite",
+        "nudge-x": "nudgeX 1.4s ease-in-out infinite",
       },
       transitionTimingFunction: {
         // Decelerating curve - motion that settles rather than stops dead.

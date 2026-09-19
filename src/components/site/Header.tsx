@@ -23,10 +23,14 @@ import { useSiteUI } from "./SiteUI";
  *
  * On phones and tablets the menu is a full-screen panel rather than a narrow
  * drawer: large display-type items, numbered, sliding in from the right with a
- * short stagger, the ambient glow drifting behind them, and the three actions
- * (call, chat, enquire) pinned at the bottom inside the safe area. It is the
- * one screen every mobile visitor who explores will open, so it earns the
- * treatment.
+ * short stagger, the ambient glow drifting behind them, and the actions
+ * (call, WhatsApp, chat, enquire) pinned at the bottom inside the safe area. It
+ * is the one screen every mobile visitor who explores will open, so it earns
+ * the treatment.
+ *
+ * WhatsApp sits in the bar itself on every screen size, as a green badge next
+ * to the phone icon: for this audience it is the contact method, not an
+ * alternative one, so it is never more than one tap away.
  */
 export default function Header() {
   const { settings, push, openEnquiry, setChatOpen } = useSiteUI();
@@ -112,10 +116,10 @@ export default function Header() {
             <Image
               src={settings.logo_url}
               alt="Acumen Gate Academy"
-              width={190}
-              height={52}
+              width={200}
+              height={80}
               priority
-              className="h-10 w-auto origin-left transition-transform duration-300 ease-smooth group-data-[scrolled]/header:scale-[0.85] sm:h-11"
+              className="h-12 w-auto origin-left transition-transform duration-300 ease-smooth group-data-[scrolled]/header:scale-[0.85] sm:h-[52px]"
             />
           ) : (
             <LogoFallback />
@@ -166,9 +170,9 @@ export default function Header() {
           </a>
           <WhatsAppLink
             ariaLabel="Message us on WhatsApp"
-            className="grid h-11 w-11 place-items-center rounded-md text-charcoal transition-colors hover:text-red"
+            className="whatsapp-badge mr-1 h-11 w-11"
           >
-            <WhatsAppIcon />
+            <WhatsAppIcon size={22} />
           </WhatsAppLink>
           <button type="button" onClick={() => setChatOpen(true)} className="btn-secondary btn-sm">
             💬 Chat with us
@@ -178,7 +182,7 @@ export default function Header() {
           </button>
         </div>
 
-        <div className="flex items-center gap-1 lg:hidden">
+        <div className="flex items-center gap-1.5 lg:hidden">
           <a
             href={telHref(settings.phone)}
             aria-label={`Call ${settings.phone}`}
@@ -186,6 +190,9 @@ export default function Header() {
           >
             <PhoneIcon />
           </a>
+          <WhatsAppLink ariaLabel="Message us on WhatsApp" className="whatsapp-badge h-10 w-10">
+            <WhatsAppIcon size={21} />
+          </WhatsAppLink>
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
@@ -283,7 +290,7 @@ export default function Header() {
               <a href={telHref(settings.phone)} className="btn-secondary px-2 text-sm">
                 <PhoneIcon /> Call
               </a>
-              <WhatsAppLink className="btn-secondary px-2 text-sm">
+              <WhatsAppLink className="btn-whatsapp px-2 text-sm">
                 <WhatsAppIcon /> WhatsApp
               </WhatsAppLink>
               <button

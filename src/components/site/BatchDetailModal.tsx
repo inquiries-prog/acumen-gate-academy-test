@@ -6,6 +6,7 @@ import { calculateFees, formatRupees } from "@/lib/payments";
 import type { BatchMode } from "@/lib/types";
 import { resolve, whatsappBatchMessage } from "@/lib/utils";
 import { useSiteUI } from "./SiteUI";
+import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
 import WhatsAppLink from "./WhatsAppLink";
 
 /**
@@ -190,8 +191,11 @@ export default function BatchDetailModal({
         Prefer chat?{" "}
         <WhatsAppLink
           message={whatsappBatchMessage(branch.name, branch.code, mode)}
-          className="font-semibold text-red underline-offset-4 hover:underline"
+          className="inline-flex items-center gap-1.5 align-middle font-semibold text-charcoal underline-offset-4 hover:underline"
         >
+          <span className="whatsapp-badge h-5 w-5">
+            <WhatsAppIcon size={11} />
+          </span>
           WhatsApp us about this batch
         </WhatsAppLink>
       </p>

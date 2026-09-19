@@ -155,6 +155,22 @@
     }
   }
 
+  /* The WhatsApp control, in WhatsApp's own green (see tailwind.config.ts
+     for why this one colour sits outside the palette). Same shape as the
+     other buttons so it lines up beside "Call" everywhere. */
+  .btn-whatsapp {
+    @apply btn border border-transparent bg-whatsapp text-white shadow-whatsapp-glow
+           hover:-translate-y-0.5 hover:bg-whatsapp-dark hover:shadow-lifted
+           active:translate-y-0;
+  }
+
+  /* Round icon-only version for the header bars. */
+  .whatsapp-badge {
+    @apply grid place-items-center rounded-full bg-whatsapp text-white shadow-whatsapp-glow
+           transition-all duration-300 ease-smooth hover:scale-[1.08] hover:bg-whatsapp-dark
+           active:scale-95;
+  }
+
   .btn-secondary {
     @apply btn border border-line bg-white text-charcoal shadow-chip
            hover:-translate-y-0.5 hover:border-charcoal/20 hover:shadow-card

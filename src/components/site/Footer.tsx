@@ -155,8 +155,10 @@ export default function Footer({
               </a>
             </li>
             <li>
-              <WhatsAppLink className="inline-flex min-h-11 items-center gap-2 font-semibold text-white transition-colors hover:text-red">
-                <WhatsAppIcon />
+              <WhatsAppLink className="group/wa inline-flex min-h-11 items-center gap-2.5 font-semibold text-white transition-colors hover:text-whatsapp">
+                <span className="whatsapp-badge h-7 w-7 group-hover/wa:scale-[1.08]">
+                  <WhatsAppIcon size={15} />
+                </span>
                 {WHATSAPP_DISPLAY}
               </WhatsAppLink>
             </li>
