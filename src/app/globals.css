@@ -24,6 +24,10 @@
     *::after {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
+      /* Delays too: with fill-mode `both`, a staggered element would otherwise
+         sit invisible for its delay and then appear - the hero headline would
+         arrive one word at a time with nothing to watch. */
+      animation-delay: 0s !important;
       transition-duration: 0.01ms !important;
     }
   }
@@ -329,5 +333,61 @@
     background-image: linear-gradient(to right, #fff 1px, transparent 1px),
       linear-gradient(to bottom, #fff 1px, transparent 1px);
     background-size: 56px 56px;
+  }
+}
+
+/* --- Page transitions --------------------------------------------------- */
+/* Driven by React's ViewTransition in components/site/PageTransition.tsx.
+   The root snapshot is disabled so only the named page and header move;
+   the header is pinned so it stays put while the page cross-fades beneath. */
+::view-transition {
+  pointer-events: none;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-old(.page-exit) {
+  animation: 160ms ease-in both vt-fade reverse;
+}
+::view-transition-new(.page-enter) {
+  animation:
+    260ms cubic-bezier(0.16, 1, 0.3, 1) 60ms both vt-fade,
+    360ms cubic-bezier(0.16, 1, 0.3, 1) both vt-rise;
+}
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+@keyframes vt-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes vt-rise {
+  from {
+    transform: translateY(14px);
+  }
+  to {
+    transform: none;
+  }
+}
+/* The global reduced-motion rule cannot reach these pseudo-elements. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
   }
 }

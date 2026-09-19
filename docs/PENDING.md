@@ -161,6 +161,17 @@ is hard to read at strip size and repeats content the reader has just seen.
 are legible and each name a publication. That is one switch in **Result & press
 images** — no code change.
 
+### C8. WhatsApp number is a code constant
+The WhatsApp button (sticky bar, menu, CTA band, footer, batch sheet, chat
+fallback) opens `wa.me/918200035090`. The number lives in
+`src/lib/defaults.ts` as `WHATSAPP_NUMBER`, not in the admin panel - putting it
+in site settings would have been spread into the database seeder and broken a
+fresh setup.
+
+**If the client wants to change it himself:** one migration to add a
+`whatsapp_number` column plus a field on the settings form. Until then it is a
+one-line code change.
+
 ### C7. Newsletter of record for the announcement banner link
 The banner currently opens the seminar popup, per §6.2. It can also open the
 enquiry form, link to any page, or be plain text — all admin-controlled, no code

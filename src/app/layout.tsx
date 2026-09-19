@@ -50,8 +50,12 @@ export const metadata: Metadata = {
   },
   description:
     "Acumen Gate Academy has been coaching GATE aspirants in Vadodara since 2014, with 10,000+ GATE success stories.",
+  applicationName: "Acumen Gate Academy",
   robots: { index: true, follow: true },
-  openGraph: { type: "website", locale: "en_IN", siteName: "Acumen Gate Academy" },
+  // Image, icons and manifest are injected by the file conventions in this
+  // folder (opengraph-image.tsx, icon.tsx, apple-icon.tsx, manifest.ts).
+  openGraph: { type: "website", locale: "en_IN", siteName: "Acumen Gate Academy", url: "/" },
+  twitter: { card: "summary_large_image" },
 };
 
 /**

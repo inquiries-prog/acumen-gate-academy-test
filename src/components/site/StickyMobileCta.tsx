@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
 import { telHref } from "@/lib/utils";
+import WhatsAppLink from "./WhatsAppLink";
 import { useSiteUI } from "./SiteUI";
 
 /**
@@ -37,11 +39,12 @@ export default function StickyMobileCta() {
                     hidden ? "translate-y-full" : "translate-y-0"
                   }`}
     >
+      {/* Three controls at 390px: Call ~138px, WhatsApp 48px, Enquire ~180px. */}
       <div className="flex gap-2.5 pb-3">
         <a
           href={telHref(settings.phone)}
           tabIndex={hidden ? -1 : 0}
-          className="btn-secondary flex-1"
+          className="btn-secondary flex-1 px-3"
         >
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path
@@ -51,13 +54,19 @@ export default function StickyMobileCta() {
               strokeLinejoin="round"
             />
           </svg>
-          Call now
+          Call
         </a>
+        <WhatsAppLink
+          ariaLabel="Message us on WhatsApp"
+          className={`btn-secondary w-12 shrink-0 px-0 ${hidden ? "pointer-events-none" : ""}`}
+        >
+          <WhatsAppIcon size={20} />
+        </WhatsAppLink>
         <button
           type="button"
           tabIndex={hidden ? -1 : 0}
           onClick={() => openEnquiry("Sticky mobile bar")}
-          className="btn-primary flex-[1.3]"
+          className="btn-primary flex-[1.4] px-3"
         >
           Enquire Now
         </button>

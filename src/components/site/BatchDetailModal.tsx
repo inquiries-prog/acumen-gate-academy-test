@@ -1,10 +1,12 @@
 "use client";
 
+import DemoVideoTile from "@/components/home/DemoVideoTile";
 import Modal from "@/components/ui/Modal";
-import { formatRupees } from "@/lib/payments";
+import { calculateFees, formatRupees } from "@/lib/payments";
 import type { BatchMode } from "@/lib/types";
-import { resolve } from "@/lib/utils";
+import { resolve, whatsappBatchMessage } from "@/lib/utils";
 import { useSiteUI } from "./SiteUI";
+import WhatsAppLink from "./WhatsAppLink";
 
 /**
  * "Know about the batch" popup (SRS 7.1.6).
@@ -12,6 +14,12 @@ import { useSiteUI } from "./SiteUI";
  * Shows mode, start date, duration, faculty and fees, plus the full nine-point
  * pedagogy checklist, and offers exactly two actions: Enroll & Pay Now (SRS 11)
  * and Enquire for this batch (SRS 8.1).
+ *
+ * Built to read like a product page rather than a fact sheet: the branch's own
+ * demo lecture up top, an offline/online switch, and the fee shown the way a
+ * student will actually pay it - with GST worked out and a total, not "+ GST".
+ * The WhatsApp line under the buttons is a tertiary text link, so the two
+ * actions the SRS specifies stay the only buttons.
  */
 export default function BatchDetailModal({
   open,
@@ -24,7 +32,7 @@ export default function BatchDetailModal({
   mode: BatchMode;
   onClose: () => void;
 }) {
-  const { findBranchBatch, pedagogy, push, openEnquiry } = useSiteUI();
+  const { findBranchBatch, pedagogy, push, pop, openEnquiry } = useSiteUI();
   const row = findBranchBatch(branchId, mode);
   if (!row) return null;
 
@@ -32,7 +40,20 @@ export default function BatchDetailModal({
   const modeLabel = mode === "offline" ? "Offline" : "Online";
   const batchLabel = `${branch.name} (${branch.code}) ${modeLabel}`;
   const fees = batch?.fees ?? null;
-  const canEnroll = Boolean(batch?.enroll_enabled && fees && fees > 0);
+  const breakdown = fees && fees > 0 ? calculateFees(fees) : null;
+  const canEnroll = Boolean(batch?.enroll_enabled && breakdown);
+
+  // The other mode, if this branch runs one - drives the switch.
+  const otherMode: BatchMode = mode === "offline" ? "online" : "offline";
+  const hasOther = Boolean(findBranchBatch(branchId, otherMode)?.batch?.visible);
+
+  function switchMode(next: BatchMode) {
+    if (next === mode) return;
+    // Same component at the same stack position, so React batches these into
+    // one render and the sheet updates in place without re-animating.
+    pop();
+    push({ kind: "batchDetail", branchId, mode: next });
+  }
 
   const facts: Array<{ label: string; value: string }> = [
     { label: "Mode", value: modeLabel },
@@ -40,8 +61,10 @@ export default function BatchDetailModal({
     { label: "Duration", value: resolve(batch?.duration, "Call us for details") },
     { label: "Faculty", value: resolve(batch?.faculty, "Assigned from our core mentor team") },
     {
-      label: "Fees",
-      value: fees ? `${formatRupees(fees)} + GST` : "Call us for current fees",
+      label: "Course fee",
+      value: breakdown
+        ? `${formatRupees(breakdown.fee)} + ${breakdown.gstRate}% GST`
+        : "Call us for current fees",
     },
   ];
 
@@ -55,13 +78,66 @@ export default function BatchDetailModal({
         mode === "offline" ? "at our Vadodara centre" : "live online"
       }.`}
     >
-      <dl className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2">
+      {batch?.video_id && (
+        <DemoVideoTile
+          compact
+          videoId={batch.video_id}
+          start={batch.video_start}
+          title={`${branch.name} — demo lecture`}
+          caption="Watch a demo lecture"
+        />
+      )}
+
+      {hasOther && (
+        <div
+          role="group"
+          aria-label="Batch mode"
+          className={`grid grid-cols-2 gap-1 rounded-xl border border-line bg-offwhite p-1 ${
+            batch?.video_id ? "mt-5" : ""
+          }`}
+        >
+          {(["offline", "online"] as const).map((m) => (
+            <button
+              key={m}
+              type="button"
+              aria-pressed={m === mode}
+              onClick={() => switchMode(m)}
+              className={`min-h-10 rounded-lg text-sm font-semibold transition-all duration-200 ease-smooth ${
+                m === mode
+                  ? "bg-white text-charcoal shadow-chip"
+                  : "text-muted hover:text-charcoal"
+              }`}
+            >
+              {m === "offline" ? "Offline · Vadodara" : "Live online"}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <dl
+        className={`grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 ${
+          batch?.video_id || hasOther ? "mt-5" : ""
+        }`}
+      >
         {facts.map((f) => (
           <div key={f.label} className="bg-white px-5 py-3.5">
             <dt className="text-xs font-bold uppercase tracking-wide text-muted">{f.label}</dt>
             <dd className="mt-1 font-display text-[15px] font-bold text-charcoal">{f.value}</dd>
           </div>
         ))}
+        {breakdown && (
+          <div className="flex items-center justify-between gap-4 bg-offwhite px-5 py-3.5 sm:col-span-2">
+            <div>
+              <dt className="text-xs font-bold uppercase tracking-wide text-muted">Total payable</dt>
+              <dd className="mt-0.5 text-xs text-muted">
+                includes {formatRupees(breakdown.gst)} GST
+              </dd>
+            </div>
+            <dd className="font-display text-xl font-extrabold text-charcoal">
+              {formatRupees(breakdown.total)}
+            </dd>
+          </div>
+        )}
       </dl>
 
       <h3 className="mt-7 font-display text-lg font-bold">What this batch includes</h3>
@@ -108,6 +184,17 @@ export default function BatchDetailModal({
           Enquire for this batch
         </button>
       </div>
+
+      {/* Tertiary, deliberately a text link: SRS 7.1.6 fixes this sheet at two buttons. */}
+      <p className="mt-4 text-center text-sm text-body">
+        Prefer chat?{" "}
+        <WhatsAppLink
+          message={whatsappBatchMessage(branch.name, branch.code, mode)}
+          className="font-semibold text-red underline-offset-4 hover:underline"
+        >
+          WhatsApp us about this batch
+        </WhatsAppLink>
+      </p>
     </Modal>
   );
 }

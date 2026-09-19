@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import AmbientGlow from "@/components/ui/AmbientGlow";
-import { telHref } from "@/lib/utils";
+import { WHATSAPP_DEFAULT_MESSAGE, WHATSAPP_NUMBER } from "@/lib/defaults";
+import { telHref, whatsappHref } from "@/lib/utils";
 import { useSiteUI } from "./SiteUI";
 
 /**
@@ -171,6 +172,9 @@ export default function ChatWidget() {
             <Options>
               <Option primary as="a" href={telHref(settings.phone)}>
                 📞 Call {settings.phone}
+              </Option>
+              <Option as="a" href={whatsappHref(WHATSAPP_NUMBER, WHATSAPP_DEFAULT_MESSAGE)}>
+                💬 Message us on WhatsApp
               </Option>
               <Option
                 onClick={() => {

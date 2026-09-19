@@ -30,7 +30,7 @@ export default function ResultsGallery({ images }: { images: GalleryImage[] }) {
   const remaining = images.length - shown;
 
   return (
-    <section className="section">
+    <section id="archive" className="section scroll-mt-28">
       <div className="container-site">
         <p className="eyebrow">The full picture</p>
         <h2 className="h-section mt-4">Every result we&apos;ve celebrated</h2>

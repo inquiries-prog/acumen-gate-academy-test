@@ -29,6 +29,7 @@ To enable the admin panel, lead capture and payments, follow
 |---|---|
 | `npm run dev` | Local development server |
 | `npm run build` | Production build |
+| `npm run build:clean` | Wipe `.next` then build - use after adding metadata files or changing layouts (the incremental build reuses prerendered pages) |
 | `npm run typecheck` | TypeScript check, no build |
 | `npm run seed` | Load the starting content into an empty database |
 | `npm run upload-assets` | Move bundled images into Supabase Storage |

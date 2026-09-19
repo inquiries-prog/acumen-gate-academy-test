@@ -64,11 +64,23 @@ export default function ResultsTabs({
         </div>
 
         {visible.length === 0 ? (
-          <p className="mt-8 rounded-xl border border-dashed border-line bg-offwhite px-5 py-10 text-center text-sm text-body">
-            {activeYear
-              ? `Results for ${activeYear.label} will be published here shortly.`
-              : "Results will be published here shortly."}
-          </p>
+          // Not a dead end: point at the archive that sits just below.
+          <div className="mt-8 rounded-2xl border border-line bg-offwhite p-6 text-center sm:p-10">
+            <span className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-red/[0.08] text-red">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M7 4h10v5a5 5 0 01-10 0V4zM12 14v4m-3.5 2.5h7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </span>
+            <h3 className="mt-4 font-display text-lg font-bold">
+              We&apos;re adding {activeYear?.label ?? "these"} results
+            </h3>
+            <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-body">
+              Meanwhile, every result we&apos;ve celebrated is just below.
+            </p>
+            <a href="#archive" className="btn-secondary mt-5">
+              See every result
+            </a>
+          </div>
         ) : (
           <ul className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {visible.map((e) => (

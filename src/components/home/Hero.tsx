@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import HeroQuickCapture from "@/components/home/HeroQuickCapture";
 import PressRow from "@/components/home/PressRow";
 import EnquiryForm from "@/components/site/EnquiryForm";
@@ -58,6 +59,13 @@ const POINTS = [
 export default function Hero() {
   const { settings } = useSiteUI();
 
+  // The headline arrives one word at a time. Spaces are kept as text nodes
+  // BETWEEN the spans (an inline-block drops its own trailing space), so the
+  // DOM text is byte-identical to the headline for crawlers and screen
+  // readers - no aria-label needed, and the copy itself is untouched.
+  const words = settings.hero_headline.trim().split(/\s+/);
+  const taglineDelay = 200 + words.length * 60;
+
   return (
     <section className="relative isolate overflow-hidden bg-white">
       <AmbientGlow />
@@ -69,7 +77,7 @@ export default function Hero() {
               breakpoint without existing twice. min-w-0 matters: a grid track
               defaults to a min-content minimum, and the nowrap chip rail below
               would otherwise widen this column past the phone's viewport. */}
-          <div className="flex min-w-0 flex-col animate-reveal lg:pt-6">
+          <div className="flex min-w-0 flex-col lg:pt-6">
             <p className="eyebrow self-start">
               <span className="relative flex h-1.5 w-1.5" aria-hidden="true">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red opacity-70" />
@@ -78,9 +86,24 @@ export default function Hero() {
               GATE &amp; GPSC Coaching · Vadodara
             </p>
 
-            <h1 className="mt-6 text-display-xl text-charcoal">{settings.hero_headline}</h1>
+            <h1 className="mt-6 text-display-xl text-charcoal">
+              {words.map((word, i) => (
+                <Fragment key={i}>
+                  {i > 0 && " "}
+                  <span
+                    className="inline-block animate-reveal"
+                    style={{ animationDelay: `${80 + i * 60}ms` }}
+                  >
+                    {word}
+                  </span>
+                </Fragment>
+              ))}
+            </h1>
 
-            <p className="mt-5 max-w-xl text-lg font-bold leading-snug text-red sm:text-xl md:text-[1.45rem] lg:mt-6">
+            <p
+              className="mt-5 max-w-xl text-lg font-bold leading-snug text-red animate-reveal sm:text-xl md:text-[1.45rem] lg:mt-6"
+              style={{ animationDelay: `${taglineDelay}ms` }}
+            >
               {settings.hero_tagline}
             </p>
 

@@ -110,6 +110,27 @@ const config: Config = {
           from: { opacity: "0", transform: "translateX(6%)" },
           to: { opacity: "1", transform: "translateX(0)" },
         },
+        /* Success moment: the tick draws itself, the circle pops, particles
+           burst outward. Dash-offset and transform only - no layout. */
+        drawCheck: {
+          from: { strokeDashoffset: "36" },
+          to: { strokeDashoffset: "0" },
+        },
+        pop: {
+          "0%": { transform: "scale(.4)", opacity: "0" },
+          "60%": { transform: "scale(1.08)", opacity: "1" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
+        burst: {
+          "0%": { transform: "translateX(0) scale(1)", opacity: "1" },
+          "70%": { opacity: "1" },
+          "100%": { transform: "translateX(var(--dist, 52px)) scale(.2)", opacity: "0" },
+        },
+        /* Soft ring expanding behind a play button. */
+        pulseRing: {
+          "0%": { transform: "scale(1)", opacity: ".45" },
+          "100%": { transform: "scale(1.9)", opacity: "0" },
+        },
       },
       animation: {
         // Slow + continuous per SRS 7.1.2 - the client explicitly asked for this
@@ -133,6 +154,10 @@ const config: Config = {
         // animation-delay and must stay invisible until their turn.
         sheetUp: "sheetUp .32s cubic-bezier(0.16,1,0.3,1) both",
         slideInRight: "slideInRight .32s cubic-bezier(0.16,1,0.3,1) both",
+        "draw-check": "drawCheck .45s cubic-bezier(0.16,1,0.3,1) .25s both",
+        pop: "pop .5s cubic-bezier(0.16,1,0.3,1) both",
+        burst: "burst .7s cubic-bezier(0.16,1,0.3,1) .2s both",
+        "pulse-ring": "pulseRing 2.2s cubic-bezier(0.16,1,0.3,1) infinite",
       },
       transitionTimingFunction: {
         // Decelerating curve - motion that settles rather than stops dead.

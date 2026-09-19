@@ -1,5 +1,6 @@
 import ComparisonTable from "@/components/home/ComparisonTable";
 import AmbientGlow from "@/components/ui/AmbientGlow";
+import CursorGlow from "@/components/ui/CursorGlow";
 import Rail from "@/components/ui/Rail";
 import Reveal from "@/components/ui/Reveal";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -26,6 +27,7 @@ export default function WhyChooseSection({ cards }: { cards: WhyChooseCard[] }) 
     <section className="relative overflow-hidden bg-charcoal bg-dark-sheen">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 grid-texture opacity-[0.05]" />
       <AmbientGlow tone="dark" />
+      <CursorGlow />
 
       <div className="container-site relative py-16 md:py-24 lg:py-28">
         <SectionHeading

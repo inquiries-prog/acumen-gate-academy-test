@@ -1,4 +1,5 @@
 import Reveal from "@/components/ui/Reveal";
+import Spotlight from "@/components/ui/Spotlight";
 import { PEDAGOGY_INTRO } from "@/lib/defaults";
 import type { PedagogyPoint } from "@/lib/types";
 
@@ -9,9 +10,12 @@ import type { PedagogyPoint } from "@/lib/types";
  * section at all: it was tried there and removed for making the page too heavy,
  * so do not reintroduce it (SRS 7.2.4).
  *
- * Laid out as a two-column split - a sticky intro against a numbered list -
- * rather than another card grid, so the About page does not read as five
- * variations of the same block.
+ * Presented as a journey rather than a grid of nine boxes, because that is what
+ * the nine points describe: the order a student actually moves through them,
+ * from the first offline hour to placement. On a phone a spine runs down the
+ * left and draws in as the section reveals; from `lg` the steps sit three to a
+ * row with a connecting line that draws across as each step appears. The nine
+ * strings are the SRS text, untouched.
  */
 export default function PedagogySection({ points }: { points: PedagogyPoint[] }) {
   if (points.length === 0) return null;
@@ -34,25 +38,54 @@ export default function PedagogySection({ points }: { points: PedagogyPoint[] })
             </p>
           </Reveal>
 
-          <ol className="grid gap-3 sm:grid-cols-2">
-            {points.map((point, i) => (
-              <Reveal
-                as="li"
-                key={point.id}
-                delay={(i % 2) * 70}
-                className="group flex items-start gap-4 rounded-2xl border border-line bg-white p-5
-                           shadow-chip transition-all duration-300 ease-smooth
-                           hover:-translate-y-1 hover:border-red/25 hover:shadow-card"
-              >
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-red/[0.08] font-display text-sm font-bold text-red transition-colors duration-300 group-hover:bg-red group-hover:text-white">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <span className="pt-1.5 text-[15px] font-medium leading-snug text-charcoal">
-                  {point.text}
-                </span>
-              </Reveal>
-            ))}
-          </ol>
+          {/* group/journey lets the phone spine key its draw-in off this
+              wrapper's own reveal state. */}
+          <Reveal className="group/journey relative">
+            <span
+              aria-hidden="true"
+              className="absolute bottom-3 left-[21px] top-3 w-px origin-top scale-y-0
+                         bg-gradient-to-b from-red via-line to-line
+                         transition-transform duration-[1200ms] ease-smooth
+                         group-[.opacity-100]/journey:scale-y-100 lg:hidden"
+            />
+
+            <ol data-journey className="relative grid gap-4 lg:grid-cols-3 lg:gap-x-6 lg:gap-y-12">
+              {points.map((point, i) => (
+                <Reveal
+                  as="li"
+                  key={point.id}
+                  delay={i * 70}
+                  className="relative pl-14 lg:pl-0 lg:pt-14
+                             lg:before:absolute lg:before:left-0 lg:before:top-[22px] lg:before:h-px
+                             lg:before:-right-6 lg:[&:nth-child(3n)]:before:right-0
+                             lg:before:origin-left lg:before:scale-x-0 lg:before:bg-line
+                             lg:before:transition-transform lg:before:duration-700 lg:before:delay-150
+                             lg:before:ease-smooth lg:[&.opacity-100]:before:scale-x-100"
+                >
+                  {/* Node on the spine / line. */}
+                  <span
+                    aria-hidden="true"
+                    className="absolute left-0 top-0 z-[1] grid h-11 w-11 place-items-center rounded-full
+                               border-4 border-white bg-red font-display text-xs font-extrabold text-white
+                               shadow-red-glow"
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+
+                  <div
+                    className="group relative overflow-hidden rounded-2xl border border-line bg-white p-5
+                               shadow-chip transition-all duration-300 ease-smooth
+                               hover:-translate-y-1 hover:border-red/25 hover:shadow-card"
+                  >
+                    <Spotlight size={240} />
+                    <p className="relative text-[15px] font-medium leading-snug text-charcoal">
+                      {point.text}
+                    </p>
+                  </div>
+                </Reveal>
+              ))}
+            </ol>
+          </Reveal>
         </div>
       </div>
     </section>

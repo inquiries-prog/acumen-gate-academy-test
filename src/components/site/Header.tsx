@@ -6,9 +6,11 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import AmbientGlow from "@/components/ui/AmbientGlow";
+import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
 import { useFocusTrap } from "@/lib/useFocusTrap";
 import { telHref } from "@/lib/utils";
 import ScrollProgress from "./ScrollProgress";
+import WhatsAppLink from "./WhatsAppLink";
 import { useSiteUI } from "./SiteUI";
 
 /**
@@ -32,6 +34,35 @@ export default function Header() {
   const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
+
+  // Compact the bar once the page has scrolled. Written as a data attribute
+  // through one rAF-coalesced passive listener, so nothing re-renders; the
+  // CSS does the rest with transforms, so the document never reflows.
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header) return;
+    let frame = 0;
+    let scrolled = false;
+    const update = () => {
+      frame = 0;
+      // Hysteresis: on past 24px, off again below 8px - no flicker at the edge.
+      const next = scrolled ? window.scrollY > 8 : window.scrollY > 24;
+      if (next !== scrolled) {
+        scrolled = next;
+        header.toggleAttribute("data-scrolled", scrolled);
+      }
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(frame);
+    };
+  }, []);
 
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
 
@@ -63,8 +94,18 @@ export default function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 border-b border-line/80 bg-white/85 backdrop-blur-xl supports-[backdrop-filter]:bg-white/75">
-      <div className="container-site flex h-[76px] items-center justify-between gap-4">
+    <header ref={headerRef} className="group/header pointer-events-none sticky top-0 z-50 h-[76px]">
+      {/* The visible bar. It is what compacts: up 12px and a shadow when the
+          page has scrolled. Named for the view transition so it stays put
+          while pages cross-fade beneath it. */}
+      <div
+        className="pointer-events-auto absolute inset-x-0 top-0 h-[76px] border-b border-line/80
+                   bg-white/85 backdrop-blur-xl supports-[backdrop-filter]:bg-white/75
+                   transition-[transform,box-shadow] duration-300 ease-smooth
+                   group-data-[scrolled]/header:-translate-y-3 group-data-[scrolled]/header:shadow-card"
+        style={{ viewTransitionName: "site-header" }}
+      >
+      <div className="container-site flex h-[76px] items-center justify-between gap-4 transition-transform duration-300 ease-smooth group-data-[scrolled]/header:translate-y-1.5">
         <Link href="/" className="flex shrink-0 items-center" aria-label="Acumen Gate Academy home">
           {settings.logo_url ? (
             // Never recoloured or inverted via CSS filters (SRS 3.2).
@@ -74,7 +115,7 @@ export default function Header() {
               width={190}
               height={52}
               priority
-              className="h-10 w-auto sm:h-11"
+              className="h-10 w-auto origin-left transition-transform duration-300 ease-smooth group-data-[scrolled]/header:scale-[0.85] sm:h-11"
             />
           ) : (
             <LogoFallback />
@@ -123,6 +164,12 @@ export default function Header() {
             <PhoneIcon />
             <span className="hidden whitespace-nowrap 2xl:inline">{settings.phone}</span>
           </a>
+          <WhatsAppLink
+            ariaLabel="Message us on WhatsApp"
+            className="grid h-11 w-11 place-items-center rounded-md text-charcoal transition-colors hover:text-red"
+          >
+            <WhatsAppIcon />
+          </WhatsAppLink>
           <button type="button" onClick={() => setChatOpen(true)} className="btn-secondary btn-sm">
             💬 Chat with us
           </button>
@@ -232,17 +279,20 @@ export default function Header() {
             className="relative shrink-0 animate-reveal border-t border-line bg-white/90 px-5 pt-4 pb-safe backdrop-blur"
             style={{ animationDelay: "380ms" }}
           >
-            <div className="grid grid-cols-2 gap-2.5">
-              <a href={telHref(settings.phone)} className="btn-secondary">
+            <div className="grid grid-cols-3 gap-2.5">
+              <a href={telHref(settings.phone)} className="btn-secondary px-2 text-sm">
                 <PhoneIcon /> Call
               </a>
+              <WhatsAppLink className="btn-secondary px-2 text-sm">
+                <WhatsAppIcon /> WhatsApp
+              </WhatsAppLink>
               <button
                 type="button"
                 onClick={() => {
                   closeDrawer();
                   setChatOpen(true);
                 }}
-                className="btn-secondary"
+                className="btn-secondary px-2 text-sm"
               >
                 💬 Chat
               </button>
@@ -252,7 +302,7 @@ export default function Header() {
                   closeDrawer();
                   openEnquiry("Mobile menu");
                 }}
-                className="btn-primary col-span-2"
+                className="btn-primary col-span-3"
               >
                 Enquire Now
               </button>
@@ -263,6 +313,7 @@ export default function Header() {
       )}
 
       <ScrollProgress />
+      </div>
     </header>
   );
 }

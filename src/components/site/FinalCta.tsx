@@ -1,6 +1,8 @@
 "use client";
 
 import AmbientGlow from "@/components/ui/AmbientGlow";
+import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
+import WhatsAppLink from "./WhatsAppLink";
 import { telHref } from "@/lib/utils";
 import { useSiteUI } from "./SiteUI";
 
@@ -86,6 +88,14 @@ export default function FinalCta({
               </svg>
               {settings.phone}
             </a>
+            <WhatsAppLink
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl
+                         border border-white/20 px-6 text-[15px] font-semibold text-white
+                         transition-colors duration-200 hover:bg-white/10"
+            >
+              <WhatsAppIcon />
+              WhatsApp
+            </WhatsAppLink>
           </div>
         </div>
       </div>

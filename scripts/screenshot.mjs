@@ -22,6 +22,10 @@
  * menu, a card rail, and the sticky bar over the footer.
  *
  * It never submits a form. Dev-only; Playwright is a devDependency.
+ *
+ * Build with `rm -rf .next && npm run build` (or `npm run build:clean`) before
+ * running. Turbopack's incremental build reuses prerendered pages, so a page
+ * captured after adding metadata files or changing a layout can be stale.
  */
 
 import { chromium } from "playwright";
@@ -57,6 +61,36 @@ function parseArgs(argv) {
 }
 
 const slugOf = (route) => (route === "/" ? "home" : route.replace(/^\//, "").replace(/\//g, "-"));
+
+/**
+ * The identity assets are file-convention routes generated at build time. If
+ * one is missing, a shared link shows no preview card and the home-screen icon
+ * is a blank tile - worth failing loudly over.
+ */
+const ASSET_CHECKS = [
+  ["/icon/32", "image/png"],
+  ["/icon/512", "image/png"],
+  ["/apple-icon", "image/png"],
+  ["/opengraph-image", "image/png"],
+  ["/twitter-image", "image/png"],
+  ["/manifest.webmanifest", "application/manifest+json"],
+];
+
+async function checkAssets() {
+  console.log("\n== identity assets ==");
+  for (const [path, type] of ASSET_CHECKS) {
+    let verdict;
+    try {
+      const res = await fetch(BASE + path);
+      const ct = res.headers.get("content-type") ?? "";
+      verdict = res.ok && ct.startsWith(type) ? "PASS" : `FAIL (${res.status} ${ct})`;
+    } catch (err) {
+      verdict = `FAIL (${err.message})`;
+    }
+    if (verdict !== "PASS") process.exitCode = 1;
+    console.log(`  ${verdict.padEnd(6)} ${path}`);
+  }
+}
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function waitForServer(url, timeoutMs = 90_000) {
@@ -128,7 +162,10 @@ async function captureMobileExtras(page) {
     console.log(`  sheet phone prefilled: ${prefilled || "(EMPTY)"}`);
     await shoot(page, "home-mobile-sheet.png");
     await page.keyboard.press("Escape");
-    await sleep(400);
+    // Wait for the sheet to actually leave the DOM, not a fixed delay - the
+    // next click lands on the header and must not race the close.
+    await page.waitForSelector(dialog, { state: "detached", timeout: 5000 });
+    await sleep(300);
   } else {
     console.log("  (no #hero-quick-phone on this page - skipping sheet capture)");
   }
@@ -138,7 +175,8 @@ async function captureMobileExtras(page) {
   await sleep(800);
   await shoot(page, "home-mobile-menu.png");
   await page.keyboard.press("Escape");
-  await sleep(400);
+  await page.waitForSelector('[aria-label="Menu"][role="dialog"]', { state: "detached", timeout: 5000 });
+  await sleep(300);
 
   // 3. A card rail, to check the peek + dots.
   await page.evaluate(() => {
@@ -147,12 +185,50 @@ async function captureMobileExtras(page) {
   await sleep(900);
   await shoot(page, "home-mobile-rail.png");
 
-  // 4. Sticky bar over the footer clearance.
+  // 4. Branch picker -> batch sheet (video, mode switch, GST total).
+  const chip = page.locator("#courses [data-branch]").first();
+  if ((await chip.count()) > 0) {
+    await chip.click();
+    await page.waitForSelector(dialog, { timeout: 5000 });
+    await sleep(700);
+    await shoot(page, "home-mobile-branch-sheet.png");
+    await page.keyboard.press("Escape");
+    await page.waitForSelector(dialog, { state: "detached", timeout: 5000 });
+    await sleep(300);
+  }
+
+  // 5. The demo video tile in view.
+  await page.evaluate(() => {
+    document.querySelector("[data-demo-tile]")?.scrollIntoView({ block: "center", behavior: "instant" });
+  });
+  await sleep(700);
+  await shoot(page, "home-mobile-video-tile.png");
+
+  // 6. Sticky bar over the footer clearance.
   await page.evaluate(() =>
     window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "instant" }),
   );
   await sleep(700);
   await shoot(page, "home-mobile-bottom.png");
+}
+
+async function captureAboutMobile(page) {
+  await page.evaluate(() => {
+    document.querySelector("[data-journey]")?.scrollIntoView({ block: "start", behavior: "instant" });
+  });
+  await sleep(1400); // the spine and segments draw in over ~1.2s
+  await shoot(page, "about-mobile-journey.png");
+}
+
+async function captureDesktopExtras(page) {
+  await page.evaluate(() => {
+    document.querySelector("#courses")?.scrollIntoView({ block: "start", behavior: "instant" });
+  });
+  await sleep(800);
+  // Hover the first course card off-centre so the spotlight is clearly visible.
+  await page.locator("#courses article").first().hover({ position: { x: 140, y: 90 } });
+  await sleep(450);
+  await shoot(page, "home-desktop-spotlight.png");
 }
 
 async function main() {
@@ -165,6 +241,7 @@ async function main() {
     await waitForServer(BASE, 15_000);
   }
 
+  await checkAssets();
   await mkdir(OUT, { recursive: true });
   const browser = await chromium.launch();
 
@@ -176,6 +253,8 @@ async function main() {
         console.log(route);
         const page = await captureRoute(context, device, route);
         if (device === "mobile" && route === "/") await captureMobileExtras(page);
+        if (device === "mobile" && route === "/about") await captureAboutMobile(page);
+        if (device === "desktop" && route === "/") await captureDesktopExtras(page);
         await page.close();
       }
       await context.close();

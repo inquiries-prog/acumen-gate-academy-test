@@ -1,6 +1,7 @@
 import MediaImage from "@/components/ui/MediaImage";
 import Rail from "@/components/ui/Rail";
 import Reveal from "@/components/ui/Reveal";
+import Spotlight from "@/components/ui/Spotlight";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { MENTORS_CREDIBILITY, MENTORS_INTRO } from "@/lib/defaults";
 import type { Mentor } from "@/lib/types";
@@ -35,11 +36,12 @@ export default function MentorsSection({ mentors }: { mentors: Mentor[] }) {
               key={m.id}
               as="article"
               delay={(i % 3) * 80}
-              className="group flex h-full flex-col overflow-hidden
+              className="group relative flex h-full flex-col overflow-hidden
                          rounded-2xl border border-line bg-white shadow-card
                          transition-all duration-300 ease-smooth hover:-translate-y-1.5
                          hover:border-red/25 hover:shadow-card-hover"
             >
+              <Spotlight />
               <div className="relative aspect-[4/3] w-full overflow-hidden bg-offwhite">
                 <MediaImage
                   src={m.image_url}

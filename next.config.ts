@@ -12,10 +12,15 @@ const supabaseHost = (() => {
 
 const nextConfig: NextConfig = {
   images: {
-    // Supabase Storage is the image host once configured (SRS 4).
-    remotePatterns: supabaseHost
-      ? [{ protocol: "https", hostname: supabaseHost, pathname: "/storage/v1/object/public/**" }]
-      : [],
+    remotePatterns: [
+      // Supabase Storage is the image host once configured (SRS 4).
+      ...(supabaseHost
+        ? [{ protocol: "https" as const, hostname: supabaseHost, pathname: "/storage/v1/object/public/**" }]
+        : []),
+      // YouTube poster frames for the demo-class tiles. The video itself still
+      // plays inline via youtube-nocookie (SRS 7.1.6 - never sent off-site).
+      { protocol: "https" as const, hostname: "i.ytimg.com", pathname: "/vi/**" },
+    ],
     formats: ["image/avif", "image/webp"],
   },
   poweredByHeader: false,

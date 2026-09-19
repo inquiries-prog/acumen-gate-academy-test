@@ -3,6 +3,7 @@ import ChatWidget from "@/components/site/ChatWidget";
 import Footer from "@/components/site/Footer";
 import Header from "@/components/site/Header";
 import ModalHost from "@/components/site/ModalHost";
+import PageTransition from "@/components/site/PageTransition";
 import StickyMobileCta from "@/components/site/StickyMobileCta";
 import { SiteUIProvider } from "@/components/site/SiteUI";
 import {
@@ -79,7 +80,9 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
 
       <Header />
       <AnnouncementBanner />
-      <main id="main">{children}</main>
+      <main id="main">
+        <PageTransition>{children}</PageTransition>
+      </main>
       <Footer centers={centers} ecosystem={ecosystem} />
 
       <ModalHost />

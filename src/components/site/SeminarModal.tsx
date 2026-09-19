@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Modal from "@/components/ui/Modal";
+import SuccessBurst from "@/components/ui/SuccessBurst";
 import { useSiteUI } from "./SiteUI";
 
 /**
@@ -71,13 +72,14 @@ export default function SeminarModal({ open, onClose }: { open: boolean; onClose
     >
       {offer !== null ? (
         <div className="py-3 text-center">
-          <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-full bg-red/10">
-            <span className="text-2xl" aria-hidden="true">
-              🎁
-            </span>
-          </div>
-          <h2 className="text-xl font-bold">Here&apos;s your exclusive offer</h2>
-          <div className="mt-4 rounded-xl border border-red/25 bg-red/5 px-5 py-4 text-left">
+          <SuccessBurst variant="gift" />
+          <h2 className="font-display text-xl font-bold animate-reveal" style={{ animationDelay: "250ms" }}>
+            Here&apos;s your exclusive offer
+          </h2>
+          <div
+            className="mt-4 rounded-xl border border-red/25 bg-red/5 px-5 py-4 text-left animate-reveal"
+            style={{ animationDelay: "350ms" }}
+          >
             <p className="text-[15px] leading-relaxed text-charcoal">{offer}</p>
           </div>
           <div className="mt-5 flex flex-col gap-2.5 sm:flex-row sm:justify-center">

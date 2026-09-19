@@ -49,6 +49,17 @@ export const HEAD_OFFICE_ADDRESS =
 export const DEMO_VIDEO_ID = "2nh8TYHqa8s";
 export const DEMO_VIDEO_START = 824;
 
+/**
+ * WhatsApp contact. A code constant on purpose, like PHONE_DISPLAY: adding it
+ * to `siteSettings` would be spread into the `site_settings` insert by the
+ * seeder, and an unknown column would break a fresh seed. Making it
+ * admin-editable later is one migration plus a field on the settings form.
+ */
+export const WHATSAPP_NUMBER = "8200035090";
+export const WHATSAPP_DISPLAY = "+91 82000 35090";
+export const WHATSAPP_DEFAULT_MESSAGE =
+  "Hi Acumen Gate Academy, I'd like to know more about your GATE coaching batches.";
+
 export const siteSettings: SiteSettings = {
   // SRS 6.2
   banner_enabled: true,
