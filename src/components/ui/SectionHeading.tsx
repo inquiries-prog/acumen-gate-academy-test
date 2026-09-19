@@ -1,3 +1,4 @@
+import LiveDot from "./LiveDot";
 import Reveal from "./Reveal";
 
 /**
@@ -36,7 +37,7 @@ export default function SectionHeading({
       <Reveal className={centered ? "max-w-2xl" : "max-w-2xl"}>
         {eyebrow && (
           <p className={centered ? "eyebrow mx-auto" : "eyebrow"}>
-            <span className="h-1.5 w-1.5 rounded-full bg-red" aria-hidden="true" />
+            <LiveDot />
             {eyebrow}
           </p>
         )}

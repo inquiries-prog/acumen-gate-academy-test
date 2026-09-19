@@ -94,13 +94,25 @@ export default function CoursesSection({ cards }: { cards: CourseCard[] }) {
                   src={card.image_url}
                   alt={card.alt_text || card.title}
                   placeholderLabel={`${card.title} photo`}
+                  placeholder={{
+                    kind: "art",
+                    icon:
+                      card.action === "batches_offline"
+                        ? "classroom"
+                        : card.action === "batches_online"
+                          ? "online"
+                          : "gpsc",
+                  }}
                   sizes="(max-width: 640px) 104px, (max-width: 1024px) 50vw, 33vw"
                   className="transition-transform duration-700 ease-smooth group-hover:scale-105"
                 />
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 bg-gradient-to-t from-charcoal/50 via-transparent to-transparent max-sm:hidden"
-                />
+                {/* Photo scrim - only over a real photo; the placeholder art is light. */}
+                {card.image_url && (
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 bg-gradient-to-t from-charcoal/50 via-transparent to-transparent max-sm:hidden"
+                  />
+                )}
                 {card.banner_label && (
                   <span className="absolute left-4 top-4 rounded-full bg-white/95 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-wide text-red shadow-chip backdrop-blur max-sm:hidden">
                     {card.banner_label}

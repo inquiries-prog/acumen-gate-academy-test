@@ -2,6 +2,7 @@
 
 import AmbientGlow from "@/components/ui/AmbientGlow";
 import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
+import Magnetic from "@/components/ui/Magnetic";
 import WhatsAppLink from "./WhatsAppLink";
 import { telHref } from "@/lib/utils";
 import { useSiteUI } from "./SiteUI";
@@ -65,13 +66,15 @@ export default function FinalCta({
           </div>
 
           <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
-            <button
-              type="button"
-              onClick={() => openEnquiry(source)}
-              className="btn-primary w-full px-8 sm:w-auto"
-            >
-              {buttonLabel || settings.final_cta_button}
-            </button>
+            <Magnetic className="w-full sm:w-auto">
+              <button
+                type="button"
+                onClick={() => openEnquiry(source)}
+                className="btn-primary w-full px-8 sm:w-auto"
+              >
+                {buttonLabel || settings.final_cta_button}
+              </button>
+            </Magnetic>
             <a
               href={telHref(settings.phone)}
               className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl

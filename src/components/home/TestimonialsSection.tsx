@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import MediaImage from "@/components/ui/MediaImage";
+import MediaImage, { initialsOf } from "@/components/ui/MediaImage";
 import Rail from "@/components/ui/Rail";
 import Reveal from "@/components/ui/Reveal";
 import Spotlight from "@/components/ui/Spotlight";
@@ -116,6 +116,11 @@ export default function TestimonialsSection({
                     src={t.image_url}
                     alt={t.alt_text || `${name}, ${t.university}`}
                     placeholderLabel={isVideo ? "Video thumbnail" : "Student photo"}
+                    placeholder={
+                      isVideo
+                        ? undefined
+                        : { kind: "person", name: initialsOf(t.student_name) ? t.student_name : t.university }
+                    }
                     sizes="(max-width: 640px) 85vw, (max-width: 1024px) 50vw, 33vw"
                     className="transition-transform duration-700 ease-smooth group-hover:scale-105"
                   />

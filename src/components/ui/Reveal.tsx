@@ -26,7 +26,7 @@ export default function Reveal({
   children: React.ReactNode;
   /** Stagger, in ms. Keep small - long chains feel sluggish, not premium. */
   delay?: number;
-  as?: "div" | "li" | "section" | "article";
+  as?: "div" | "li" | "section" | "article" | "p";
   className?: string;
 }) {
   const ref = useRef<HTMLElement | null>(null);

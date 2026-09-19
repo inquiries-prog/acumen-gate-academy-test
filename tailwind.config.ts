@@ -138,6 +138,16 @@ const config: Config = {
           "0%": { transform: "scale(1)", opacity: ".45" },
           "100%": { transform: "scale(1.9)", opacity: "0" },
         },
+        /* A hand-drawn underline stroke drawing itself in. */
+        drawStroke: {
+          "0%": { strokeDashoffset: "220" },
+          "100%": { strokeDashoffset: "0" },
+        },
+        /* One light sweep across a figure. */
+        shine: {
+          "0%": { transform: "translateX(-130%) skewX(-12deg)" },
+          "100%": { transform: "translateX(130%) skewX(-12deg)" },
+        },
         /* The arrow in a "swipe" cue, beckoning sideways. */
         nudgeX: {
           "0%, 100%": { transform: "translateX(0)" },
@@ -171,6 +181,8 @@ const config: Config = {
         burst: "burst .7s cubic-bezier(0.16,1,0.3,1) .2s both",
         "pulse-ring": "pulseRing 2.2s cubic-bezier(0.16,1,0.3,1) infinite",
         "nudge-x": "nudgeX 1.4s ease-in-out infinite",
+        "draw-stroke": "drawStroke .6s cubic-bezier(0.16,1,0.3,1) both",
+        shine: "shine 1.2s cubic-bezier(0.16,1,0.3,1) 1.6s both",
       },
       transitionTimingFunction: {
         // Decelerating curve - motion that settles rather than stops dead.

@@ -81,8 +81,8 @@ Vercel's environment variables, if deployed) straight afterwards.
 | B6 | Student result entries (§7.4) | The Results page shows year tabs with "results will be published shortly". |
 | B7 | Per-branch demo videos (§7.1.6, §12) | All six branches use the one supplied placeholder video. Each batch already has its own video field. |
 | B8 | Social media links (§6.3, §12) | The footer social icons are hidden rather than linking nowhere. |
-| B9 | Real classroom / online-class photos (§7.1.4, §12) | Course cards show a labelled placeholder. |
-| B10 | Mentor photos (§7.1.9) | Mentor cards show a labelled placeholder; names and bios are real. |
+| B9 | Real classroom / online-class photos (§7.1.4, §12) | Course cards show designed placeholder artwork (branded tile + line icon) so the public site does not look unfinished. An upload in admin replaces it automatically. |
+| B10 | Mentor photos (§7.1.9) | Mentor cards (and student cards without a photo) show a monogram tile built from the name - "UT" for Dr. Umashankar Tripathi. Uploads replace it. |
 | B11 | Google Business Profile (§13) | Not a development task, but it affects "best GATE coaching in Vadodara" rankings more than the website does. |
 | B12 | Who owns News publishing (§12) | Decides whether `/news` launches with the one seed post or more. |
 
@@ -176,6 +176,12 @@ The button is WhatsApp green (#25D366), a deliberate exception to the SRS 3.1
 palette on the same basis as the amber Google stars: it is another company's
 mark, and the client asked for it to stand out. The colour is defined once in
 `tailwind.config.ts` and used only on the WhatsApp control.
+
+### C9. Hero rank strip is a code constant
+The hero shows "Top ranks, GATE 2026" chips - AIR 52, 73, 75, 267, 306 and
+333 - all taken from the supplied newspaper clippings, ranks only. They live in
+`src/lib/defaults.ts` as `HERO_RANKS` / `HERO_RANKS_LABEL`; update both when
+the next cycle's results are in. This is not a second headline total (§15.7).
 
 ### C7. Newsletter of record for the announcement banner link
 The banner currently opens the seminar popup, per §6.2. It can also open the

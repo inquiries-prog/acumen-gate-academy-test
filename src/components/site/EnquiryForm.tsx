@@ -3,6 +3,7 @@
 import { useState } from "react";
 import SuccessBurst from "@/components/ui/SuccessBurst";
 import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
+import Magnetic from "@/components/ui/Magnetic";
 import { useSiteUI } from "./SiteUI";
 import WhatsAppLink from "./WhatsAppLink";
 import { telHref } from "@/lib/utils";
@@ -295,9 +296,11 @@ export default function EnquiryForm({
         </p>
       )}
 
-      <button type="submit" disabled={submitting} className="btn-primary w-full">
-        {submitting ? "Sending…" : "Request a callback"}
-      </button>
+      <Magnetic className="block w-full">
+        <button type="submit" disabled={submitting} className="btn-primary w-full">
+          {submitting ? "Sending…" : "Request a callback"}
+        </button>
+      </Magnetic>
 
       <p className="text-center text-xs leading-relaxed text-muted">
         We call once, within 24 hours. No spam. Or reach us now on{" "}

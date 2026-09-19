@@ -3,8 +3,10 @@
 import { Fragment } from "react";
 import HeroQuickCapture from "@/components/home/HeroQuickCapture";
 import PressRow from "@/components/home/PressRow";
+import RankStrip from "@/components/home/RankStrip";
 import EnquiryForm from "@/components/site/EnquiryForm";
 import AmbientGlow from "@/components/ui/AmbientGlow";
+import LiveDot from "@/components/ui/LiveDot";
 import GoogleRating from "@/components/ui/GoogleRating";
 import { useSiteUI } from "@/components/site/SiteUI";
 
@@ -32,7 +34,7 @@ import { useSiteUI } from "@/components/site/SiteUI";
  * PHONE vs DESKTOP. On a phone the full card would land a whole screen below
  * the fold, so below `lg` it is replaced by HeroQuickCapture (one number field)
  * placed straight under the tagline, and the three supporting points become a
- * horizontal chip rail. Every split is CSS - the server HTML is identical on
+ * wrapped chip row. Every split is CSS - the server HTML is identical on
  * all devices, the form exists exactly once in the DOM, and nothing swaps
  * after hydration.
  */
@@ -64,7 +66,11 @@ export default function Hero() {
   // DOM text is byte-identical to the headline for crawlers and screen
   // readers - no aria-label needed, and the copy itself is untouched.
   const words = settings.hero_headline.trim().split(/\s+/);
+  const lastWordDelay = 80 + (words.length - 1) * 60;
+  // The underline draws once the last word has landed.
+  const strokeDelay = lastWordDelay + 250;
   const taglineDelay = 200 + words.length * 60;
+  const ranksDelay = taglineDelay + 150;
 
   return (
     <section className="relative isolate overflow-hidden bg-white">
@@ -79,25 +85,47 @@ export default function Hero() {
               would otherwise widen this column past the phone's viewport. */}
           <div className="flex min-w-0 flex-col lg:pt-6">
             <p className="eyebrow self-start">
-              <span className="relative flex h-1.5 w-1.5" aria-hidden="true">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red opacity-70" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-red" />
-              </span>
+              <LiveDot />
               GATE &amp; GPSC Coaching · Vadodara
             </p>
 
             <h1 className="mt-6 text-display-xl text-charcoal">
-              {words.map((word, i) => (
-                <Fragment key={i}>
-                  {i > 0 && " "}
-                  <span
-                    className="inline-block animate-reveal"
-                    style={{ animationDelay: `${80 + i * 60}ms` }}
-                  >
-                    {word}
-                  </span>
-                </Fragment>
-              ))}
+              {words.map((word, i) => {
+                const last = i === words.length - 1;
+                return (
+                  <Fragment key={i}>
+                    {i > 0 && " "}
+                    <span
+                      className={`inline-block animate-reveal ${last ? "relative" : ""}`}
+                      style={{ animationDelay: `${80 + i * 60}ms` }}
+                    >
+                      {word}
+                      {/* A hand-drawn stroke under the last word, drawn in
+                          after the words settle. Outside the text node, so the
+                          headline's DOM text is untouched. */}
+                      {last && (
+                        <svg
+                          aria-hidden="true"
+                          viewBox="0 0 200 14"
+                          preserveAspectRatio="none"
+                          className="pointer-events-none absolute -bottom-1 left-0 h-[0.18em] w-full text-red sm:-bottom-1.5"
+                        >
+                          <path
+                            d="M3 10.5C40 3.5 92 2.5 197 7.5M22 11.5C70 8.5 130 8 178 11"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="3.2"
+                            strokeLinecap="round"
+                            strokeDasharray="220"
+                            className="animate-draw-stroke"
+                            style={{ animationDelay: `${strokeDelay}ms` }}
+                          />
+                        </svg>
+                      )}
+                    </span>
+                  </Fragment>
+                );
+              })}
             </h1>
 
             <p
@@ -107,21 +135,22 @@ export default function Hero() {
               {settings.hero_tagline}
             </p>
 
+            <RankStrip delay={ranksDelay} className="mt-6 lg:mt-7" />
+
             {/* Phone only: the primary action, above the fold. */}
             <HeroQuickCapture />
 
-            {/* Chip rail on a phone (bleeds to the screen edge and scrolls);
+            {/* Wrapped chips on a phone and tablet (nothing scrolls sideways);
                 vertical bullet list from lg. Sits after the rating on desktop. */}
             <ul
-              className="mt-6 -mx-5 flex gap-2 overflow-x-auto px-5 pb-1 no-scrollbar max-sm:edge-fade-x
-                         sm:mx-0 sm:flex-wrap sm:px-0
-                         lg:order-last lg:mt-8 lg:flex-col lg:gap-3 lg:overflow-visible"
+              className="mt-6 flex flex-wrap gap-2
+                         lg:order-last lg:mt-8 lg:flex-col lg:gap-3"
             >
               {POINTS.map((point) => (
                 <li
                   key={point.full}
-                  className="chip shrink-0 gap-2 whitespace-nowrap px-3.5 py-2 text-[13px]
-                             lg:items-start lg:gap-3 lg:whitespace-normal lg:border-0 lg:bg-transparent
+                  className="chip gap-2 px-3.5 py-2 text-[13px]
+                             lg:items-start lg:gap-3 lg:border-0 lg:bg-transparent
                              lg:px-0 lg:py-0 lg:text-[15px] lg:font-normal lg:leading-snug lg:shadow-none"
                 >
                   <CheckIcon />

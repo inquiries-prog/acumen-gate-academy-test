@@ -621,6 +621,20 @@ export const PRESS_MENTIONS = [
 ];
 
 /**
+ * All India Ranks shown as floating chips in the hero, as "AIR 52" etc.
+ *
+ * Every number here appears in the newspaper clippings in `public/assets/press/`
+ * (Sandesh, Divya Bhaskar, Gujarat Samachar and The Times of India, March
+ * 2026), so nothing is claimed that has not already been printed. Ranks only -
+ * no names, no totals. The one headline total on the site is the stat line
+ * (SRS 7.1.3 / 15.7), and this strip must never turn into a second one.
+ *
+ * Update for the next GATE cycle by replacing the list.
+ */
+export const HERO_RANKS = [52, 73, 75, 267, 306, 333];
+export const HERO_RANKS_LABEL = "Top ranks, GATE 2026";
+
+/**
  * The client's GATE 26 success-post archive: 56 square images in
  * `public/assets/results/`, listed by file number. The numbering has gaps
  * because the client curated the set - files are listed explicitly rather

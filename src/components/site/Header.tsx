@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import AmbientGlow from "@/components/ui/AmbientGlow";
+import Magnetic from "@/components/ui/Magnetic";
 import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
 import { useFocusTrap } from "@/lib/useFocusTrap";
 import { telHref } from "@/lib/utils";
@@ -31,6 +32,14 @@ import { useSiteUI } from "./SiteUI";
  * WhatsApp sits in the bar itself on every screen size, as a green badge next
  * to the phone icon: for this audience it is the contact method, not an
  * alternative one, so it is never more than one tap away.
+ *
+ * Desktop layout (from `xl`; below that the full nav and the grouped actions
+ * would not fit on one line, so tablets get the phone treatment) is a
+ * three-column grid - logo / nav / actions - so the nav is centred on the page
+ * rather than trailing the logo. The right-hand side is
+ * three visual units, not five controls: a contact pill (phone + WhatsApp
+ * share one shape), "Chat with us" as a quiet text link, and the one solid red
+ * button. Everything SRS 6.1 lists is still there; it is just grouped.
  */
 export default function Header() {
   const { settings, push, openEnquiry, setChatOpen } = useSiteUI();
@@ -109,8 +118,12 @@ export default function Header() {
                    group-data-[scrolled]/header:-translate-y-3 group-data-[scrolled]/header:shadow-card"
         style={{ viewTransitionName: "site-header" }}
       >
-      <div className="container-site flex h-[76px] items-center justify-between gap-4 transition-transform duration-300 ease-smooth group-data-[scrolled]/header:translate-y-1.5">
-        <Link href="/" className="flex shrink-0 items-center" aria-label="Acumen Gate Academy home">
+      <div
+        className="container-site flex h-[76px] items-center justify-between gap-4
+                   transition-transform duration-300 ease-smooth group-data-[scrolled]/header:translate-y-1.5
+                   xl:grid xl:grid-cols-[1fr_auto_1fr]"
+      >
+        <Link href="/" className="flex shrink-0 items-center xl:justify-self-start" aria-label="Acumen Gate Academy home">
           {settings.logo_url ? (
             // Never recoloured or inverted via CSS filters (SRS 3.2).
             <Image
@@ -119,14 +132,14 @@ export default function Header() {
               width={200}
               height={80}
               priority
-              className="h-12 w-auto origin-left transition-transform duration-300 ease-smooth group-data-[scrolled]/header:scale-[0.85] sm:h-[52px]"
+              className="h-12 w-auto max-w-none origin-left transition-transform duration-300 ease-smooth group-data-[scrolled]/header:scale-[0.85] sm:h-[52px]"
             />
           ) : (
             <LogoFallback />
           )}
         </Link>
 
-        <nav aria-label="Main" className="hidden items-center gap-1 lg:flex">
+        <nav aria-label="Main" className="hidden items-center gap-1 xl:flex">
           {navItems.map((item) =>
             item.href ? (
               <Link
@@ -160,29 +173,37 @@ export default function Header() {
           )}
         </nav>
 
-        <div className="hidden items-center gap-2 lg:flex">
-          <a
-            href={telHref(settings.phone)}
-            className="flex min-h-11 items-center gap-1.5 rounded-md px-2.5 text-sm font-bold text-charcoal transition-colors hover:text-red"
+        <div className="hidden items-center gap-4 xl:flex xl:justify-self-end">
+          {/* Contact pill: phone and WhatsApp share one shape. */}
+          <div className="flex items-center rounded-full border border-line bg-white p-1 pl-1.5 shadow-chip">
+            <a
+              href={telHref(settings.phone)}
+              aria-label={`Call ${settings.phone}`}
+              className="flex h-8 items-center gap-1.5 rounded-full px-2 text-sm font-bold text-charcoal transition-colors hover:text-red"
+            >
+              <PhoneIcon />
+              <span className="hidden whitespace-nowrap 2xl:inline">{settings.phone}</span>
+            </a>
+            <span aria-hidden="true" className="mx-1 h-5 w-px bg-line" />
+            <WhatsAppLink ariaLabel="Message us on WhatsApp" className="whatsapp-badge h-8 w-8">
+              <WhatsAppIcon size={17} />
+            </WhatsAppLink>
+          </div>
+          <button
+            type="button"
+            onClick={() => setChatOpen(true)}
+            className="whitespace-nowrap text-sm font-semibold text-charcoal underline-offset-4 transition-colors hover:text-red hover:underline"
           >
-            <PhoneIcon />
-            <span className="hidden whitespace-nowrap 2xl:inline">{settings.phone}</span>
-          </a>
-          <WhatsAppLink
-            ariaLabel="Message us on WhatsApp"
-            className="whatsapp-badge mr-1 h-11 w-11"
-          >
-            <WhatsAppIcon size={22} />
-          </WhatsAppLink>
-          <button type="button" onClick={() => setChatOpen(true)} className="btn-secondary btn-sm">
-            💬 Chat with us
+            Chat with us
           </button>
-          <button type="button" onClick={() => openEnquiry("Header")} className="btn-primary btn-sm px-5">
-            Enquire Now
-          </button>
+          <Magnetic>
+            <button type="button" onClick={() => openEnquiry("Header")} className="btn-primary btn-sm px-5">
+              Enquire Now
+            </button>
+          </Magnetic>
         </div>
 
-        <div className="flex items-center gap-1.5 lg:hidden">
+        <div className="flex items-center gap-1.5 xl:hidden">
           <a
             href={telHref(settings.phone)}
             aria-label={`Call ${settings.phone}`}
@@ -217,7 +238,7 @@ export default function Header() {
           role="dialog"
           aria-modal="true"
           aria-label="Menu"
-          className="fixed inset-0 z-[95] flex flex-col overflow-hidden bg-white animate-slideInRight lg:hidden"
+          className="fixed inset-0 z-[95] flex flex-col overflow-hidden bg-white animate-slideInRight xl:hidden"
         >
           <AmbientGlow />
 

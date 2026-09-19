@@ -1,4 +1,5 @@
 import CountUp from "@/components/ui/CountUp";
+import Reveal from "@/components/ui/Reveal";
 
 /**
  * Stat line (SRS 7.1.3).
@@ -26,18 +27,29 @@ export default function StatBand({ statLine }: { statLine: string }) {
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(45%_120%_at_50%_0%,rgba(227,30,36,0.07),transparent_70%)]"
       />
       <div className="container-site relative py-10 md:py-16">
-        <p className="mx-auto flex max-w-4xl flex-col items-center gap-x-4 gap-y-1 text-center sm:flex-row sm:justify-center sm:text-left">
+        {/* `group/stat`: the shine below starts only once this has revealed,
+            otherwise it would have played long before anyone scrolled here. */}
+        <Reveal as="p" className="group/stat mx-auto flex max-w-4xl flex-col items-center gap-x-4 gap-y-1 text-center sm:flex-row sm:justify-center sm:text-left">
           {/* Counts up on first view; ends on the admin's exact text. */}
-          <CountUp
-            value={figure}
-            className="bg-red-sheen bg-clip-text font-display text-5xl font-extrabold leading-none tracking-tight text-transparent sm:text-6xl md:text-7xl"
-          />
+          <span className="relative inline-block overflow-hidden px-1">
+            <CountUp
+              value={figure}
+              className="bg-red-sheen bg-clip-text font-display text-5xl font-extrabold leading-none tracking-tight text-transparent sm:text-6xl md:text-7xl"
+            />
+            {/* One light sweep across the figure after the count settles. Fills
+                forward to its off-screen end state, so under reduced motion
+                (duration zeroed) it is simply never visible. */}
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-transparent via-white/70 to-transparent mix-blend-overlay group-[.opacity-100]/stat:animate-shine"
+            />
+          </span>
           {remainder && (
             <span className="max-w-md font-display text-xl font-bold leading-tight text-charcoal sm:text-2xl md:text-[1.75rem]">
               {remainder}
             </span>
           )}
-        </p>
+        </Reveal>
       </div>
     </section>
   );

@@ -90,6 +90,7 @@ export default function ResultsTabs({
                     src={e.image_url}
                     alt={e.alt_text || `${e.student_name}, AIR ${e.air}`}
                     placeholderLabel="Student photo"
+                    placeholder={{ kind: "person", name: e.student_name }}
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   />
                   {e.air && (

@@ -47,13 +47,16 @@ export default function MentorsSection({ mentors }: { mentors: Mentor[] }) {
                   src={m.image_url}
                   alt={m.alt_text || `${m.name}, ${m.title}`}
                   placeholderLabel="Faculty photo"
+                  placeholder={{ kind: "person", name: m.name }}
                   sizes="(max-width: 640px) 85vw, (max-width: 1024px) 50vw, 33vw"
                   className="transition-transform duration-500 ease-smooth group-hover:scale-105"
                 />
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 bg-gradient-to-t from-charcoal/55 via-transparent to-transparent"
-                />
+                {m.image_url && (
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 bg-gradient-to-t from-charcoal/55 via-transparent to-transparent"
+                  />
+                )}
                 <span className="absolute bottom-4 left-4 rounded-full bg-white/95 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-red shadow-chip backdrop-blur">
                   {m.title}
                 </span>

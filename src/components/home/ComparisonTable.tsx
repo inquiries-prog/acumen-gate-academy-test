@@ -92,7 +92,7 @@ export default function ComparisonTable() {
       {/* ---------------------------------------------------- desktop ---- */}
       <Reveal
         delay={80}
-        className="mt-8 hidden overflow-hidden rounded-2xl border border-white/10 lg:block"
+        className="group/table mt-8 hidden overflow-hidden rounded-2xl border border-white/10 lg:block"
       >
         <table className="w-full border-collapse text-left">
           <caption className="sr-only">
@@ -107,7 +107,7 @@ export default function ComparisonTable() {
                   scope="col"
                   className={`p-5 align-bottom font-display text-sm font-bold ${
                     i === 0
-                      ? "border-x border-red/40 bg-red/[0.14] text-white"
+                      ? "border-x border-red/40 bg-red/[0.14] text-white shadow-[inset_0_0_48px_rgba(227,30,36,0.22)]"
                       : "bg-white/[0.03] text-white/60"
                   }`}
                 >
@@ -123,7 +123,14 @@ export default function ComparisonTable() {
           </thead>
           <tbody>
             {ROWS.map((row, r) => (
-              <tr key={row.feature} className="border-t border-white/10">
+              // Rows cascade in once the table reveals: each one transitions from
+              // the wrapping Reveal's `opacity-100` with its own delay.
+              <tr
+                key={row.feature}
+                className="translate-y-2 border-t border-white/10 opacity-0 transition-[transform,opacity] duration-500 ease-smooth
+                           group-[.opacity-100]/table:translate-y-0 group-[.opacity-100]/table:opacity-100"
+                style={{ transitionDelay: `${120 + r * 45}ms` }}
+              >
                 <th
                   scope="row"
                   className="bg-white/[0.03] p-5 align-top font-display text-sm font-bold text-white/80"

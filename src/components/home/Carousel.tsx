@@ -94,7 +94,7 @@ function MarqueeRow({
                 aria-label={`Enlarge: ${img.alt_text || "result image"}`}
                 className="relative block h-32 w-32 overflow-hidden rounded-2xl border border-white/10
                            bg-charcoal shadow-lifted transition-all duration-500 ease-smooth
-                           hover:z-20 hover:scale-[1.12] hover:border-red
+                           hover:z-20 hover:scale-[1.12] hover:-rotate-[1.5deg] hover:border-red
                            sm:h-40 sm:w-40 md:h-44 md:w-44
                            group-hover/row:opacity-55 hover:!opacity-100"
               >
