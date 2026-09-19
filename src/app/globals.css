@@ -1,0 +1,333 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Header height, used to offset in-page anchor scrolling. */
+    --header-h: 76px;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: calc(var(--header-h) + 20px);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* SRS 3.5 / 14: motion is decoration, never a requirement. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    @apply bg-bg font-sans text-body antialiased;
+    /* SRS 3.4: nothing on this site may scroll sideways on a phone. */
+    overflow-x: hidden;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    /* Touch: no grey flash on tap. Press feedback comes from active:scale. */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Removes the 300ms double-tap-to-zoom delay on every control. */
+  a,
+  button,
+  [role="button"],
+  input,
+  select,
+  textarea,
+  label {
+    touch-action: manipulation;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display font-bold text-charcoal;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  :focus-visible {
+    outline: 2px solid #e31e24;
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: rgba(227, 30, 36, 0.15);
+    color: #231f20;
+  }
+}
+
+@layer components {
+  .container-site {
+    @apply mx-auto w-full max-w-site px-5 sm:px-7 lg:px-10;
+  }
+
+  /* Section rhythm. Generous but not gappy - SRS 3.3 flags dead whitespace. */
+  .section {
+    @apply py-14 md:py-24 lg:py-28;
+  }
+
+  .section-tight {
+    @apply py-12 md:py-16;
+  }
+
+  .section-alt {
+    @apply bg-offwhite;
+  }
+
+  /* --- Section headers ---------------------------------------------------- */
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 rounded-full border border-red/15 bg-red/[0.06]
+           px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-red;
+  }
+
+  .h-section {
+    @apply text-display-md;
+  }
+
+  .lede {
+    @apply text-[15px] leading-relaxed text-body sm:text-base;
+  }
+
+  /* --- Buttons ------------------------------------------------------------ */
+  /* min-h-12 is ~48px: a comfortable tap target on a phone (SRS 3.4). */
+
+  .btn {
+    @apply relative inline-flex min-h-12 select-none items-center justify-center gap-2
+           whitespace-nowrap rounded-xl px-6 text-[15px] font-semibold
+           transition-all duration-200 ease-smooth
+           active:scale-[0.98]
+           disabled:pointer-events-none disabled:opacity-45;
+  }
+
+  .btn-primary {
+    @apply btn overflow-hidden bg-red text-white shadow-red-glow
+           hover:-translate-y-0.5 hover:bg-red-dark hover:shadow-lifted
+           active:translate-y-0;
+  }
+
+  /* A light sweep that crosses the button on hover. Purely decorative, and it
+     sits behind the label so it can never affect legibility. */
+  .btn-primary::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      110deg,
+      transparent 20%,
+      rgba(255, 255, 255, 0.22) 45%,
+      transparent 70%
+    );
+    transform: translateX(-120%);
+    transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+  }
+
+  @media (hover: hover) {
+    .btn-primary:hover::after {
+      transform: translateX(120%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn-primary::after {
+      display: none;
+    }
+  }
+
+  .btn-secondary {
+    @apply btn border border-line bg-white text-charcoal shadow-chip
+           hover:-translate-y-0.5 hover:border-charcoal/20 hover:shadow-card
+           active:translate-y-0;
+  }
+
+  .btn-ghost {
+    @apply btn text-charcoal hover:bg-charcoal/[0.05];
+  }
+
+  .btn-onDark {
+    @apply btn bg-white text-charcoal shadow-lifted
+           hover:-translate-y-0.5 hover:bg-offwhite active:translate-y-0;
+  }
+
+  .btn-sm {
+    @apply min-h-10 rounded-lg px-4 text-sm;
+  }
+
+  /* --- Surfaces ----------------------------------------------------------- */
+
+  .card {
+    @apply rounded-2xl border border-line bg-white shadow-card;
+  }
+
+  /* Cards that respond to the cursor. Lift + warm the border, never both hard. */
+  .card-interactive {
+    @apply card transition-all duration-300 ease-smooth
+           hover:-translate-y-1 hover:border-red/25 hover:shadow-card-hover
+           active:scale-[0.99];
+  }
+
+  /* --- Mobile surfaces ---------------------------------------------------- */
+
+  /* dvh where supported (tracks the iOS toolbar collapsing); vh stays as the
+     fallback for older WebKit, which ignores the second declaration. */
+  .max-h-sheet {
+    max-height: 92vh;
+    max-height: 92dvh;
+  }
+
+  .max-h-chat {
+    max-height: 80vh;
+    max-height: 80dvh;
+  }
+
+  /* Bottom padding that grows to clear the iPhone home indicator. Needs
+     viewport-fit=cover (set in app/layout.tsx) or the env() is always 0. */
+  .pb-safe {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
+  .pb-safe-6 {
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-line bg-white
+           px-3 py-1.5 text-xs font-semibold text-charcoal shadow-chip;
+  }
+
+  /* --- Forms -------------------------------------------------------------- */
+
+  .field-label {
+    @apply mb-1.5 block text-sm font-semibold text-charcoal;
+  }
+
+  .field {
+    @apply block min-h-12 w-full rounded-xl border border-line bg-white px-4 py-3
+           text-[15px] text-charcoal transition-all duration-200
+           placeholder:text-muted/80
+           focus:border-red focus:outline-none focus:ring-4 focus:ring-red/10;
+  }
+
+  /* 16px stops iOS Safari zooming the page when a field is focused. */
+  select.field,
+  input.field,
+  textarea.field {
+    font-size: 16px;
+  }
+
+  .link-quiet {
+    @apply text-body underline-offset-4 transition-colors hover:text-red hover:underline;
+  }
+
+  /* --- Decoration --------------------------------------------------------- */
+
+  /* Hairline that fades out at both ends, for section dividers. */
+  .rule-fade {
+    @apply h-px w-full bg-gradient-to-r from-transparent via-line to-transparent;
+  }
+
+  /* Frosted panel used over photography and dark grounds. */
+  .glass {
+    @apply border border-white/15 bg-white/10 backdrop-blur-md;
+  }
+
+  /* Numbered/icon tile used by pedagogy and feature lists. */
+  .icon-tile {
+    @apply grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-red/[0.08] text-red
+           transition-colors duration-300;
+  }
+}
+
+@layer base {
+  /* Scrollbar styled to the palette rather than the browser default grey. */
+  @supports selector(::-webkit-scrollbar) {
+    ::-webkit-scrollbar {
+      width: 11px;
+      height: 11px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #fbf9f8;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #edebe9;
+      border: 3px solid #fbf9f8;
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #767671;
+    }
+  }
+}
+
+@layer base {
+  /* If scripting is off, Reveal's observer never runs and its children would
+     stay at opacity 0 forever. Force them visible instead. */
+  @media (scripting: none) {
+    .js-reveal {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+}
+
+@layer utilities {
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (hover: hover) {
+    .marquee-track:hover {
+      animation-play-state: paused;
+    }
+  }
+
+  /* Fades the ends of a horizontal scroller so content dissolves rather than
+     being sliced off mid-card. */
+  .edge-fade-x {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 4%,
+      #000 96%,
+      transparent
+    );
+    mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Red gradient applied to text, for a single emphasised word in a heading. */
+  .text-gradient-red {
+    @apply bg-red-sheen bg-clip-text text-transparent;
+  }
+
+  /* Hairline grid, for texture on dark bands. */
+  .grid-texture {
+    background-image: linear-gradient(to right, #fff 1px, transparent 1px),
+      linear-gradient(to bottom, #fff 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+}
