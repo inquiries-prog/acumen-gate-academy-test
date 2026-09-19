@@ -112,7 +112,7 @@ fallback the site renders if the database is ever unreachable.
 
 ## 3. Bulk-import the result and press images
 
-Uploading ~84 images one at a time through the admin panel is painful, so there
+Uploading dozens of images one at a time through the admin panel is painful, so there
 is an importer:
 
 ```bash
@@ -128,6 +128,20 @@ node scripts/import-images.mjs --dir ./incoming/results --dry-run
 
 Afterwards, open **Result & press images** in the admin panel to improve the
 descriptions — they matter for search engines and screen readers.
+
+### Replacing the whole set of result posts
+
+When a new batch of success posts replaces the old one, put the PNGs in
+`public/assets/results/` (numbered, e.g. `1.png`, `2.png` … gaps are fine),
+update `RESULT_POST_FILES` in `src/lib/defaults.ts` to list the numbers, then:
+
+```bash
+npm run sync-results -- --dry-run   # shows what will change
+npm run sync-results                # uploads new, removes old, renumbers
+```
+
+Rows the admin has already described keep their text; only images that are no
+longer in the folder are removed.
 
 ---
 

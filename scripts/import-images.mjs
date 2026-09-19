@@ -2,7 +2,7 @@
 /**
  * Bulk image importer.
  *
- * Uploading ~84 result images and press clippings one at a time through the
+ * Uploading dozens of result images and press clippings one at a time through the
  * admin panel would be miserable, so this uploads a whole folder to Supabase
  * Storage and creates the matching gallery rows in one go.
  *

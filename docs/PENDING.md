@@ -74,9 +74,9 @@ Vercel's environment variables, if deployed) straight afterwards.
 | B1 | SMS/WhatsApp provider (§10, §12) | Students get no confirmation message. The site correctly does *not* claim one was sent. Ongoing per-message cost — SRS §12 asks the client to confirm budget first. |
 | B2 | Notification email address (§12) | New leads appear in the admin panel but no email alert goes out. |
 | B3 | Acumen 360 / Etude 360 logo files (§3.2, §12) | Footer ecosystem badges show the names as text instead of logos. **Still needed** — the file supplied as `acumen 360 logo.png` was actually the Acumen Gate Academy logo, now in use as the main site logo. |
-| B4a | ~~84 result images~~ | ✅ **Supplied.** In `public/assets/results/`. 24 show in the homepage carousel, all 84 on the Results page. |
+| B4a | ~~Result images~~ | ✅ **Supplied.** 56 curated posts in `public/assets/results/` (replaced the first set of 84 on 19 Sep 2026). 24 show in the homepage carousel, all 56 on the Results page. To swap the set again: drop the new PNGs in that folder and run `npm run sync-results`. |
 | B4b | ~~5 newspaper-clipping pages~~ | ✅ **Supplied.** Sandesh, Divya Bhaskar, Gujarat Samachar and The Times of India, March 2026. They appear in both the homepage carousel and "In the News" on the About page. See C6 — one is a composite of the other four. |
-| B4c | Descriptions for the 84 result images (§13) | Each has a generic description like "…success post 12". Each post names a real student, so replacing these with the student's name would help search rankings. Editable in **Result & press images**. |
+| B4c | Descriptions for the 56 result images (§13) | Each has a generic description like "…success post 12". Each post names a real student, so replacing these with the student's name would help search rankings. Editable in **Result & press images**. |
 | B5 | Real student testimonials (§7.1.7) | Six cards are scaffolded with the right universities but no names, quotes or photos — see C1. |
 | B6 | Student result entries (§7.4) | The Results page shows year tabs with "results will be published shortly". |
 | B7 | Per-branch demo videos (§7.1.6, §12) | All six branches use the one supplied placeholder video. Each batch already has its own video field. |
@@ -134,13 +134,13 @@ Each batch also has its own switch to turn online payment off.
 
 **Confirm:** that hiding, rather than disabling, is the preferred behaviour.
 
-### C5. The homepage shows 24 of the 84 result posts
+### C5. The homepage shows 24 of the 56 result posts
 SRS §7.1.2 asks for "a curated mix" on the homepage, and §7.4 says the homepage
 "only surfaces a curated handful, so this page is where the rest actually gets
 used."
 
-So the first 24 posts run in the homepage carousel, and all 84 appear on the
-Results page under "Every result we've celebrated", 24 at a time. Putting all 84
+So the first 24 posts run in the homepage carousel, and all 56 appear on the
+Results page under "Every result we've celebrated", 24 at a time. Putting all 56
 in the carousel would also work against §3.5, since the 90-second loop would
 eventually pull every image down.
 

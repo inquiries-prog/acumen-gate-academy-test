@@ -33,6 +33,7 @@ To enable the admin panel, lead capture and payments, follow
 | `npm run typecheck` | TypeScript check, no build |
 | `npm run seed` | Load the starting content into an empty database |
 | `npm run upload-assets` | Move bundled images into Supabase Storage |
+| `npm run sync-results` | Makes the result posts in Supabase match `public/assets/results/`: uploads new files, removes ones no longer in the folder, renumbers. `-- --dry-run` previews. |
 | `npm run shots:start` | Screenshot every page at phone + desktop size into `screenshots/` (needs `npm run build` first) |
 
 ---

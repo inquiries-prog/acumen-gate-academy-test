@@ -8,13 +8,13 @@ import type { GalleryImage } from "@/lib/types";
 /**
  * The full result-post archive (SRS 7.4).
  *
- * The Results page exists partly because "the client has ~84 real student
+ * The Results page exists partly because "the client has real student
  * result images plus press clippings; the homepage only surfaces a curated
  * handful, so this page is where the rest actually gets used." This section is
  * that use - the homepage carousel shows a curated subset, and everything in
  * the library appears here.
  *
- * Loads a page at a time rather than all 84 at once, so opening the Results
+ * Loads a page at a time rather than the whole set at once, so opening the Results
  * page stays fast (SRS 3.5). Clicking any post opens the shared lightbox, the
  * same component the homepage carousel and the About press strip use.
  */

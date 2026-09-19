@@ -12,7 +12,8 @@
     "upload-assets": "node scripts/upload-local-assets.mjs",
     "shots": "node scripts/screenshot.mjs",
     "shots:start": "node scripts/screenshot.mjs --start",
-    "build:clean": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\" && next build"
+    "build:clean": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\" && next build",
+    "sync-results": "node scripts/sync-results.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.5",

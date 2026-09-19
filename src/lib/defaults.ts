@@ -621,27 +621,35 @@ export const PRESS_MENTIONS = [
 ];
 
 /**
- * The client's GATE 26 success-post archive, supplied as 84 square images in
- * `public/assets/results/`.
+ * The client's GATE 26 success-post archive: 56 square images in
+ * `public/assets/results/`, listed by file number. The numbering has gaps
+ * because the client curated the set - files are listed explicitly rather
+ * than counted so a missing number never produces a broken image.
  *
  * Only the first block is flagged for the homepage carousel. SRS 7.1.2 asks for
  * "a curated mix" there, and SRS 7.4 is explicit that the homepage surfaces a
  * curated handful while the Results page is "where the rest actually gets
- * used" - so all 84 live in the library, and the Results page shows the lot.
- * Putting every image in the marquee would also work against SRS 3.5, since a
- * 90-second loop would eventually pull all 84 down.
+ * used" - so every post lives in the library, and the Results page shows the
+ * lot. Putting every image in the marquee would also work against SRS 3.5,
+ * since a 90-second loop would eventually pull all of them down.
  *
  * Every flag here is admin-editable, so the client can move any image between
- * the two placements without a code change.
+ * the two placements without a code change. `scripts/sync-results.mjs` pushes
+ * this folder into Supabase Storage whenever the set changes.
  */
 const CAROUSEL_COUNT = 24;
-const RESULT_POST_COUNT = 84;
+export const RESULT_POST_FILES = [
+  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 18, 19, 20, 21, 24, 25,
+  26, 28, 30, 32, 33, 34, 36, 39, 40, 46, 47, 49, 50, 52, 53, 54, 57, 58, 59,
+  61, 62, 63, 64, 66, 67, 72, 73, 77, 78, 79, 80, 81, 82, 83, 84,
+];
+const RESULT_POST_COUNT = RESULT_POST_FILES.length;
 
-const resultPosts: GalleryImage[] = Array.from({ length: RESULT_POST_COUNT }, (_, index) => {
+const resultPosts: GalleryImage[] = RESULT_POST_FILES.map((file, index) => {
   const n = index + 1;
   return {
-    id: `gallery-result-${n}`,
-    image_url: `/assets/results/${n}.png`,
+    id: `gallery-result-${file}`,
+    image_url: `/assets/results/${file}.png`,
     // Generic but unique. These posts each name a student, so the client can
     // improve these in the admin panel - see docs/PENDING.md.
     alt_text: `Acumen Gate Academy student qualified in GATE 2026 — success post ${n}`,
