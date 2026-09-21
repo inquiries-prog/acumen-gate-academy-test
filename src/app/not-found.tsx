@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PHONE_DISPLAY } from "@/lib/defaults";
-import { telHref } from "@/lib/utils";
+import { displayPhone, telHref } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Page not found",
@@ -34,7 +34,7 @@ export default function NotFound() {
       <p className="mt-6 text-sm text-body">
         Or just call us on{" "}
         <a href={telHref(PHONE_DISPLAY)} className="font-bold text-red hover:underline">
-          {PHONE_DISPLAY}
+          {displayPhone(PHONE_DISPLAY)}
         </a>
         .
       </p>

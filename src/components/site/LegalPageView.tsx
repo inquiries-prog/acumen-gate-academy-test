@@ -1,5 +1,5 @@
 import { PHONE_DISPLAY } from "@/lib/defaults";
-import { telHref, toParagraphs } from "@/lib/utils";
+import { displayPhone, telHref, toParagraphs } from "@/lib/utils";
 
 /**
  * Privacy Policy / Terms & Conditions.
@@ -33,7 +33,7 @@ export default function LegalPageView({ title, content }: { title: string; conte
             We&apos;re finalising this page. If you have a question about how we handle your
             information or about enrolling with us, please call us on{" "}
             <a href={telHref(PHONE_DISPLAY)} className="font-bold text-red hover:underline">
-              {PHONE_DISPLAY}
+              {displayPhone(PHONE_DISPLAY)}
             </a>{" "}
             and we&apos;ll answer directly.
           </p>

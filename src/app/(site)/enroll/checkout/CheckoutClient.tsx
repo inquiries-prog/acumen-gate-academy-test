@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { PHONE_DISPLAY } from "@/lib/defaults";
-import { telHref } from "@/lib/utils";
+import { displayPhone, telHref } from "@/lib/utils";
 
 /**
  * Payment simulator for the stub provider.
@@ -53,7 +53,7 @@ export default function CheckoutClient({
           Your payment is being handled securely by {providerName}. If nothing happens in a few
           seconds, please call us on{" "}
           <a href={telHref(PHONE_DISPLAY)} className="font-bold text-red hover:underline">
-            {PHONE_DISPLAY}
+            {displayPhone(PHONE_DISPLAY)}
           </a>{" "}
           and we&apos;ll complete your enrollment over the phone.
         </p>

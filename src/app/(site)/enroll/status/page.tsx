@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PHONE_DISPLAY } from "@/lib/defaults";
-import { telHref } from "@/lib/utils";
+import { displayPhone, telHref } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Enrollment status",
@@ -53,7 +53,7 @@ export default async function EnrollStatusPage({ searchParams }: { searchParams:
 
         <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:justify-center">
           <a href={telHref(PHONE_DISPLAY)} className={paid ? "btn-secondary" : "btn-primary"}>
-            Call {PHONE_DISPLAY}
+            Call {displayPhone(PHONE_DISPLAY)}
           </a>
           <Link href="/" className={paid ? "btn-primary" : "btn-secondary"}>
             Back to home
