@@ -14,8 +14,9 @@ import { PRESS_MENTIONS } from "@/lib/defaults";
  * is a trademark question, and we do not have licensed logo files anyway. A
  * serif face carries the newspaper association without borrowing anyone's mark.
  *
- * The row links through to the About page's clippings, so the claim is one
- * click from its evidence.
+ * Every publication name links through to the About page's clippings (as does
+ * the trailing "See the clippings"), so the claim is one click from its
+ * evidence whichever part of the row a reader taps.
  */
 export default function PressRow() {
   if (PRESS_MENTIONS.length === 0) return null;
@@ -29,15 +30,22 @@ export default function PressRow() {
       <ul className="mt-4 flex flex-wrap items-center gap-x-8 gap-y-4 sm:gap-x-10">
         {PRESS_MENTIONS.map((item) => (
           <li key={item.name} className="leading-tight">
-            <span
-              className="block text-lg font-semibold tracking-tight text-charcoal/85 sm:text-xl"
-              // Generic serif stack: no extra font download, and it reads as a
-              // masthead rather than as another line of UI text.
-              style={{ fontFamily: 'Georgia, "Times New Roman", "Noto Serif", serif' }}
+            <Link
+              href="/about#press"
+              aria-label={`See the ${item.name} clipping`}
+              className="group/press block rounded-md transition-colors duration-200"
             >
-              {item.name}
-            </span>
-            <span className="mt-0.5 block text-[11px] font-medium text-muted">{item.detail}</span>
+              <span
+                className="block text-lg font-semibold tracking-tight text-charcoal/85 underline-offset-4
+                           transition-colors duration-200 group-hover/press:text-red group-hover/press:underline sm:text-xl"
+                // Generic serif stack: no extra font download, and it reads as a
+                // masthead rather than as another line of UI text.
+                style={{ fontFamily: 'Georgia, "Times New Roman", "Noto Serif", serif' }}
+              >
+                {item.name}
+              </span>
+              <span className="mt-0.5 block text-[11px] font-medium text-muted">{item.detail}</span>
+            </Link>
           </li>
         ))}
 

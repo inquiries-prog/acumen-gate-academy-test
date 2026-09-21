@@ -47,8 +47,9 @@ export default function Carousel({ images }: { images: GalleryImage[] }) {
         />
       </Parallax>
 
-      {/* The tilt. Scaled up so the rotated rows still cover the full width. */}
-      <div className="relative -rotate-[1.5deg] scale-[1.06] space-y-4 md:space-y-5">
+      {/* Two straight rows. (They used to run at a slight tilt; the client
+          preferred them level.) */}
+      <div className="relative space-y-4 md:space-y-5">
         <MarqueeRow images={rowA} all={images} offset={0} speed="slow" />
         {rowB.length > 0 && (
           <MarqueeRow images={rowB} all={images} offset={rowA.length} speed="reverse" />
