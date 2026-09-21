@@ -7,6 +7,8 @@ import RankStrip from "@/components/home/RankStrip";
 import EnquiryForm from "@/components/site/EnquiryForm";
 import AmbientGlow from "@/components/ui/AmbientGlow";
 import LiveDot from "@/components/ui/LiveDot";
+import Parallax from "@/components/ui/Parallax";
+import Reveal from "@/components/ui/Reveal";
 import GoogleRating from "@/components/ui/GoogleRating";
 import { useSiteUI } from "@/components/site/SiteUI";
 
@@ -74,7 +76,10 @@ export default function Hero() {
 
   return (
     <section className="relative isolate overflow-hidden bg-white">
-      <AmbientGlow />
+      {/* The glow lags the page slightly on desktop - a depth cue, nothing more. */}
+      <Parallax speed={0.18} className="pointer-events-none absolute inset-x-0 -inset-y-1/4">
+        <AmbientGlow />
+      </Parallax>
 
       <div className="container-site relative">
         <div className="grid items-start gap-10 py-10 sm:py-14 md:py-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:py-20">
@@ -161,7 +166,9 @@ export default function Hero() {
             </ul>
 
             <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3 lg:mt-8">
-              <GoogleRating />
+              <Reveal variant="pop" delay={ranksDelay + 100}>
+                <GoogleRating />
+              </Reveal>
               <a
                 href="#courses"
                 className="inline-flex min-h-12 items-center gap-2 text-[15px] font-semibold text-charcoal underline-offset-4 transition-colors hover:text-red hover:underline"
@@ -184,11 +191,12 @@ export default function Hero() {
           {/* Desktop only. On a phone HeroQuickCapture above is the entry point
               into the same form, opened as a bottom sheet. */}
           <div className="relative hidden min-w-0 lg:block">
-            {/* Soft red bloom behind the card, so it lifts off the page. */}
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute -inset-6 rounded-[2rem] bg-red/[0.07] blur-2xl"
-            />
+            {/* Soft red bloom behind the card, so it lifts off the page. It runs
+                slightly ahead of the card on scroll, so the card reads as the
+                nearer layer. */}
+            <Parallax speed={-0.08} className="pointer-events-none absolute -inset-6">
+              <div aria-hidden="true" className="absolute inset-0 rounded-[2rem] bg-red/[0.07] blur-2xl" />
+            </Parallax>
 
             <div className="relative overflow-hidden rounded-2xl border border-line bg-white shadow-lifted">
               <div className="relative overflow-hidden bg-charcoal px-6 py-5 sm:px-7">
@@ -213,9 +221,9 @@ export default function Hero() {
           </div>
         </div>
 
-        <div className="pb-10 md:pb-16">
+        <Reveal variant="pop" className="pb-10 md:pb-16">
           <PressRow />
-        </div>
+        </Reveal>
       </div>
     </section>
   );

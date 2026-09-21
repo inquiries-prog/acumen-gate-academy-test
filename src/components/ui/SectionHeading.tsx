@@ -34,7 +34,7 @@ export default function SectionHeading({
         centered ? "justify-center text-center" : "justify-between"
       } ${className}`}
     >
-      <Reveal className={centered ? "max-w-2xl" : "max-w-2xl"}>
+      <Reveal distance="lg" className="max-w-2xl">
         {eyebrow && (
           <p className={centered ? "eyebrow mx-auto" : "eyebrow"}>
             <LiveDot />
@@ -57,7 +57,7 @@ export default function SectionHeading({
         )}
       </Reveal>
 
-      {action && <Reveal delay={80}>{action}</Reveal>}
+      {action && <Reveal delay={80} variant="pop">{action}</Reveal>}
     </div>
   );
 }

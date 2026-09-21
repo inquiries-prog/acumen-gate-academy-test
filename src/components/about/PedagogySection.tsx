@@ -24,7 +24,7 @@ export default function PedagogySection({ points }: { points: PedagogyPoint[] })
     <section className="section">
       <div className="container-site">
         <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
-          <Reveal className="lg:sticky lg:top-28 lg:self-start">
+          <Reveal variant="left" distance="lg" className="lg:sticky lg:top-28 lg:self-start">
             <p className="eyebrow">
               <span className="h-1.5 w-1.5 rounded-full bg-red" aria-hidden="true" />
               How We Teach

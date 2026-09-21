@@ -3,6 +3,7 @@
 import AmbientGlow from "@/components/ui/AmbientGlow";
 import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
 import Magnetic from "@/components/ui/Magnetic";
+import Reveal from "@/components/ui/Reveal";
 import WhatsAppLink from "./WhatsAppLink";
 import { telHref } from "@/lib/utils";
 import { useSiteUI } from "./SiteUI";
@@ -54,7 +55,10 @@ export default function FinalCta({
         {/* Tighter bottom padding than top: the footer continues this same dark
             surface, so a full section gap here reads as two separate panels
             rather than one region (SRS 3.3 flags gappy spacing). */}
-        <div className="flex flex-col items-center gap-8 pb-12 pt-16 text-center md:flex-row md:justify-between md:gap-10 md:pb-14 md:pt-20 md:text-left">
+        <Reveal
+          variant="scale"
+          className="flex flex-col items-center gap-8 pb-12 pt-16 text-center md:flex-row md:justify-between md:gap-10 md:pb-14 md:pt-20 md:text-left"
+        >
           <div className="max-w-2xl">
             <h2 className="text-display-sm text-white">
               {heading || settings.final_cta_heading}
@@ -96,7 +100,7 @@ export default function FinalCta({
               WhatsApp
             </WhatsAppLink>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

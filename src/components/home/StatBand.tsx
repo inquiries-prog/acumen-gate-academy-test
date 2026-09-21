@@ -29,7 +29,7 @@ export default function StatBand({ statLine }: { statLine: string }) {
       <div className="container-site relative py-10 md:py-16">
         {/* `group/stat`: the shine below starts only once this has revealed,
             otherwise it would have played long before anyone scrolled here. */}
-        <Reveal as="p" className="group/stat mx-auto flex max-w-4xl flex-col items-center gap-x-4 gap-y-1 text-center sm:flex-row sm:justify-center sm:text-left">
+        <Reveal as="p" variant="pop" className="group/stat mx-auto flex max-w-4xl flex-col items-center gap-x-4 gap-y-1 text-center sm:flex-row sm:justify-center sm:text-left">
           {/* Counts up on first view; ends on the admin's exact text. */}
           <span className="relative inline-block overflow-hidden px-1">
             <CountUp

@@ -73,7 +73,7 @@ export default function TestimonialsSection({
         />
 
         {showUniversities && (
-          <Reveal delay={60} className="mt-10">
+          <Reveal delay={60} variant="pop" className="mt-10">
             <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-muted">
               Students from across Gujarat&apos;s universities
             </p>
@@ -106,6 +106,7 @@ export default function TestimonialsSection({
                 key={t.id}
                 as="article"
                 delay={(i % 3) * 80}
+                distance="lg"
                 className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-line
                            bg-white shadow-card transition-all duration-300 ease-smooth
                            hover:-translate-y-1.5 hover:border-red/25 hover:shadow-card-hover"

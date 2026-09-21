@@ -61,7 +61,7 @@ export default function CoursesSection({ cards }: { cards: CourseCard[] }) {
         {/* min-w-0 on both cells: the picker's nowrap chip row would otherwise
             set the column's min-content width past the phone viewport. */}
         <div className="mt-10 grid gap-6 sm:mt-12 lg:grid-cols-[1.45fr_1fr] lg:items-stretch">
-          <Reveal className="min-w-0">
+          <Reveal variant="left" distance="lg" className="min-w-0">
             <DemoVideoTile
               videoId={demo.id}
               start={demo.start}
@@ -69,7 +69,7 @@ export default function CoursesSection({ cards }: { cards: CourseCard[] }) {
               caption="Watch a demo class"
             />
           </Reveal>
-          <Reveal delay={90} className="group/picker order-first min-w-0 lg:order-none">
+          <Reveal delay={90} variant="right" distance="lg" className="group/picker order-first min-w-0 lg:order-none">
             <BranchPicker />
           </Reveal>
         </div>
@@ -80,6 +80,7 @@ export default function CoursesSection({ cards }: { cards: CourseCard[] }) {
               key={card.id}
               as="article"
               delay={i * 90}
+              distance="lg"
               className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border border-line
                           bg-white shadow-card transition-all duration-300 ease-smooth
                           hover:-translate-y-1.5 hover:border-red/25 hover:shadow-card-hover

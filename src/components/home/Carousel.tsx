@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Parallax from "@/components/ui/Parallax";
 import { useSiteUI } from "@/components/site/SiteUI";
 import type { GalleryImage } from "@/lib/types";
 
@@ -39,10 +40,12 @@ export default function Carousel({ images }: { images: GalleryImage[] }) {
     >
       {/* Static wash - the two marquees are already animating in this band, so
           no drifting glow here, to keep the compositor budget sensible. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(65%_120%_at_50%_-10%,rgba(227,30,36,0.28),transparent_65%)]"
-      />
+      <Parallax speed={0.12} className="pointer-events-none absolute inset-x-0 -inset-y-1/4">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-[radial-gradient(65%_120%_at_50%_10%,rgba(227,30,36,0.28),transparent_65%)]"
+        />
+      </Parallax>
 
       {/* The tilt. Scaled up so the rotated rows still cover the full width. */}
       <div className="relative -rotate-[1.5deg] scale-[1.06] space-y-4 md:space-y-5">

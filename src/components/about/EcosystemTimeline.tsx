@@ -44,6 +44,7 @@ export default function EcosystemTimeline({ cards }: { cards: EcosystemCard[] })
                 as="li"
                 key={card.id}
                 delay={i * 110}
+                variant={i % 2 ? "right" : "left"}
                 className="relative pl-14 lg:pl-0 lg:pt-16"
               >
                 {/* Node on the spine. */}

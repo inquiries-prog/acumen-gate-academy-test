@@ -92,6 +92,7 @@ export default function ComparisonTable() {
       {/* ---------------------------------------------------- desktop ---- */}
       <Reveal
         delay={80}
+        variant="scale"
         className="group/table mt-8 hidden overflow-hidden rounded-2xl border border-white/10 lg:block"
       >
         <table className="w-full border-collapse text-left">

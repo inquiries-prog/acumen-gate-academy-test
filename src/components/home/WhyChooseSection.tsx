@@ -1,6 +1,7 @@
 import ComparisonTable from "@/components/home/ComparisonTable";
 import AmbientGlow from "@/components/ui/AmbientGlow";
 import CursorGlow from "@/components/ui/CursorGlow";
+import Parallax from "@/components/ui/Parallax";
 import Rail from "@/components/ui/Rail";
 import Reveal from "@/components/ui/Reveal";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -26,7 +27,9 @@ export default function WhyChooseSection({ cards }: { cards: WhyChooseCard[] }) 
   return (
     <section className="relative overflow-hidden bg-charcoal bg-dark-sheen">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 grid-texture opacity-[0.05]" />
-      <AmbientGlow tone="dark" />
+      <Parallax speed={0.18} className="pointer-events-none absolute inset-x-0 -inset-y-1/4">
+        <AmbientGlow tone="dark" />
+      </Parallax>
       <CursorGlow />
 
       <div className="container-site relative py-16 md:py-24 lg:py-28">
@@ -48,6 +51,7 @@ export default function WhyChooseSection({ cards }: { cards: WhyChooseCard[] }) 
               key={card.id}
               as="article"
               delay={(i % 3) * 80}
+              variant="scale"
               className="group h-full rounded-2xl border border-white/10 bg-white/[0.045] p-7
                          transition-all duration-300 ease-smooth
                          hover:-translate-y-1.5 hover:border-red/40 hover:bg-white/[0.08]"

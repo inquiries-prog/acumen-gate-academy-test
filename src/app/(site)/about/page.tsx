@@ -94,7 +94,7 @@ export default async function AboutPage() {
         <section className="section">
           <div className="container-site">
             <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
-              <Reveal className="lg:sticky lg:top-28 lg:self-start">
+              <Reveal variant="left" distance="lg" className="lg:sticky lg:top-28 lg:self-start">
                 <p className="eyebrow">
                   <span className="h-1.5 w-1.5 rounded-full bg-red" aria-hidden="true" />
                   Our Story
@@ -102,7 +102,7 @@ export default async function AboutPage() {
                 <h2 className="h-section mt-5">{story.heading || "Our Story"}</h2>
               </Reveal>
 
-              <Reveal delay={80}>
+              <Reveal delay={80} variant="right" distance="lg">
                 <div className="space-y-5 border-l-2 border-line pl-7">
                   {toParagraphs(story.body).map((p, i) => (
                     <p
@@ -140,7 +140,7 @@ export default async function AboutPage() {
               tone="dark"
               title={different.heading || "What Makes Us Different"}
             />
-            <Reveal delay={80} className="mt-10 grid gap-6 md:grid-cols-3">
+            <Reveal delay={80} variant="scale" className="mt-10 grid gap-6 md:grid-cols-3">
               {toParagraphs(different.body).map((p, i) => (
                 <p
                   key={i}

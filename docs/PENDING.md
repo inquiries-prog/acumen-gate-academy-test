@@ -205,6 +205,10 @@ Per SRS §2.2 and §15, so nobody adds them by mistake:
 - **No second headline number.** "10,000+ GATE Success Stories and Counting."
   is the only total used anywhere (§7.1.3, §15.7).
 - **No address for Vidyanagar**, and no placeholder in its place (§6.3, §15.8).
+- **No animation library.** Scroll reveals run both ways (elements animate
+  out as they leave and back in as they return) using CSS transitions and
+  IntersectionObserver only - see `src/components/ui/Reveal.tsx` for the
+  variants. Adding GSAP or similar is not needed and would break §3.5.
 - **No email field on the general enquiry form** (§8.1, §15.2). Confirmations go
   by SMS/WhatsApp. Email is collected only in the payment flow, where an invoice
   legally requires it.

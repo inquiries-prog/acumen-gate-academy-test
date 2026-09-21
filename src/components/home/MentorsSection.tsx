@@ -36,6 +36,7 @@ export default function MentorsSection({ mentors }: { mentors: Mentor[] }) {
               key={m.id}
               as="article"
               delay={(i % 3) * 80}
+              distance="lg"
               className="group relative flex h-full flex-col overflow-hidden
                          rounded-2xl border border-line bg-white shadow-card
                          transition-all duration-300 ease-smooth hover:-translate-y-1.5
