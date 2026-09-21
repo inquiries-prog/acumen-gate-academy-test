@@ -5,7 +5,7 @@ import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
 import Magnetic from "@/components/ui/Magnetic";
 import Reveal from "@/components/ui/Reveal";
 import WhatsAppLink from "./WhatsAppLink";
-import { telHref } from "@/lib/utils";
+import { displayPhone, telHref } from "@/lib/utils";
 import { useSiteUI } from "./SiteUI";
 
 /**
@@ -81,8 +81,8 @@ export default function FinalCta({
             </Magnetic>
             <a
               href={telHref(settings.phone)}
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl
-                         border border-white/20 px-6 text-[15px] font-semibold text-white
+              className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 whitespace-nowrap
+                         rounded-xl border border-white/20 px-6 text-[15px] font-semibold text-white
                          transition-colors duration-200 hover:bg-white/10"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -93,7 +93,7 @@ export default function FinalCta({
                   strokeLinejoin="round"
                 />
               </svg>
-              {settings.phone}
+              {displayPhone(settings.phone)}
             </a>
             <WhatsAppLink className="btn-whatsapp min-h-12 px-6 text-[15px]">
               <WhatsAppIcon size={20} />

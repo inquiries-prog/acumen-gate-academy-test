@@ -6,7 +6,7 @@ import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
 import Magnetic from "@/components/ui/Magnetic";
 import { useSiteUI } from "./SiteUI";
 import WhatsAppLink from "./WhatsAppLink";
-import { telHref } from "@/lib/utils";
+import { displayPhone, telHref } from "@/lib/utils";
 
 /**
  * The general enquiry form (SRS 8.1), extracted so the popup and the hero share
@@ -147,7 +147,7 @@ export default function EnquiryForm({
           style={{ animationDelay: "450ms" }}
         >
           <a href={telHref(settings.phone)} className="btn-secondary">
-            Call {settings.phone}
+            Call {displayPhone(settings.phone)}
           </a>
           <WhatsAppLink className="btn-whatsapp">
             <WhatsAppIcon /> WhatsApp
@@ -305,7 +305,7 @@ export default function EnquiryForm({
       <p className="text-center text-xs leading-relaxed text-muted">
         We call once, within 24 hours. No spam. Or reach us now on{" "}
         <a href={telHref(settings.phone)} className="font-semibold text-red hover:underline">
-          {settings.phone}
+          {displayPhone(settings.phone)}
         </a>
       </p>
     </form>

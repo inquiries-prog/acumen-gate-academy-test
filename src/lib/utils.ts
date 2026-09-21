@@ -21,6 +21,16 @@ export function telHref(phone: string): string {
 }
 
 /**
+ * A phone number for display. The spaces become non-breaking, so the number
+ * can never wrap onto two lines inside a button or a tight column - a number
+ * split in half reads as two numbers. Use this wherever a number is printed.
+ */
+const NBSP = String.fromCharCode(0xa0);
+export function displayPhone(phone: string): string {
+  return phone.trim().replace(/\s+/g, NBSP);
+}
+
+/**
  * wa.me deep link. Accepts the number however it was typed (10 digits, with a
  * leading 0, or with +91) and normalises to the international form WhatsApp
  * requires. The message is encoded once; wa.me decodes it into the chat box.

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { displayPhone } from "@/lib/utils";
 import Modal from "@/components/ui/Modal";
 import SuccessBurst from "@/components/ui/SuccessBurst";
 import { useSiteUI } from "./SiteUI";
@@ -84,7 +85,7 @@ export default function SeminarModal({ open, onClose }: { open: boolean; onClose
           </div>
           <div className="mt-5 flex flex-col gap-2.5 sm:flex-row sm:justify-center">
             <a href={`tel:${settings.phone.replace(/\s/g, "")}`} className="btn-primary">
-              Call {settings.phone}
+              Call {displayPhone(settings.phone)}
             </a>
             <button type="button" onClick={handleClose} className="btn-secondary">
               Close

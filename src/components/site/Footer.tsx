@@ -5,7 +5,7 @@ import Link from "next/link";
 import type { Center, EcosystemCard } from "@/lib/types";
 import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
 import { WHATSAPP_DISPLAY } from "@/lib/defaults";
-import { telHref } from "@/lib/utils";
+import { displayPhone, telHref } from "@/lib/utils";
 import WhatsAppLink from "./WhatsAppLink";
 import { useSiteUI } from "./SiteUI";
 
@@ -151,7 +151,7 @@ export default function Footer({
                 href={telHref(settings.phone)}
                 className="inline-flex min-h-11 items-center font-semibold text-white transition-colors hover:text-red"
               >
-                {settings.phone}
+                {displayPhone(settings.phone)}
               </a>
             </li>
             <li>
@@ -159,7 +159,7 @@ export default function Footer({
                 <span className="whatsapp-badge h-7 w-7 group-hover/wa:scale-[1.08]">
                   <WhatsAppIcon size={15} />
                 </span>
-                {WHATSAPP_DISPLAY}
+                {displayPhone(WHATSAPP_DISPLAY)}
               </WhatsAppLink>
             </li>
             {settings.email && (

@@ -9,7 +9,7 @@ import AmbientGlow from "@/components/ui/AmbientGlow";
 import Magnetic from "@/components/ui/Magnetic";
 import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
 import { useFocusTrap } from "@/lib/useFocusTrap";
-import { telHref } from "@/lib/utils";
+import { displayPhone, telHref } from "@/lib/utils";
 import ScrollProgress from "./ScrollProgress";
 import WhatsAppLink from "./WhatsAppLink";
 import { useSiteUI } from "./SiteUI";
@@ -182,7 +182,7 @@ export default function Header() {
               className="flex h-8 items-center gap-1.5 rounded-full px-2 text-sm font-bold text-charcoal transition-colors hover:text-red"
             >
               <PhoneIcon />
-              <span className="hidden whitespace-nowrap 2xl:inline">{settings.phone}</span>
+              <span className="hidden whitespace-nowrap 2xl:inline">{displayPhone(settings.phone)}</span>
             </a>
             <span aria-hidden="true" className="mx-1 h-5 w-px bg-line" />
             <WhatsAppLink ariaLabel="Message us on WhatsApp" className="whatsapp-badge h-8 w-8">
