@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import CheckoutClient, { type RazorpayCheckout } from "./CheckoutClient";
-import { getPaymentProvider, toPaise } from "@/lib/payments";
+import { env, getPaymentProvider, toPaise } from "@/lib/payments";
 import { getServiceClient } from "@/lib/supabase";
 import type { Enrollment } from "@/lib/types";
 
@@ -40,10 +40,10 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Sea
 
     if (enrollment?.status === "paid") {
       alreadyPaid = true;
-    } else if (enrollment && enrollment.payment_ref === order && process.env.PAYMENT_KEY_ID) {
+    } else if (enrollment && enrollment.payment_ref === order && env("PAYMENT_KEY_ID")) {
       razorpay = {
         // The Key ID is public by design; the secret never leaves the server.
-        keyId: process.env.PAYMENT_KEY_ID,
+        keyId: env("PAYMENT_KEY_ID"),
         orderId: order,
         amountPaise: toPaise(Number(enrollment.total_amount)),
         description: enrollment.batch_label,

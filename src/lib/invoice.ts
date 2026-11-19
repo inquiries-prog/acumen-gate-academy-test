@@ -1,4 +1,4 @@
-import { formatRupees, gstDetailsConfigured } from "./payments";
+import { env, formatRupees, gstDetailsConfigured } from "./payments";
 import type { Enrollment } from "./types";
 
 /**
@@ -36,9 +36,9 @@ export function canIssueInvoice(): boolean {
 }
 
 export function renderInvoiceHtml({ enrollment, invoiceNumber, issuedOn }: InvoiceInput): string {
-  const legalName = process.env.BUSINESS_LEGAL_NAME ?? "";
-  const gstin = process.env.BUSINESS_GSTIN ?? "";
-  const address = process.env.BUSINESS_ADDRESS ?? "";
+  const legalName = env("BUSINESS_LEGAL_NAME");
+  const gstin = env("BUSINESS_GSTIN");
+  const address = env("BUSINESS_ADDRESS");
 
   const date = issuedOn.toLocaleDateString("en-IN", {
     day: "2-digit",

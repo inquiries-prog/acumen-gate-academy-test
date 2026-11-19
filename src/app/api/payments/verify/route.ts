@@ -1,8 +1,10 @@
 import { clientIp, fail, ok, rateLimit } from "@/lib/api";
 import { markEnrollmentPaid } from "@/lib/enrollment-completion";
 import {
+  env,
   fetchRazorpayPayment,
   getPaymentProvider,
+  gstDetailsConfigured,
   toPaise,
   verifyRazorpayCheckoutSignature,
 } from "@/lib/payments";
@@ -25,6 +27,23 @@ import type { Enrollment } from "@/lib/types";
  * Responds { state: "paid" | "pending" }. "pending" means the payment is
  * genuine but not yet captured - the webhook will finish the job.
  */
+/**
+ * Configuration check, for confirming a deployment picked up its settings.
+ * Reports only which provider is active and yes/no flags - never a value.
+ * (The Key ID's test/live prefix is public anyway: Checkout sends it to
+ * every visitor's browser.)
+ */
+export async function GET() {
+  const keyId = env("PAYMENT_KEY_ID");
+  return Response.json({
+    provider: getPaymentProvider().name,
+    keyMode: keyId.startsWith("rzp_live_") ? "live" : keyId.startsWith("rzp_test_") ? "test" : keyId ? "unknown" : "missing",
+    keySecretSet: Boolean(env("PAYMENT_KEY_SECRET")),
+    webhookSecretSet: Boolean(env("PAYMENT_WEBHOOK_SECRET")),
+    gstDetailsSet: gstDetailsConfigured(),
+  });
+}
+
 export async function POST(request: Request) {
   if (!rateLimit(clientIp(request))) {
     return fail("Too many attempts. Please wait a minute.", 429);

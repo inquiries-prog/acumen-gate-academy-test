@@ -55,6 +55,15 @@ export interface PaymentProvider {
   verifyWebhook(rawBody: string, signature: string | null): WebhookResult;
 }
 
+/**
+ * Reads a setting, forgiving what pasting into a hosting dashboard tends to
+ * add: surrounding spaces, line breaks and quote marks. A stray space in
+ * PAYMENT_PROVIDER would otherwise silently leave the live site on the stub.
+ */
+export function env(name: string): string {
+  return (process.env[name] ?? "").trim().replace(/^(["'])(.*)\1$/s, "$2").trim();
+}
+
 // --- Stub -----------------------------------------------------------------
 
 const stubProvider: PaymentProvider = {
@@ -105,8 +114,8 @@ const stubProvider: PaymentProvider = {
 const RAZORPAY_API = "https://api.razorpay.com/v1";
 
 function razorpayAuthHeader(): string {
-  const keyId = process.env.PAYMENT_KEY_ID ?? "";
-  const keySecret = process.env.PAYMENT_KEY_SECRET ?? "";
+  const keyId = env("PAYMENT_KEY_ID");
+  const keySecret = env("PAYMENT_KEY_SECRET");
   if (!keyId || !keySecret) throw new Error("Razorpay credentials are not configured.");
   return `Basic ${Buffer.from(`${keyId}:${keySecret}`).toString("base64")}`;
 }
@@ -133,7 +142,7 @@ export function verifyRazorpayCheckoutSignature(
   paymentId: string,
   signature: string,
 ): boolean {
-  const secret = process.env.PAYMENT_KEY_SECRET ?? "";
+  const secret = env("PAYMENT_KEY_SECRET");
   if (!secret || !orderId || !paymentId || !signature) return false;
   const expected = crypto
     .createHmac("sha256", secret)
@@ -224,7 +233,7 @@ const razorpayProvider: PaymentProvider = {
     };
   },
   verifyWebhook(rawBody, signature) {
-    const secret = process.env.PAYMENT_WEBHOOK_SECRET ?? "";
+    const secret = env("PAYMENT_WEBHOOK_SECRET");
     if (!secret) return { ok: false, reason: "webhook secret not configured" };
     if (!signature) return { ok: false, reason: "missing signature" };
 
@@ -266,7 +275,7 @@ const razorpayProvider: PaymentProvider = {
 };
 
 export function getPaymentProvider(): PaymentProvider {
-  switch ((process.env.PAYMENT_PROVIDER ?? "stub").toLowerCase()) {
+  switch ((env("PAYMENT_PROVIDER") || "stub").toLowerCase()) {
     case "razorpay":
       return razorpayProvider;
     default:
@@ -312,5 +321,5 @@ export function formatRupees(amount: number): string {
 
 /** True once the client has supplied the details a legal GST invoice needs. */
 export function gstDetailsConfigured(): boolean {
-  return Boolean(process.env.BUSINESS_GSTIN && process.env.BUSINESS_LEGAL_NAME);
+  return Boolean(env("BUSINESS_GSTIN") && env("BUSINESS_LEGAL_NAME"));
 }
