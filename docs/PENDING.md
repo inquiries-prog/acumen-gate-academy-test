@@ -11,18 +11,19 @@ visible rather than living only in this file.
 
 ## A. Blocking — the site cannot launch without these
 
-### A1. Payment gateway account — **BLOCKS LAUNCH**
-SRS §11 requires online payment live at launch; §12 flags the provider as
-undecided and as a blocking dependency.
+### A1. Payment gateway — Razorpay, **test mode working; live setup BLOCKS LAUNCH**
+SRS §11 requires online payment live at launch.
 
-**Status:** built behind an adapter (`src/lib/payments.ts`). The whole flow —
-form, GST summary, invoice numbering, paid-enrollment list, abandoned-payment
-capture — is complete and testable against a stub. A Razorpay adapter is
-written but has never run against real credentials.
+**Status (19 Nov 2026):** Razorpay account created. Standard Checkout is
+integrated and running on test keys: server-side orders, Razorpay Checkout on
+`/enroll/checkout`, signature-checked confirmation (`/api/payments/verify`) and
+the webhook. See the Razorpay section of [SETUP.md](./SETUP.md).
 
-**Needed:** the chosen provider, plus API key, secret and webhook secret. Then
-set `PAYMENT_PROVIDER` and point the gateway's webhook at
-`/api/payments/webhook`.
+**Still needed before taking real money:**
+- Razorpay account activation (KYC) and **live** API keys.
+- Payment Capture set to automatic in the Razorpay dashboard.
+- The live webhook, which needs the deployed domain.
+- A2 (GSTIN) — otherwise a paid student gets no invoice.
 
 ### A2. GSTIN and registered business details — **BLOCKS LAUNCH**
 SRS §11.3 makes a proper GST tax invoice a legal requirement.

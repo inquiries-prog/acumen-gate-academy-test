@@ -1,27 +1,235 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { PHONE_DISPLAY } from "@/lib/defaults";
 import { displayPhone, telHref } from "@/lib/utils";
 
+/** What the server hands the browser to open Razorpay Checkout. Never the secret. */
+export interface RazorpayCheckout {
+  keyId: string;
+  orderId: string;
+  amountPaise: number;
+  description: string;
+  prefill: { name: string; email: string; contact: string };
+}
+
+interface RazorpaySuccess {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+}
+
+interface RazorpayFailure {
+  error: { code?: string; description?: string; reason?: string };
+}
+
+interface RazorpayInstance {
+  open(): void;
+  on(event: "payment.failed", cb: (response: RazorpayFailure) => void): void;
+}
+
+declare global {
+  interface Window {
+    Razorpay?: new (options: Record<string, unknown>) => RazorpayInstance;
+  }
+}
+
+const CHECKOUT_SCRIPT = "https://checkout.razorpay.com/v1/checkout.js";
+
+function loadCheckoutScript(): Promise<void> {
+  if (window.Razorpay) return Promise.resolve();
+  return new Promise((resolve, reject) => {
+    const existing = document.querySelector<HTMLScriptElement>(`script[src="${CHECKOUT_SCRIPT}"]`);
+    const script = existing ?? document.createElement("script");
+    script.addEventListener("load", () => resolve(), { once: true });
+    script.addEventListener("error", () => reject(new Error("script failed")), { once: true });
+    if (!existing) {
+      script.src = CHECKOUT_SCRIPT;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  });
+}
+
+type PayState =
+  | { kind: "loading" }
+  | { kind: "ready" }
+  | { kind: "open" }
+  | { kind: "verifying" }
+  | { kind: "dismissed" }
+  | { kind: "error"; message: string };
+
 /**
- * Payment simulator for the stub provider.
- *
- * This screen exists only while PAYMENT_PROVIDER=stub. Once the client chooses
- * a gateway (SRS 12), this is replaced by that provider's hosted checkout and
- * no money ever moves through code we wrote.
+ * Razorpay Standard Checkout. Opens the payment window as soon as the script
+ * loads, and offers a "Pay" button to reopen it if the student closes it.
+ * Success is never trusted from the browser: the signed response goes to
+ * /api/payments/verify, which checks it before anything is marked paid.
+ */
+function RazorpayPay({
+  enrollmentId,
+  providerName,
+  config,
+}: {
+  enrollmentId: string;
+  providerName: string;
+  config: RazorpayCheckout;
+}) {
+  const [state, setState] = useState<PayState>({ kind: "loading" });
+  const autoOpened = useRef(false);
+
+  const verify = useCallback(
+    async (response: RazorpaySuccess) => {
+      setState({ kind: "verifying" });
+      try {
+        const res = await fetch("/api/payments/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ enrollmentId, ...response }),
+        });
+        const body = (await res.json()) as { ok: boolean; state?: string; error?: string };
+        if (!res.ok || !body.ok) throw new Error(body.error || "verification failed");
+        // "pending" = genuine payment still being captured; the webhook
+        // completes it, so the student sees the confirmation either way.
+        window.location.href = `/enroll/status?state=${body.state === "failed" ? "failed" : body.state === "pending" ? "pending" : "paid"}`;
+      } catch (err) {
+        setState({
+          kind: "error",
+          message:
+            err instanceof Error && err.message !== "verification failed"
+              ? err.message
+              : "Your payment went through, but we couldn't confirm it automatically. Please don't pay again - call us and we'll sort it out.",
+        });
+      }
+    },
+    [enrollmentId],
+  );
+
+  const open = useCallback(() => {
+    if (!window.Razorpay) return;
+    const rzp = new window.Razorpay({
+      key: config.keyId,
+      amount: config.amountPaise,
+      currency: "INR",
+      order_id: config.orderId,
+      name: "Acumen Gate Academy",
+      description: config.description,
+      image: `${window.location.origin}/assets/logo/acumen-gate-academy-logo.png`,
+      prefill: config.prefill,
+      notes: { enrollmentId },
+      theme: { color: "#E31E24" },
+      handler: (response: RazorpaySuccess) => void verify(response),
+      modal: {
+        ondismiss: () => setState((s) => (s.kind === "verifying" ? s : { kind: "dismissed" })),
+      },
+    });
+    // Razorpay lets the student retry inside the window, so a failure is
+    // shown here but the window stays usable.
+    rzp.on("payment.failed", (response) => {
+      setState({
+        kind: "error",
+        message: response.error?.description || "That payment didn't go through. You can try again.",
+      });
+    });
+    setState({ kind: "open" });
+    rzp.open();
+  }, [config, enrollmentId, verify]);
+
+  useEffect(() => {
+    let cancelled = false;
+    loadCheckoutScript()
+      .then(() => {
+        if (cancelled) return;
+        setState({ kind: "ready" });
+        if (!autoOpened.current) {
+          autoOpened.current = true;
+          open();
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setState({
+            kind: "error",
+            message: "We couldn't load the secure payment window. Check your connection and try again.",
+          });
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [open]);
+
+  const amount = new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 2,
+  }).format(config.amountPaise / 100);
+
+  const busy = state.kind === "loading" || state.kind === "verifying" || state.kind === "open";
+
+  return (
+    <div className="card p-7 text-center">
+      <h1 className="text-xl font-bold">
+        {state.kind === "verifying"
+          ? "Confirming your payment…"
+          : state.kind === "dismissed"
+            ? "Payment not completed"
+            : "Complete your payment"}
+      </h1>
+      <p className="mt-3 text-sm leading-relaxed text-body">
+        {config.description} · <span className="font-bold text-charcoal">{amount}</span> incl. GST
+      </p>
+      <p className="mt-2 text-xs text-muted">
+        Payment is handled securely by {providerName === "razorpay" ? "Razorpay" : providerName}.
+        We never see your card or UPI details.
+      </p>
+
+      {state.kind === "error" && (
+        <p className="mt-4 rounded-md bg-red/5 px-3 py-2.5 text-sm text-red-dark" role="alert">
+          {state.message}
+        </p>
+      )}
+      {state.kind === "dismissed" && (
+        <p className="mt-4 text-sm text-body">
+          You closed the payment window. Nothing has been charged.
+        </p>
+      )}
+
+      {state.kind !== "verifying" && (
+        <button type="button" onClick={open} disabled={busy} className="btn-primary mt-6 w-full">
+          {state.kind === "loading" ? "Loading secure checkout…" : `Pay ${amount}`}
+        </button>
+      )}
+
+      <p className="mt-4 text-xs text-muted">
+        Trouble paying? Call{" "}
+        <a href={telHref(PHONE_DISPLAY)} className="font-bold text-red hover:underline">
+          {displayPhone(PHONE_DISPLAY)}
+        </a>{" "}
+        and we&apos;ll complete your enrollment over the phone.
+      </p>
+    </div>
+  );
+}
+
+/**
+ * Checkout screen. With Razorpay it renders <RazorpayPay>; with the stub
+ * provider it renders a clearly-labelled simulator so no money moves.
  */
 export default function CheckoutClient({
   orderId,
   enrollmentId,
   providerName,
   isLive,
+  razorpay,
+  alreadyPaid,
 }: {
   orderId: string;
   enrollmentId: string;
   providerName: string;
   isLive: boolean;
+  razorpay: RazorpayCheckout | null;
+  alreadyPaid: boolean;
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,20 +253,39 @@ export default function CheckoutClient({
     }
   }
 
-  if (isLive) {
+  if (alreadyPaid) {
     return (
       <div className="card p-7 text-center">
-        <h1 className="text-xl font-bold">Redirecting you to pay…</h1>
+        <h1 className="text-xl font-bold">This enrollment is already paid</h1>
         <p className="mt-3 text-sm leading-relaxed text-body">
-          Your payment is being handled securely by {providerName}. If nothing happens in a few
-          seconds, please call us on{" "}
-          <a href={telHref(PHONE_DISPLAY)} className="font-bold text-red hover:underline">
-            {displayPhone(PHONE_DISPLAY)}
-          </a>{" "}
-          and we&apos;ll complete your enrollment over the phone.
+          Nothing more to pay. Your invoice has been emailed to you.
         </p>
+        <Link href="/" className="btn-primary mt-5">
+          Back to home
+        </Link>
       </div>
     );
+  }
+
+  if (isLive) {
+    if (!razorpay) {
+      return (
+        <div className="card p-7 text-center">
+          <h1 className="text-xl font-bold">This payment link has expired</h1>
+          <p className="mt-3 text-sm leading-relaxed text-body">
+            Please start again from the batch you want to join, or call us on{" "}
+            <a href={telHref(PHONE_DISPLAY)} className="font-bold text-red hover:underline">
+              {displayPhone(PHONE_DISPLAY)}
+            </a>{" "}
+            and we&apos;ll complete your enrollment over the phone.
+          </p>
+          <Link href="/" className="btn-primary mt-5">
+            Back to home
+          </Link>
+        </div>
+      );
+    }
+    return <RazorpayPay enrollmentId={enrollmentId} providerName={providerName} config={razorpay} />;
   }
 
   if (!enrollmentId) {

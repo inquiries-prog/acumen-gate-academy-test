@@ -164,26 +164,55 @@ SMTP_FROM="Acumen Gate Academy <office@example.com>"
 Without these, leads are still saved and visible in the admin panel — the team
 just doesn't get an email.
 
-### Payment gateway
-
-Not yet chosen. See [PENDING.md](./PENDING.md).
+### Payment gateway (Razorpay)
 
 ```
-PAYMENT_PROVIDER=stub      # or: razorpay
-PAYMENT_KEY_ID=
-PAYMENT_KEY_SECRET=
-PAYMENT_WEBHOOK_SECRET=
+PAYMENT_PROVIDER=razorpay  # or: stub
+PAYMENT_KEY_ID=rzp_test_...       # Razorpay Key ID (rzp_live_... in production)
+PAYMENT_KEY_SECRET=...            # Razorpay Key Secret - server only
+PAYMENT_WEBHOOK_SECRET=...        # any long random string you also enter in Razorpay
 GST_RATE_PERCENT=18
 BUSINESS_LEGAL_NAME=
 BUSINESS_GSTIN=
 BUSINESS_ADDRESS=
 ```
 
-With `stub`, no real money can move; `/enroll/checkout` shows a clearly-labelled
-simulator so the whole flow — success, failure and abandonment — can be tested.
+Keys come from Razorpay Dashboard → Account & Settings → API Keys. Test-mode and
+live-mode keys are separate; test keys start `rzp_test_` and never move real money.
 
-To switch to a real gateway, set the variables above and point the gateway's
-webhook at `https://yourdomain.com/api/payments/webhook`.
+**How a payment flows** (Razorpay Standard Checkout):
+
+1. `/api/enroll` saves the enrollment as `initiated`, reads the fee from the
+   batch record (never from the browser) and creates a Razorpay Order.
+2. `/enroll/checkout` opens Razorpay Checkout for that order. Card and UPI
+   details go straight to Razorpay.
+3. On success the browser posts the signed response to `/api/payments/verify`,
+   which checks the signature against the stored order id, reads the payment
+   back from Razorpay, checks the amount, and marks the enrollment paid.
+4. `/api/payments/webhook` is the backstop for a student who closes the tab
+   right after paying. Both paths share one function, and only one of them can
+   mark an enrollment paid, so nobody gets two invoices.
+
+**Testing locally (test keys):** `npm run dev`, open a batch with a fee, click
+Enroll & Pay. In Checkout use UPI `success@razorpay` (or `failure@razorpay`), or
+card `4100 2800 0000 1007` with any future expiry and any CVV. Test-mode OTP
+prompts accept `754081`. Webhooks cannot reach `localhost`; step 3 covers
+local testing on its own.
+
+**Before going live:**
+
+- Razorpay → Account & Settings → **Payment Capture**: automatic. Without it
+  payments sit "authorized" and Razorpay refunds them.
+- Razorpay → Account & Settings → **Webhooks** → Add New Webhook (live mode):
+  URL `https://<domain>/api/payments/webhook`, events `order.paid`,
+  `payment.captured`, `payment.failed`, and a secret that matches
+  `PAYMENT_WEBHOOK_SECRET`.
+- Swap in the **live** Key ID and Secret. Leaving test keys in production shows
+  students a success screen while no money is collected.
+- Run one real low-value payment end to end, then refund it from the dashboard.
+
+`PAYMENT_PROVIDER=stub` brings back the local simulator on `/enroll/checkout`
+(no money moves), which is handy for testing the admin side without Razorpay.
 
 ### SMS / WhatsApp confirmations
 

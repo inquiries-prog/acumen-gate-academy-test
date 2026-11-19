@@ -18,7 +18,10 @@ type SearchParams = Promise<{ state?: string }>;
  */
 export default async function EnrollStatusPage({ searchParams }: { searchParams: SearchParams }) {
   const { state } = await searchParams;
-  const paid = state === "paid";
+  // "pending" = Razorpay has the money but hasn't finished capturing it; the
+  // webhook completes the enrollment, so the student is told it's received.
+  const pending = state === "pending";
+  const paid = state === "paid" || pending;
 
   return (
     <div className="container-site max-w-lg py-14 md:py-20">
@@ -38,7 +41,13 @@ export default async function EnrollStatusPage({ searchParams }: { searchParams:
         </h1>
 
         <p className="mt-3 text-[15px] leading-relaxed text-body">
-          {paid ? (
+          {pending ? (
+            <>
+              Your payment has been received and is being confirmed by the bank - this usually
+              takes a minute. Your GST invoice will be emailed to you as soon as it completes, and
+              our team will contact you with your batch joining details.
+            </>
+          ) : paid ? (
             <>
               Your enrollment is confirmed. Your GST invoice has been emailed to you, and our team
               will contact you shortly with your batch joining details.
