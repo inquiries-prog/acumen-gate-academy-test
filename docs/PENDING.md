@@ -25,15 +25,13 @@ the webhook. See the Razorpay section of [SETUP.md](./SETUP.md).
 - The live webhook, which needs the deployed domain.
 - A2 (GSTIN) — otherwise a paid student gets no invoice.
 
-### A2. GSTIN and registered business details — **BLOCKS LAUNCH**
+### A2. ~~GSTIN and registered business details~~ — ✅ **Supplied (19 Nov 2026)**
 SRS §11.3 makes a proper GST tax invoice a legal requirement.
 
-**Needed:** `BUSINESS_LEGAL_NAME`, `BUSINESS_GSTIN`, `BUSINESS_ADDRESS`.
-
-Until these are set the code **refuses to issue an invoice** rather than issuing
-an invalid one. The payment is still recorded and the team is alerted, but a
-student would not receive their invoice — so this must be done before taking any
-real money.
+Set in `.env.local`: legal name Rohit Suresh Chandorkar, GSTIN 24ABDPC7956K1ZI,
+Subhanpura, Vadodara address. **These must also be set as environment variables
+on the host when deploying**; without them the code refuses to issue an invoice.
+See C2: a Gujarat GSTIN makes the CGST/SGST question more pressing.
 
 ### A3. Privacy Policy and Terms & Conditions copy — **BLOCKS LAUNCH**
 Required by SRS §12 specifically because online payment is live from day one.
@@ -44,14 +42,16 @@ been invented.
 
 **Needed:** the real wording, pasted into **Privacy Policy & Terms** in admin.
 
-### A4. Real batch fees, start dates and faculty — **BLOCKS LAUNCH**
+### A4. Real batch start dates and faculty — **BLOCKS LAUNCH** (fees ✅ done)
 SRS §12 notes prototype values are illustrative placeholders.
 
-**Status:** batches are seeded with a placeholder fee of ₹45,000 and no real
-dates. The admin **Batches** screen shows a warning while placeholders remain.
+**Fees — supplied 19 Nov 2026:** ₹15,000 online, ₹45,000 offline, **GST
+included** (that is exactly what the student pays). Set on all 12 batches in
+Supabase and in the defaults. The invoice splits GST back out, e.g. ₹15,000 =
+₹12,711.86 + ₹2,288.14 GST.
 
-**This matters more than the other content gaps:** the fee in that screen is the
-amount a student is actually charged online.
+**Still needed:** real start dates and faculty. The admin **Batches** screen
+shows a warning while those placeholders remain.
 
 ### A5. Rotate the Supabase service_role key — **BEFORE GOING PUBLIC**
 The current `service_role` key was shared over chat during setup. It bypasses

@@ -149,15 +149,15 @@ export const branches: Branch[] = [
 
 /**
  * One batch per branch per mode.
- * start_date / duration / faculty / fees are ILLUSTRATIVE PLACEHOLDERS - the
- * SRS 12 checklist lists real values as pending from the client. Every field
- * is admin-editable; nothing here is referenced by code.
+ * Fees are the client's real figures (Nov 2026), GST-inclusive: ₹15,000
+ * online, ₹45,000 offline. start_date / duration / faculty are still
+ * ILLUSTRATIVE PLACEHOLDERS pending from the client (SRS 12). Every field is
+ * admin-editable; nothing here is referenced by code.
  */
 export const batches: Batch[] = branches.flatMap((b, i) => {
   const base = {
     duration: "12 months",
     faculty: PLACEHOLDER,
-    fees: 45000,
     fees_note: "",
     seats: "",
     video_id: DEMO_VIDEO_ID,
@@ -171,6 +171,7 @@ export const batches: Batch[] = branches.flatMap((b, i) => {
       id: `batch-${b.code.toLowerCase()}-offline`,
       branch_id: b.id,
       mode: "offline" as const,
+      fees: 45000,
       start_date: PLACEHOLDER,
       sort_order: i + 1,
     },
@@ -179,6 +180,7 @@ export const batches: Batch[] = branches.flatMap((b, i) => {
       id: `batch-${b.code.toLowerCase()}-online`,
       branch_id: b.id,
       mode: "online" as const,
+      fees: 15000,
       start_date: PLACEHOLDER,
       sort_order: i + 1,
     },

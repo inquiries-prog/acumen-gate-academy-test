@@ -64,7 +64,7 @@ export default function BatchDetailModal({
     {
       label: "Course fee",
       value: breakdown
-        ? `${formatRupees(breakdown.fee)} + ${breakdown.gstRate}% GST`
+        ? `${formatRupees(breakdown.total)} incl. ${breakdown.gstRate}% GST`
         : "Call us for current fees",
     },
   ];

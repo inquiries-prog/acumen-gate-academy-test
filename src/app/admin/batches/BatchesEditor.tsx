@@ -94,7 +94,7 @@ export default function BatchesEditor({
             batch.start_date === PLACEHOLDER || !batch.start_date
               ? "No start date set"
               : `Starts ${batch.start_date}`,
-            batch.fees ? `₹${Number(batch.fees).toLocaleString("en-IN")} + GST` : "No fee set",
+            batch.fees ? `₹${Number(batch.fees).toLocaleString("en-IN")} incl. GST` : "No fee set",
           ].join(" · ");
 
           return (
@@ -157,7 +157,7 @@ export default function BatchesEditor({
 
                     <div>
                       <label htmlFor={`fees-${batch.id}`} className="field-label">
-                        Course fee (₹, before GST)
+                        Course fee (₹, including GST - what the student pays)
                       </label>
                       <input
                         id={`fees-${batch.id}`}

@@ -284,15 +284,18 @@ export interface FeeBreakdown {
 }
 
 /**
- * GST is shown as a separate line and added on top of the batch fee (SRS 11.2).
- * Rounded to paise to avoid float drift on an amount that ends up on a tax
- * invoice.
+ * The batch fee is GST-INCLUSIVE: it is exactly what the student pays (client
+ * decision, Nov 2026 - ₹15,000 online / ₹45,000 offline). GST is still shown
+ * as a separate line (SRS 11.2) by splitting it back out of the total:
+ *   base = total × 100 / (100 + rate), GST = total − base.
+ * GST is taken as the remainder so base + GST always equals the total to the
+ * paisa, which matters on a tax invoice.
  */
 export function calculateFees(feeInRupees: number, gstRatePercent?: number): FeeBreakdown {
   const rate = gstRatePercent ?? Number(process.env.GST_RATE_PERCENT ?? 18);
-  const fee = round2(feeInRupees);
-  const gst = round2((fee * rate) / 100);
-  return { fee, gstRate: rate, gst, total: round2(fee + gst) };
+  const total = round2(feeInRupees);
+  const fee = round2((total * 100) / (100 + rate));
+  return { fee, gstRate: rate, gst: round2(total - fee), total };
 }
 
 function round2(n: number): number {
