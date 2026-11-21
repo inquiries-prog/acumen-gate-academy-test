@@ -129,12 +129,19 @@ export default function Header() {
                    group-data-[scrolled]/header:-translate-y-3 group-data-[scrolled]/header:shadow-card"
         style={{ viewTransitionName: "site-header" }}
       >
+      {/* Desktop is a three-column grid whose outer columns are EQUAL
+          (minmax(0,1fr) each), so the nav sits on the true centre of the page
+          at every width. The actions on the right must therefore fit in half
+          of what the nav leaves over - which is why they step down in size
+          below 1500px / 1680px instead of pushing past the edge. The bar is a
+          little wider than the page content (1600px) so big screens get the
+          room for the full labels. */}
       <div
-        className="container-site flex h-[76px] items-center justify-between gap-4
+        className="mx-auto flex h-[76px] w-full max-w-[1600px] items-center justify-between gap-4 px-5 sm:px-7 lg:px-10
                    transition-transform duration-300 ease-smooth group-data-[scrolled]/header:translate-y-1.5
-                   xl:grid xl:grid-cols-[1fr_auto_1fr]"
+                   xl:grid xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] xl:gap-5"
       >
-        <Link href="/" className="flex shrink-0 items-center xl:justify-self-start" aria-label="Acumen Gate Academy home">
+        <Link href="/" className="flex shrink-0 items-center xl:min-w-0 xl:justify-self-start" aria-label="Acumen Gate Academy home">
           {settings.logo_url ? (
             // Never recoloured or inverted via CSS filters (SRS 3.2).
             <Image
@@ -150,7 +157,7 @@ export default function Header() {
           )}
         </Link>
 
-        <nav aria-label="Main" className="hidden items-center gap-0.5 xl:flex">
+        <nav aria-label="Main" className="hidden items-center xl:flex">
           {navItems.map((item) =>
             item.menu ? (
               <CoursesMenu key={item.label} active={Boolean(isActive(item.href))} />
@@ -158,7 +165,8 @@ export default function Header() {
               <Link
                 key={item.label}
                 href={item.href}
-                className={`relative whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold transition-colors duration-200
+                className={`relative whitespace-nowrap rounded-lg px-2.5 py-2 text-[13.5px] font-semibold transition-colors duration-200
+                            min-[1440px]:px-3 min-[1440px]:text-sm
                             after:absolute after:inset-x-3 after:-bottom-0.5 after:h-0.5 after:rounded-full
                             after:bg-red after:transition-transform after:duration-300 after:ease-smooth
                             hover:text-red ${
@@ -173,37 +181,40 @@ export default function Header() {
           )}
         </nav>
 
-        <div className="hidden items-center gap-4 xl:flex xl:justify-self-end">
-          {/* Contact pill: phone and WhatsApp share one shape. */}
-          <div className="flex items-center rounded-full border border-line bg-white p-1 pl-1.5 shadow-chip">
+        <div className="hidden min-w-0 items-center gap-2.5 xl:flex xl:justify-self-end min-[1500px]:gap-3">
+          {/* Contact pill: phone, WhatsApp and chat share one shape. Icons
+              only - the number is on hover (title), in the menu and footer. */}
+          <div className="flex shrink-0 items-center rounded-full border border-line bg-white p-1 pl-1.5 shadow-chip">
             <a
               href={telHref(settings.phone)}
               aria-label={`Call ${settings.phone}`}
-              className="flex h-8 items-center gap-1.5 rounded-full px-2 text-sm font-bold text-charcoal transition-colors hover:text-red"
+              title={displayPhone(settings.phone)}
+              className="flex h-8 items-center gap-1.5 rounded-full px-1.5 text-sm font-bold text-charcoal transition-colors hover:text-red"
             >
               <PhoneIcon />
-              <span className="hidden whitespace-nowrap 2xl:inline">{displayPhone(settings.phone)}</span>
             </a>
             <span aria-hidden="true" className="mx-1 h-5 w-px bg-line" />
             <WhatsAppLink ariaLabel="Message us on WhatsApp" className="whatsapp-badge h-8 w-8">
               <WhatsAppIcon size={17} />
             </WhatsAppLink>
+            <button
+              type="button"
+              onClick={() => setChatOpen(true)}
+              aria-label="Chat with us"
+              title="Chat with us"
+              className="ml-1 grid h-8 w-8 place-items-center rounded-full text-charcoal transition-colors hover:bg-offwhite hover:text-red"
+            >
+              <ChatIcon />
+            </button>
           </div>
           <button
             type="button"
-            onClick={() => setChatOpen(true)}
-            className="hidden whitespace-nowrap text-sm font-semibold text-charcoal underline-offset-4 transition-colors hover:text-red hover:underline 2xl:inline"
-          >
-            Chat with us
-          </button>
-          <button
-            type="button"
             onClick={() => openEnquiry("Header")}
-            className="whitespace-nowrap text-sm font-bold text-charcoal underline-offset-4 transition-colors hover:text-red hover:underline"
+            className="shrink-0 whitespace-nowrap text-sm font-bold text-charcoal underline-offset-4 transition-colors hover:text-red hover:underline"
           >
-            Enquire Now
+            Enquire<span className="hidden min-[1500px]:inline"> Now</span>
           </button>
-          <Magnetic>
+          <Magnetic className="shrink-0">
             <DemoButton onClick={() => openDemo("Header button")} />
           </Magnetic>
         </div>
@@ -399,11 +410,22 @@ function DemoButton({ onClick }: { onClick: () => void }) {
       <span className="relative animate-wiggle">
         <GiftIcon />
       </span>
-      <span className="relative">Free Demo Class</span>
-      <span className="relative rounded-md bg-white px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-red">
+      <span className="relative">
+        Free Demo<span className="hidden min-[1500px]:inline"> Class</span>
+      </span>
+      <span className="relative hidden rounded-md bg-white px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-red min-[1680px]:inline">
         Free
       </span>
     </button>
+  );
+}
+
+function ChatIcon() {
+  return (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M4 5h16v11H9l-5 4V5z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+      <path d="M8.5 10.5h.01M12 10.5h.01M15.5 10.5h.01" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+    </svg>
   );
 }
 
