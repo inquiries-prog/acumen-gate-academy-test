@@ -313,12 +313,28 @@
   /* --- The glass pill ----------------------------------------------------
      Frosted glass, in layers: a strong blur with a little extra saturation
      and brightness (what makes real glass glow rather than grey out), a
-     white gradient that is denser at the top, a sheen across it (::before),
-     a bright 1px highlight on the top edge and a faint shade on the bottom
-     edge (inset shadows), and a soft two-part drop shadow so it floats.
-     `isolation` keeps the sheen behind the pill's content. */
+     translucent white tint, a sheen that is denser at the top and catches
+     the light diagonally (::before, behind the content), a bright 1px
+     highlight on the top edge and a faint shade on the bottom edge (inset
+     shadows), and a soft two-part drop shadow so it floats.
+
+     Timing is split on purpose. The SHAPE (width, height, radius, padding,
+     margin) morphs slowly over 700ms. The GLASS must look the same the whole
+     time, so: the blur is not transitioned at all (animating a blur from 0
+     is what made the pill look clear for a moment before frosting over),
+     the tint is a plain colour that fades in 250ms, and the gradient lives
+     in ::before, whose opacity can fade (gradients themselves can't). */
   .hdr-pill {
     isolation: isolate;
+    transition:
+      width 0.7s var(--hdr-ease),
+      height 0.7s var(--hdr-ease),
+      margin 0.7s var(--hdr-ease),
+      padding 0.7s var(--hdr-ease),
+      border-radius 0.7s var(--hdr-ease),
+      background-color 0.25s ease-out,
+      border-color 0.25s ease-out,
+      box-shadow 0.45s ease-out;
   }
   .hdr-pill::before {
     content: "";
@@ -329,12 +345,13 @@
     pointer-events: none;
     opacity: 0;
     background:
-      linear-gradient(112deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 32%),
-      linear-gradient(112deg, rgba(255, 255, 255, 0) 68%, rgba(255, 255, 255, 0.35) 100%);
-    transition: opacity 0.7s var(--hdr-ease);
+      linear-gradient(112deg, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0) 32%),
+      linear-gradient(112deg, rgba(255, 255, 255, 0) 68%, rgba(255, 255, 255, 0.3) 100%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0) 100%);
+    transition: opacity 0.25s ease-out;
   }
   .site-header[data-scrolled] .hdr-pill {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.74) 0%, rgba(255, 255, 255, 0.5) 100%);
+    background-color: rgba(255, 255, 255, 0.58);
     border-color: rgba(255, 255, 255, 0.8);
     -webkit-backdrop-filter: blur(24px) saturate(1.8) brightness(1.06);
     backdrop-filter: blur(24px) saturate(1.8) brightness(1.06);
@@ -350,7 +367,7 @@
   }
   /* Elements inside the pill go glassy too, instead of solid white. */
   .site-header[data-scrolled] .hdr-chip {
-    background: rgba(255, 255, 255, 0.45);
+    background-color: rgba(255, 255, 255, 0.45);
     border-color: rgba(255, 255, 255, 0.75);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 3px rgba(35, 31, 32, 0.06);
   }

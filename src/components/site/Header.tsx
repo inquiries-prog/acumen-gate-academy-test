@@ -139,16 +139,19 @@ export default function Header() {
           patch. Everything animates with CSS transitions over 700ms on a
           soft ease-out; no layout work in JavaScript. The pill is named for
           the view transition so it stays put while pages cross-fade. */}
+      {/* The full-width background. Its blur switches off instantly on
+          scroll (never animated): while an element still has a blur, the
+          pill inside it can't see the page through its own frosted glass,
+          which made the pill look clear for a moment before frosting over. */}
       <div
         className="pointer-events-none absolute inset-x-0 top-0 h-[var(--hdr-h)] border-b border-line/80 bg-white/85 backdrop-blur-xl
-                   transition-[background-color,border-color,backdrop-filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] supports-[backdrop-filter]:bg-white/75
+                   transition-[background-color,border-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] supports-[backdrop-filter]:bg-white/75
                    group-data-[scrolled]/header:border-transparent group-data-[scrolled]/header:!bg-transparent group-data-[scrolled]/header:backdrop-blur-none"
       >
       <ScrollProgress className="transition-opacity duration-500 group-data-[scrolled]/header:opacity-0" />
       <div
         className="hdr-pill pointer-events-auto relative mx-auto flex h-[var(--hdr-h)] w-full items-center justify-between gap-4
                    rounded-none border border-transparent px-5 sm:px-7 xl:pl-[clamp(28px,2.6vw,64px)] xl:pr-[clamp(14px,1.1vw,26px)]
-                   transition-[width,height,margin,padding,border-radius,background,border-color,box-shadow,backdrop-filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]
                    group-data-[scrolled]/header:mt-3 group-data-[scrolled]/header:!h-[var(--hdr-pill-h)] group-data-[scrolled]/header:!w-[calc(100%-1.5rem)] xl:group-data-[scrolled]/header:!w-[var(--hdr-pill-w)] group-data-[scrolled]/header:rounded-[40px]
                    group-data-[scrolled]/header:!pl-4 group-data-[scrolled]/header:!pr-2 sm:group-data-[scrolled]/header:!pl-5 xl:group-data-[scrolled]/header:!pl-[clamp(18px,1.3vw,26px)] xl:group-data-[scrolled]/header:!pr-[clamp(8px,0.5vw,10px)]"
         // The view-transition name lives here, not on the full-width layer: an
