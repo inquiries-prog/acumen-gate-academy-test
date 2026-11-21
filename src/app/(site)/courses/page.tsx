@@ -86,6 +86,22 @@ export default async function CoursesPage() {
                 nine-point structure, with mentors who know you by name.
               </p>
             </Reveal>
+            {/* Phones: the branch artwork as a row of badges (the orbit on the
+                right is desktop-only). */}
+            <ul className="mt-7 grid grid-cols-6 gap-1.5 sm:hidden" aria-hidden="true">
+              {gateCodes.slice(0, 6).map((code, i) => (
+                <li
+                  key={code}
+                  className="relative aspect-square rounded-xl border border-line bg-white p-0.5 shadow-chip animate-pop"
+                  style={{ animationDelay: `${300 + i * 70}ms` }}
+                >
+                  <BranchArt code={code} className="h-full w-full" />
+                  <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 rounded bg-charcoal px-1 font-display text-[8px] font-extrabold leading-[13px] text-white">
+                    {code}
+                  </span>
+                </li>
+              ))}
+            </ul>
             <CoursesHeroActions />
             <Reveal delay={200} className="mt-8">
               <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-muted">{HERO_RANKS_LABEL}</p>

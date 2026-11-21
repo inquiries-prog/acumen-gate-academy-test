@@ -17,10 +17,10 @@ export function announceCoursesMode(mode: Mode) {
   window.dispatchEvent(new CustomEvent(MODE_EVENT, { detail: mode }));
 }
 
-const MODES: Array<{ key: Mode; label: string; hint: string }> = [
-  { key: "all", label: "All courses", hint: "Every branch, every format" },
-  { key: "offline", label: "Classroom · Vadodara", hint: "Small batches, in person" },
-  { key: "online", label: "Live online", hint: "Live classes + recordings" },
+const MODES: Array<{ key: Mode; label: string; short: string; hint: string }> = [
+  { key: "all", label: "All courses", short: "All", hint: "Every branch, every format" },
+  { key: "offline", label: "Classroom · Vadodara", short: "Classroom", hint: "Small batches, in person" },
+  { key: "online", label: "Live online", short: "Online", hint: "Live classes + recordings" },
 ];
 
 /**
@@ -88,7 +88,10 @@ export default function CoursesExplorer({ items }: { items: CourseCardData[] }) 
               mode === m.key ? "text-white" : "text-charcoal hover:text-red"
             }`}
           >
-            <span className="block text-[13px] font-bold leading-tight sm:text-sm">{m.label}</span>
+            <span className="block text-[13px] font-bold leading-tight sm:text-sm">
+              <span className="sm:hidden">{m.short}</span>
+              <span className="hidden sm:inline">{m.label}</span>
+            </span>
             <span className={`mt-0.5 hidden text-[11px] sm:block ${mode === m.key ? "text-white/65" : "text-muted"}`}>
               {m.hint}
             </span>

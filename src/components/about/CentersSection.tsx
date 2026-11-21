@@ -24,11 +24,19 @@ export default function CentersSection({ centers }: { centers: Center[] }) {
         <h2 className="h-section mt-4">Our Centers</h2>
 
         {centers.length >= 2 && (
-          <CentersRoute
-            from={centers[0].name}
-            to={centers[1].name}
-            className="mx-auto mt-8 w-full max-w-3xl"
-          />
+          <>
+            <CentersRoute
+              compact
+              from={centers[0].name}
+              to={centers[1].name}
+              className="mx-auto mt-6 w-full sm:hidden"
+            />
+            <CentersRoute
+              from={centers[0].name}
+              to={centers[1].name}
+              className="mx-auto mt-8 hidden w-full max-w-3xl sm:block"
+            />
+          </>
         )}
 
         <div className="mt-10 grid gap-6 md:grid-cols-2">

@@ -21,6 +21,10 @@ export interface CourseCardData {
  *
  * The whole card is one link to the course page. "Free demo" is a separate
  * button layered above the link, so it doesn't navigate.
+ *
+ * On phones it becomes a compact horizontal card - artwork on the left, the
+ * facts on the right - so a list of seven courses is a quick scan rather
+ * than seven screens of scrolling. Same DOM, `max-sm:` variants.
  */
 export default function CourseCard({
   data,
@@ -41,10 +45,11 @@ export default function CourseCard({
   return (
     <article
       className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-white shadow-card
-                 transition-all duration-500 ease-smooth hover:-translate-y-2 hover:border-red/25 hover:shadow-card-hover"
+                 transition-all duration-500 ease-smooth hover:-translate-y-2 hover:border-red/25 hover:shadow-card-hover
+                 max-sm:flex-row max-sm:rounded-2xl active:scale-[0.99]"
     >
       <Spotlight />
-      <div className="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-offwhite via-white to-red/[0.06]">
+      <div className="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-offwhite via-white to-red/[0.06] max-sm:aspect-auto max-sm:w-[104px] max-sm:shrink-0">
         {course.image_url ? (
           <MediaImage
             src={course.image_url}
@@ -55,13 +60,13 @@ export default function CourseCard({
         ) : (
           <BranchArt
             code={code}
-            className="absolute inset-0 h-full w-full p-3 transition-transform duration-700 ease-smooth group-hover:scale-[1.06]"
+            className="absolute inset-0 h-full w-full p-3 transition-transform duration-700 ease-smooth group-hover:scale-[1.06] max-sm:p-1.5 max-sm:pt-7"
           />
         )}
-        <span className="absolute left-4 top-4 rounded-xl bg-charcoal px-2.5 py-1 font-display text-sm font-extrabold tracking-wide text-white shadow-chip">
+        <span className="absolute left-4 top-4 rounded-xl bg-charcoal px-2.5 py-1 font-display text-sm font-extrabold tracking-wide text-white shadow-chip max-sm:left-2.5 max-sm:top-2.5 max-sm:rounded-lg max-sm:px-2 max-sm:text-[11px]">
           {code}
         </span>
-        <div className="absolute right-4 top-4 flex gap-1.5">
+        <div className="absolute right-4 top-4 flex gap-1.5 max-sm:hidden">
           {modes.map((m) => (
             <span
               key={m}
@@ -73,24 +78,43 @@ export default function CourseCard({
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col p-6">
-        <h3 className="text-xl leading-snug">
+      <div className="flex min-w-0 flex-1 flex-col p-6 max-sm:p-4">
+        <h3 className="text-xl leading-snug max-sm:text-[15px]">
           <Link href={`/courses/${course.slug}`} className="after:absolute after:inset-0 after:z-[1]">
             {course.title}
           </Link>
         </h3>
-        <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-body">{course.tagline}</p>
+        <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-body max-sm:mt-1 max-sm:line-clamp-1 max-sm:text-[12.5px]">
+          {course.tagline}
+        </p>
 
-        <dl className="mt-5 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line text-left">
-          <div className="bg-white px-3.5 py-3">
+        {/* Phones: the two facts as one line; the boxed version from sm up. */}
+        <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[12.5px] sm:hidden">
+          <span className="font-bold text-charcoal">
+            {next ? next.start_date : course.category === "gpsc" ? "Call for dates" : "Starting soon"}
+          </span>
+          <span aria-hidden="true" className="h-1 w-1 rounded-full bg-red" />
+          <span className="font-bold text-charcoal">
+            {fromFee ? (
+              <>
+                {fees.length > 1 && new Set(fees).size > 1 && <span className="font-semibold text-muted">from </span>}
+                {formatPrice(fromFee)}
+              </>
+            ) : (
+              "Fee on request"
+            )}
+          </span>
+        </p>
+        <dl className="mt-5 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line text-left max-sm:hidden">
+          <div className="bg-white px-3.5 py-3 max-sm:px-2.5 max-sm:py-2">
             <dt className="text-[10px] font-bold uppercase tracking-wide text-muted">Next batch</dt>
-            <dd className="mt-0.5 text-sm font-bold text-charcoal">
+            <dd className="mt-0.5 text-sm font-bold text-charcoal max-sm:text-[12.5px]">
               {next ? next.start_date : course.category === "gpsc" ? "Call for dates" : "Starting soon"}
             </dd>
           </div>
-          <div className="bg-white px-3.5 py-3">
+          <div className="bg-white px-3.5 py-3 max-sm:px-2.5 max-sm:py-2">
             <dt className="text-[10px] font-bold uppercase tracking-wide text-muted">Fee</dt>
-            <dd className="mt-0.5 text-sm font-bold text-charcoal">
+            <dd className="mt-0.5 text-sm font-bold text-charcoal max-sm:text-[12.5px]">
               {fromFee ? (
                 <>
                   {fees.length > 1 && new Set(fees).size > 1 && <span className="font-semibold text-muted">from </span>}
@@ -103,10 +127,10 @@ export default function CourseCard({
           </div>
         </dl>
 
-        <div className="mt-auto flex items-center justify-between gap-3 pt-6">
-          <span className="inline-flex items-center gap-2 text-sm font-bold text-red">
+        <div className="mt-auto flex items-center justify-between gap-3 pt-6 max-sm:gap-2 max-sm:pt-3">
+          <span className="inline-flex items-center gap-2 whitespace-nowrap text-sm font-bold text-red max-sm:gap-1.5 max-sm:text-[13px]">
             View course
-            <span className="grid h-7 w-7 place-items-center rounded-full bg-red/10 transition-all duration-300 group-hover:translate-x-1 group-hover:bg-red group-hover:text-white">
+            <span className="grid h-7 w-7 place-items-center rounded-full bg-red/10 max-sm:h-6 max-sm:w-6 transition-all duration-300 group-hover:translate-x-1 group-hover:bg-red group-hover:text-white">
               <svg width="14" height="14" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                 <path d="M4 10h11m0 0l-4.5-4.5M15 10l-4.5 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
@@ -115,7 +139,7 @@ export default function CourseCard({
           <button
             type="button"
             onClick={() => openDemo(`Course card: ${course.title}`)}
-            className="relative z-[2] rounded-full border border-line px-3.5 py-1.5 text-xs font-bold text-charcoal transition-colors hover:border-red hover:text-red"
+            className="relative z-[2] shrink-0 rounded-full border border-line px-3.5 py-1.5 text-xs font-bold text-charcoal transition-colors hover:border-red hover:text-red max-sm:px-2.5 max-sm:text-[11px]"
           >
             🎓 Free demo
           </button>

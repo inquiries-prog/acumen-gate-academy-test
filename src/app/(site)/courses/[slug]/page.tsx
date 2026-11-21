@@ -161,7 +161,7 @@ export default async function CoursePage({ params }: Params) {
             </Reveal>
 
             {/* Phone/tablet: the artwork sits here, under the title. */}
-            <div className="mx-auto mt-6 w-full max-w-[300px] lg:hidden">
+            <div className="mx-auto mt-4 w-full max-w-[190px] sm:max-w-[260px] lg:hidden">
               <BranchArt code={code} tone="dark" className="w-full" />
             </div>
 

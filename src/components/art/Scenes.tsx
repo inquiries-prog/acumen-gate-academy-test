@@ -236,16 +236,33 @@ export function BrokenBridge({ className = "" }: { className?: string }) {
  * head office and the weekend centre. Deliberately not a map of Gujarat: a
  * hand-drawn state outline that is slightly wrong would look worse than none.
  */
-export function CentersRoute({ from, to, className = "" }: { from: string; to: string; className?: string }) {
-  const road = "M110 92C200 30 300 130 400 70S520 50 560 70";
-  return (
-    <LineArt viewBox="0 0 640 140" className={className} label={`${from} and ${to} centers`}>
-      <path d={road} stroke={INK} strokeOpacity={0.12} strokeWidth={14} {...draw(0)} />
-      <path d={road} stroke={RED} strokeWidth={3} strokeDasharray="2 14" className="animate-dash-flow" />
-      {[
+export function CentersRoute({
+  from,
+  to,
+  compact = false,
+  className = "",
+}: {
+  from: string;
+  to: string;
+  /** A narrower drawing for phones, so the pins and names stay legible. */
+  compact?: boolean;
+  className?: string;
+}) {
+  const road = compact ? "M64 96C120 40 190 130 250 76S300 60 300 68" : "M110 92C200 30 300 130 400 70S520 50 560 70";
+  const pins = compact
+    ? [
+        { x: 52, y: 100, label: from, d: 0.6 },
+        { x: 306, y: 72, label: to, d: 0.9 },
+      ]
+    : [
         { x: 90, y: 92, label: from, d: 0.6 },
         { x: 560, y: 70, label: to, d: 0.9 },
-      ].map((pin) => (
+      ];
+  return (
+    <LineArt viewBox={compact ? "0 0 360 150" : "0 0 640 140"} className={className} label={`${from} and ${to} centers`}>
+      <path d={road} stroke={INK} strokeOpacity={0.12} strokeWidth={14} {...draw(0)} />
+      <path d={road} stroke={RED} strokeWidth={3} strokeDasharray="2 14" className="animate-dash-flow" />
+      {pins.map((pin) => (
         <g key={pin.label}>
           <g className="la-loop animate-bob">
             <path

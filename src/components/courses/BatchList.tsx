@@ -51,7 +51,11 @@ export default function BatchList({ batches, branch }: { batches: Batch[]; branc
   return (
     <div>
       {modes.length > 1 && (
-        <div role="group" aria-label="Batch format" className="flex flex-wrap gap-2">
+        <div
+          role="group"
+          aria-label="Batch format"
+          className="no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0"
+        >
           {(["all", "offline", "online"] as const).map((f) => {
             const count = f === "all" ? batches.length : batches.filter((b) => b.mode === f).length;
             return (
@@ -60,7 +64,7 @@ export default function BatchList({ batches, branch }: { batches: Batch[]; branc
                 type="button"
                 aria-pressed={filter === f}
                 onClick={() => setFilter(f)}
-                className={`inline-flex min-h-10 items-center gap-2 rounded-full border px-4 text-sm font-bold transition-all duration-300 ease-smooth active:scale-95 ${
+                className={`inline-flex min-h-10 shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-4 text-sm font-bold transition-all duration-300 ease-smooth active:scale-95 ${
                   filter === f
                     ? "border-charcoal bg-charcoal text-white shadow-lifted"
                     : "border-line bg-white text-charcoal hover:border-red/40"

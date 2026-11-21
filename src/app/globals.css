@@ -35,6 +35,7 @@
          arrive one word at a time with nothing to watch. */
       animation-delay: 0s !important;
       transition-duration: 0.01ms !important;
+      transition-delay: 0s !important;
     }
   }
 
