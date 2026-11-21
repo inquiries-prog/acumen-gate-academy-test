@@ -23,6 +23,14 @@ interface ModalProps {
   size?: Size;
   /** Bare frame with no chrome - used by the video and image lightboxes. */
   bare?: boolean;
+  /** Small label above the title, e.g. "Free counselling". */
+  eyebrow?: string;
+  /** An animated line icon shown beside the title (components/art). */
+  icon?: React.ReactNode;
+  /** Optional content pinned under the title inside the header (e.g. a stepper). */
+  headerExtra?: React.ReactNode;
+  /** False hides the close button (e.g. while a payment is being set up). */
+  dismissible?: boolean;
   children: React.ReactNode;
 }
 
@@ -52,6 +60,10 @@ export default function Modal({
   subtitle,
   size = "md",
   bare = false,
+  eyebrow,
+  icon,
+  headerExtra,
+  dismissible = true,
   children,
 }: ModalProps) {
   const panelRef = useRef<HTMLDivElement>(null);
@@ -182,35 +194,48 @@ export default function Modal({
               onTouchCancel={onTouchEnd}
             >
               {/* Drag handle - the cue that this sheet can be pulled down. */}
-              <div className="flex justify-center pt-2.5 sm:hidden" aria-hidden="true">
-                <span className="h-1.5 w-10 rounded-full bg-line" />
+              <div className="flex justify-center bg-charcoal pt-2.5 sm:hidden" aria-hidden="true">
+                <span className="h-1.5 w-10 rounded-full bg-white/25" />
               </div>
 
               {(title || subtitle) && (
-                <div className="relative overflow-hidden border-b border-line bg-offwhite px-5 py-5 sm:px-7">
-                  {/* Warm wash behind the title, so the header is not a flat bar. */}
+                // Dark header band: charcoal with a slow red glow and a faint
+                // grid, the same treatment as the free demo panel, so every
+                // form on the site opens with the same confident header.
+                <div className="relative isolate overflow-hidden bg-charcoal bg-dark-sheen px-5 pb-5 pt-4 text-white sm:px-7 sm:pt-6">
+                  <span aria-hidden="true" className="grid-texture pointer-events-none absolute inset-0 opacity-[0.05]" />
                   <span
                     aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 bg-[radial-gradient(80%_140%_at_0%_0%,rgba(227,30,36,0.11),transparent_60%)]"
+                    className="pointer-events-none absolute -right-16 -top-24 h-56 w-56 rounded-full bg-red/40 blur-3xl animate-glow-a"
                   />
                   <div className="relative flex items-start gap-4">
+                    {icon && (
+                      <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-white/10 text-white ring-1 ring-white/15">
+                        {icon}
+                      </span>
+                    )}
                     <div className="min-w-0 flex-1">
+                      {eyebrow && (
+                        <p className="mb-1.5 inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-red">
+                          <span className="relative flex h-1.5 w-1.5">
+                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red opacity-75" />
+                            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-red" />
+                          </span>
+                          {eyebrow}
+                        </p>
+                      )}
                       {title && (
-                        <h2 className="font-display text-xl font-bold leading-snug text-charcoal sm:text-[1.4rem]">
+                        <h2 className="font-display text-xl font-bold leading-snug text-white sm:text-[1.45rem]">
                           {title}
                         </h2>
                       )}
                       {subtitle && (
-                        <p className="mt-1.5 text-sm leading-relaxed text-body">{subtitle}</p>
+                        <p className="mt-1.5 text-sm leading-relaxed text-white/65">{subtitle}</p>
                       )}
                     </div>
-                    <CloseButton onClose={onClose} />
+                    {dismissible && <CloseButton onClose={onClose} onDark />}
                   </div>
-                  {/* Red hairline seam under the header. */}
-                  <span
-                    aria-hidden="true"
-                    className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-red/50 to-transparent"
-                  />
+                  {headerExtra && <div className="relative mt-5">{headerExtra}</div>}
                 </div>
               )}
             </div>
@@ -250,7 +275,7 @@ function CloseButton({ onClose, onDark = false }: { onClose: () => void; onDark?
       className={`group grid h-11 w-11 shrink-0 place-items-center rounded-full transition-all
                   duration-200 ease-smooth active:scale-95 ${
                     onDark
-                      ? "bg-charcoal/70 text-white hover:bg-charcoal"
+                      ? "bg-white/10 text-white ring-1 ring-white/15 hover:bg-red hover:ring-red"
                       : "text-body hover:bg-red hover:text-white"
                   }`}
     >

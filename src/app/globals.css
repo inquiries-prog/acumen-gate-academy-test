@@ -245,11 +245,39 @@
     @apply mb-1.5 block text-sm font-semibold text-charcoal;
   }
 
+  /* A soft, slightly sunken fill that lifts to white with a red glow on
+     focus - the field the student is typing in is always obvious. */
   .field {
-    @apply block min-h-12 w-full rounded-xl border border-line bg-white px-4 py-3
-           text-[15px] text-charcoal transition-all duration-200
-           placeholder:text-muted/80
-           focus:border-red focus:outline-none focus:ring-4 focus:ring-red/10;
+    @apply block min-h-12 w-full rounded-xl border border-line bg-offwhite/70 px-4 py-3
+           text-[15px] text-charcoal shadow-[inset_0_1px_2px_rgba(35,31,32,0.04)]
+           transition-all duration-200 ease-smooth
+           placeholder:text-muted/80 hover:border-charcoal/20
+           focus:border-red focus:bg-white focus:shadow-none focus:outline-none focus:ring-4 focus:ring-red/10;
+  }
+
+  /* A brand chevron instead of the browser's, with room for it. */
+  select.field {
+    appearance: none;
+    padding-right: 2.75rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 20 20'%3E%3Cpath d='M5 8l5 5 5-5' stroke='%23E31E24' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 16px;
+  }
+
+  /* Leading icon inside a field: wrap the control in .field-wrap, add
+     .has-icon to the control and put the icon in a .field-icon span. */
+  .field-wrap {
+    @apply relative;
+  }
+  .field.has-icon {
+    padding-left: 2.75rem;
+  }
+  .field-icon {
+    @apply pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted transition-colors duration-200;
+  }
+  .field-wrap:focus-within .field-icon {
+    @apply text-red;
   }
 
   /* 16px stops iOS Safari zooming the page when a field is focused. */

@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { SecureLock } from "@/components/art/Icons";
+import { loadCheckoutScript } from "@/lib/razorpay-client";
 import Link from "next/link";
 import { PHONE_DISPLAY } from "@/lib/defaults";
 import { displayPhone, telHref } from "@/lib/utils";
@@ -33,23 +35,6 @@ declare global {
   interface Window {
     Razorpay?: new (options: Record<string, unknown>) => RazorpayInstance;
   }
-}
-
-const CHECKOUT_SCRIPT = "https://checkout.razorpay.com/v1/checkout.js";
-
-function loadCheckoutScript(): Promise<void> {
-  if (window.Razorpay) return Promise.resolve();
-  return new Promise((resolve, reject) => {
-    const existing = document.querySelector<HTMLScriptElement>(`script[src="${CHECKOUT_SCRIPT}"]`);
-    const script = existing ?? document.createElement("script");
-    script.addEventListener("load", () => resolve(), { once: true });
-    script.addEventListener("error", () => reject(new Error("script failed")), { once: true });
-    if (!existing) {
-      script.src = CHECKOUT_SCRIPT;
-      script.async = true;
-      document.body.appendChild(script);
-    }
-  });
 }
 
 type PayState =
@@ -166,48 +151,84 @@ function RazorpayPay({
   }).format(config.amountPaise / 100);
 
   const busy = state.kind === "loading" || state.kind === "verifying" || state.kind === "open";
+  const working = state.kind === "loading" || state.kind === "verifying";
+
+  const heading =
+    state.kind === "verifying"
+      ? "Confirming your payment…"
+      : state.kind === "dismissed"
+        ? "Payment not completed"
+        : state.kind === "error"
+          ? "Let's try that again"
+          : state.kind === "open"
+            ? "Complete your payment in the window"
+            : "Opening secure payment…";
 
   return (
-    <div className="card p-7 text-center">
-      <h1 className="text-xl font-bold">
-        {state.kind === "verifying"
-          ? "Confirming your payment…"
-          : state.kind === "dismissed"
-            ? "Payment not completed"
-            : "Complete your payment"}
-      </h1>
-      <p className="mt-3 text-sm leading-relaxed text-body">
-        {config.description} · <span className="font-bold text-charcoal">{amount}</span> incl. GST
-      </p>
-      <p className="mt-2 text-xs text-muted">
-        Payment is handled securely by {providerName === "razorpay" ? "Razorpay" : providerName}.
-        We never see your card or UPI details.
-      </p>
+    <div className="relative overflow-hidden rounded-3xl border border-line bg-white text-center shadow-lifted animate-reveal">
+      <div className="relative isolate overflow-hidden bg-charcoal bg-dark-sheen px-6 pb-6 pt-7 text-white">
+        <span aria-hidden="true" className="grid-texture pointer-events-none absolute inset-0 opacity-[0.05]" />
+        <span aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-red/40 blur-3xl animate-glow-a" />
+        <div className="relative mx-auto grid h-24 w-24 place-items-center rounded-3xl bg-white shadow-lifted">
+          <SecureLock className="h-20 w-20" />
+        </div>
+        <h1 className="relative mt-5 text-xl font-bold text-white" aria-live="polite">
+          {heading}
+        </h1>
+        <p className="relative mt-2 text-sm text-white/70">{config.description}</p>
+      </div>
 
-      {state.kind === "error" && (
-        <p className="mt-4 rounded-md bg-red/5 px-3 py-2.5 text-sm text-red-dark" role="alert">
-          {state.message}
+      <div className="p-6 sm:p-7">
+        <p className="font-display text-3xl font-extrabold text-charcoal">{amount}</p>
+        <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-muted">Total, GST included</p>
+
+        {working && (
+          <div className="mx-auto mt-5 h-1.5 max-w-[220px] overflow-hidden rounded-full bg-line" aria-hidden="true">
+            <div className="h-full w-1/3 rounded-full bg-red-sheen animate-indeterminate" />
+          </div>
+        )}
+
+        {state.kind === "error" && (
+          <p className="mt-5 rounded-lg bg-red/5 px-3 py-2.5 text-sm text-red-dark" role="alert">
+            {state.message}
+          </p>
+        )}
+        {state.kind === "dismissed" && (
+          <p className="mt-5 text-sm text-body">You closed the payment window. Nothing has been charged.</p>
+        )}
+
+        {state.kind !== "verifying" && (
+          <button type="button" onClick={open} disabled={busy} className="btn-primary mt-6 w-full text-base">
+            {state.kind === "loading" ? (
+              <>
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />
+                Loading secure checkout…
+              </>
+            ) : (
+              `Pay ${amount}`
+            )}
+          </button>
+        )}
+
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-1.5">
+          {["UPI", "Cards", "Net banking", "Wallets"].map((m) => (
+            <span key={m} className="rounded-md border border-line bg-white px-2 py-1 text-[11px] font-bold text-charcoal">
+              {m}
+            </span>
+          ))}
+        </div>
+        <p className="mt-4 text-xs text-muted">
+          Payment is handled securely by {providerName === "razorpay" ? "Razorpay" : providerName}. We never see your
+          card or UPI details.
         </p>
-      )}
-      {state.kind === "dismissed" && (
-        <p className="mt-4 text-sm text-body">
-          You closed the payment window. Nothing has been charged.
+        <p className="mt-3 text-xs text-muted">
+          Trouble paying? Call{" "}
+          <a href={telHref(PHONE_DISPLAY)} className="font-bold text-red hover:underline">
+            {displayPhone(PHONE_DISPLAY)}
+          </a>{" "}
+          and we&apos;ll complete your enrollment over the phone.
         </p>
-      )}
-
-      {state.kind !== "verifying" && (
-        <button type="button" onClick={open} disabled={busy} className="btn-primary mt-6 w-full">
-          {state.kind === "loading" ? "Loading secure checkout…" : `Pay ${amount}`}
-        </button>
-      )}
-
-      <p className="mt-4 text-xs text-muted">
-        Trouble paying? Call{" "}
-        <a href={telHref(PHONE_DISPLAY)} className="font-bold text-red hover:underline">
-          {displayPhone(PHONE_DISPLAY)}
-        </a>{" "}
-        and we&apos;ll complete your enrollment over the phone.
-      </p>
+      </div>
     </div>
   );
 }

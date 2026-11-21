@@ -11,6 +11,7 @@ import {
 import { getBatches, getBranches } from "@/lib/content";
 import { notifyTeam } from "@/lib/messaging";
 import { calculateFees, getPaymentProvider } from "@/lib/payments";
+import { after } from "next/server";
 import { getServiceClient } from "@/lib/supabase";
 import { batchDisplayLabel } from "@/lib/utils";
 
@@ -115,16 +116,19 @@ export async function POST(request: Request) {
       .update({ payment_ref: order.providerOrderId })
       .eq("id", created.id);
 
-    // Alerts the team immediately, so an abandoned payment is visible even
-    // before anyone opens the dashboard.
-    await notifyTeam(`Enrollment started: ${full_name} — ${batch_label}`, [
+    // Alerts the team, so an abandoned payment is visible even before anyone
+    // opens the dashboard. Sent AFTER the response (next/server `after`): an
+    // SMTP round-trip can take seconds, and the student should not wait on
+    // our email before the payment window opens. The enrollment row is
+    // already saved, so nothing depends on this finishing first.
+    after(() => notifyTeam(`Enrollment started: ${full_name} — ${batch_label}`, [
       `Name: ${full_name}`,
       `Phone: ${phone}`,
       `Email: ${email}`,
       `Batch: ${batch_label}`,
       `Total payable: ${fees.total}`,
       `Status: payment started (not yet paid)`,
-    ]);
+    ]));
 
     return ok({ checkoutUrl: order.checkoutUrl, enrollmentId: created.id });
   } catch (err) {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { FormIcon } from "@/components/art/Icons";
 import Modal from "@/components/ui/Modal";
 import EnquiryForm from "./EnquiryForm";
 import type { EnquiryPrefill } from "./SiteUI";
@@ -40,6 +41,8 @@ export default function EnquiryModal({
       open={open}
       onClose={handleClose}
       size="md"
+      eyebrow="Free counselling call"
+      icon={<FormIcon kind="enquiry" />}
       title={prefill?.phone ? "Almost done" : "Enquire Now"}
       subtitle={
         prefill?.phone

@@ -194,3 +194,65 @@ export function EcosystemIcon({ index, className = "h-8 w-8" }: { index: number;
     </LineArt>
   );
 }
+
+// --- Form headers (white on the dark modal band) ----------------------------
+
+const FORM = {
+  // Enquiry: a phone with a callback arrow.
+  enquiry: (
+    <>
+      <rect x="11" y="4" width="18" height="32" rx="4" {...S} {...draw(0)} />
+      <path d="M17 31h6" {...S} {...draw(0.3)} />
+      <g className="la-loop animate-pulse">
+        <path d="M33 12a9 9 0 019 9M33 17a4 4 0 014 4" stroke="#E31E24" strokeWidth={2.4} {...pop(0.6)} />
+      </g>
+      <g className="la-loop animate-bob">
+        <path d="M14 42h22l-5-4M36 42l-5 4" {...S} strokeWidth={2} {...draw(0.5)} />
+      </g>
+    </>
+  ),
+  // Enroll: an admission ticket with a star.
+  enroll: (
+    <>
+      <path d="M6 13a3 3 0 013-3h30a3 3 0 013 3v5a4 4 0 000 8v5a3 3 0 01-3 3H9a3 3 0 01-3-3v-5a4 4 0 000-8z" {...S} {...draw(0)} />
+      <path d="M30 11v24" {...S} strokeWidth={1.8} strokeDasharray="2 3" />
+      <path d="M12 19h12M12 25h8" {...S} strokeWidth={2} {...draw(0.4)} />
+      <g className="la-loop animate-pulse">
+        <path d="M36 17l1.5 3.3 3.5.4-2.6 2.4.7 3.5-3.1-1.8-3.1 1.8.7-3.5-2.6-2.4 3.5-.4z" fill="#E31E24" {...pop(0.7)} />
+      </g>
+    </>
+  ),
+  // Seminar: a gift box with a bouncing bow.
+  seminar: (
+    <>
+      <rect x="8" y="20" width="32" height="22" rx="2.5" {...S} {...draw(0)} />
+      <path d="M6 14h36v6H6zM24 14v28" {...S} {...draw(0.3)} />
+      <g className="la-loop animate-bob">
+        <path d="M24 14c-3-7-11-8-11-3s8 3 11 3zm0 0c3-7 11-8 11-3s-8 3-11 3z" stroke="#E31E24" strokeWidth={2.2} {...draw(0.6)} />
+      </g>
+    </>
+  ),
+} as const;
+
+export function FormIcon({ kind, className = "h-8 w-8" }: { kind: keyof typeof FORM; className?: string }) {
+  return (
+    <LineArt viewBox="0 0 48 48" className={className}>
+      {FORM[kind]}
+    </LineArt>
+  );
+}
+
+/** A padlock that draws itself, its shackle closing - for "securing payment". */
+export function SecureLock({ className = "h-20 w-20" }: { className?: string }) {
+  return (
+    <LineArt viewBox="0 0 64 64" className={className}>
+      <circle cx="32" cy="32" r="29" fill="#E31E24" fillOpacity={0.07} {...pop(0)} />
+      <g className="la-loop animate-bob">
+        <path d="M22 28v-6a10 10 0 0120 0v6" stroke="#231F20" strokeWidth={3} {...draw(0.1)} />
+        <rect x="16" y="28" width="32" height="24" rx="5" fill="#fff" stroke="#231F20" strokeWidth={3} {...draw(0.3)} />
+        <circle cx="32" cy="38" r="3.5" fill="#E31E24" {...pop(0.8)} />
+        <path d="M32 41v5" stroke="#E31E24" strokeWidth={3} {...draw(0.9)} />
+      </g>
+    </LineArt>
+  );
+}

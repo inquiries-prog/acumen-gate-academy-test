@@ -8,6 +8,7 @@ import {
   rateLimit,
 } from "@/lib/api";
 import { getMessagingProvider, notifyTeam } from "@/lib/messaging";
+import { after } from "next/server";
 import { getServiceClient } from "@/lib/supabase";
 
 /**
@@ -61,8 +62,12 @@ export async function POST(request: Request) {
     console.warn("[enquiry] Supabase not configured - lead not stored:", lead);
   }
 
-  // Best-effort notifications; neither is allowed to fail the request.
-  const alerted = await notifyTeam(`New GATE enquiry: ${full_name}`, [
+  // Team alert. When the lead is safely stored, the email is sent AFTER
+  // the response (next/server `after`) so the student isn't kept waiting
+  // on an SMTP round-trip. When storing failed, the email is the only copy
+  // of the lead, so then we wait for it and use its result.
+  const sendAlert = () =>
+    notifyTeam(`New GATE enquiry: ${full_name}`, [
     `Name: ${full_name}`,
     `Phone: ${phone}`,
     `Branch: ${branch || "-"}`,
@@ -72,6 +77,10 @@ export async function POST(request: Request) {
     "",
     stored ? "Saved to the General Enquiries list." : "WARNING: could not be saved to the database.",
   ]);
+  let alerted = false;
+  if (stored) after(sendAlert);
+  else alerted = await sendAlert();
+
 
   if (!stored && !alerted) {
     return fail("We couldn't submit that just now. Please call us and we'll help right away.", 503);

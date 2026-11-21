@@ -190,6 +190,11 @@ const config: Config = {
         dashFlow: {
           to: { strokeDashoffset: "-40" },
         },
+        /* A bar travelling across its track - "working on it". */
+        indeterminate: {
+          "0%": { transform: "translateX(-110%)" },
+          "100%": { transform: "translateX(320%)" },
+        },
         /* Signal-wave bob for the electronics/electrical art. */
         bob: {
           "0%, 100%": { transform: "translateY(0)" },
@@ -236,6 +241,7 @@ const config: Config = {
         "spin-gear": "spinSlow 12s linear infinite",
         "spin-gear-reverse": "spinSlow 9s linear infinite reverse",
         bob: "bob 3.2s ease-in-out infinite",
+        indeterminate: "indeterminate 1.3s cubic-bezier(0.65,0,0.35,1) infinite",
       },
       transitionTimingFunction: {
         // Decelerating curve - motion that settles rather than stops dead.

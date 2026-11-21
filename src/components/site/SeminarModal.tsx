@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { displayPhone } from "@/lib/utils";
+import { FormIcon } from "@/components/art/Icons";
 import Modal from "@/components/ui/Modal";
 import { Celebration } from "@/components/art/Scenes";
 import { useSiteUI } from "./SiteUI";
@@ -68,6 +69,8 @@ export default function SeminarModal({ open, onClose }: { open: boolean; onClose
       open={open}
       onClose={handleClose}
       size="md"
+      eyebrow={offer === null ? "Seminar attendee offer" : undefined}
+      icon={offer === null ? <FormIcon kind="seminar" /> : undefined}
       title={offer === null ? "Great that you have attended the seminar!" : undefined}
       subtitle={offer === null ? "Can you help us with some more information?" : undefined}
     >

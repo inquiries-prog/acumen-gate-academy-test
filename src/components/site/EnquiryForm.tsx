@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Celebration } from "@/components/art/Scenes";
 import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
 import Magnetic from "@/components/ui/Magnetic";
+import FieldIcon, { type FieldIconName } from "@/components/ui/FieldIcons";
 import { useSiteUI } from "./SiteUI";
 import WhatsAppLink from "./WhatsAppLink";
 import { displayPhone, telHref } from "@/lib/utils";
@@ -167,7 +168,7 @@ export default function EnquiryForm({
 
   const fieldClass = (name: FieldName) => {
     const s = state(name);
-    return `field ${
+    return `field has-icon ${
       s === "invalid"
         ? "border-red pr-11 focus:ring-red/15"
         : s === "valid"
@@ -237,7 +238,7 @@ export default function EnquiryForm({
             aria-describedby={state("branch") === "invalid" ? `enq-branch-${source}-err` : undefined}
             onBlur={(e) => judge(e.target)}
             onChange={(e) => judge(e.target)}
-            className={`field ${state("branch") === "invalid" ? "border-red" : state("branch") === "valid" ? "border-charcoal/30" : ""}`}
+            className={`field has-icon ${state("branch") === "invalid" ? "border-red" : state("branch") === "valid" ? "border-charcoal/30" : ""}`}
           >
             <option value="" disabled>
               Select your branch
@@ -262,7 +263,7 @@ export default function EnquiryForm({
             }
             onBlur={(e) => judge(e.target)}
             onChange={(e) => judge(e.target)}
-            className={`field ${state("enquiry_for") === "invalid" ? "border-red" : state("enquiry_for") === "valid" ? "border-charcoal/30" : ""}`}
+            className={`field has-icon ${state("enquiry_for") === "invalid" ? "border-red" : state("enquiry_for") === "valid" ? "border-charcoal/30" : ""}`}
           >
             <option value="" disabled>
               Select an option
@@ -280,14 +281,17 @@ export default function EnquiryForm({
         <label htmlFor={`enq-heard-${source}`} className="field-label">
           How did you hear about us?
         </label>
-        <select id={`enq-heard-${source}`} name="heard_about" defaultValue="" className="field">
-          <option value="">Select an option</option>
-          {heardAbout.map((o) => (
-            <option key={o} value={o}>
-              {o}
-            </option>
-          ))}
-        </select>
+        <div className="field-wrap">
+          <FieldIcon name="megaphone" />
+          <select id={`enq-heard-${source}`} name="heard_about" defaultValue="" className="field has-icon">
+            <option value="">Select an option</option>
+            {heardAbout.map((o) => (
+              <option key={o} value={o}>
+                {o}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {error && (
@@ -296,14 +300,41 @@ export default function EnquiryForm({
         </p>
       )}
 
+      {/* Three small reassurances right where the decision is made. */}
+      <ul className="flex flex-wrap justify-center gap-1.5 pt-1 text-[11.5px] font-semibold text-charcoal">
+        <li className="inline-flex items-center gap-1.5 rounded-full bg-offwhite px-2.5 py-1">
+          <FieldIcon name="clock" className="text-red [&_svg]:h-3.5 [&_svg]:w-3.5" /> Call back in 24 hours
+        </li>
+        <li className="inline-flex items-center gap-1.5 rounded-full bg-offwhite px-2.5 py-1">
+          <FieldIcon name="lock" className="text-red [&_svg]:h-3.5 [&_svg]:w-3.5" /> No spam, ever
+        </li>
+        {settings.google_rating && (
+          <li className="inline-flex items-center gap-1 rounded-full bg-offwhite px-2.5 py-1">
+            <span className="text-amber-500">★</span> {settings.google_rating} on Google
+          </li>
+        )}
+      </ul>
+
       <Magnetic className="block w-full">
-        <button type="submit" disabled={submitting} className="btn-primary w-full">
-          {submitting ? "Sending…" : "Request a callback"}
+        <button type="submit" disabled={submitting} className="btn-primary w-full text-base">
+          {submitting ? (
+            <>
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />
+              Sending…
+            </>
+          ) : (
+            <>
+              Request a callback
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true" className="animate-nudge-x">
+                <path d="M4 10h11m0 0l-4.5-4.5M15 10l-4.5 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </>
+          )}
         </button>
       </Magnetic>
 
       <p className="text-center text-xs leading-relaxed text-muted">
-        We call once, within 24 hours. No spam. Or reach us now on{" "}
+        In a hurry? Call us now on{" "}
         <a href={telHref(settings.phone)} className="font-semibold text-red hover:underline">
           {displayPhone(settings.phone)}
         </a>
@@ -317,6 +348,13 @@ export default function EnquiryForm({
  * right padding for inputs; selects keep their native chevron and show state
  * through the border and helper text only.
  */
+const ICON_FOR: Record<FieldName, FieldIconName> = {
+  full_name: "user",
+  phone: "phone",
+  branch: "cap",
+  enquiry_for: "pin",
+};
+
 function Field({
   name,
   label,
@@ -337,7 +375,8 @@ function Field({
       <label htmlFor={`enq-${name}-${source}`} className="field-label">
         {label} <span className="text-red">*</span>
       </label>
-      <div className="relative">
+      <div className="field-wrap">
+        <FieldIcon name={ICON_FOR[name]} />
         {children}
         {!select && state !== "idle" && (
           <span
