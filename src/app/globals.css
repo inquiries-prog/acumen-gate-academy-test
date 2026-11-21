@@ -9,6 +9,12 @@
   }
 
   html {
+    /* Elements waiting to slide in from the side (Reveal "right") sit past
+       the right edge until they appear. `clip` keeps them from widening the
+       page - which on phones could nudge the viewport sideways or down after
+       an in-page link - without creating a scroll container, so sticky
+       elements keep working. */
+    overflow-x: clip;
     scroll-behavior: smooth;
     scroll-padding-top: calc(var(--header-h) + 20px);
     -webkit-text-size-adjust: 100%;
@@ -35,7 +41,7 @@
   body {
     @apply bg-bg font-sans text-body antialiased;
     /* SRS 3.4: nothing on this site may scroll sideways on a phone. */
-    overflow-x: hidden;
+    overflow-x: clip;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     /* Touch: no grey flash on tap. Press feedback comes from active:scale. */
     -webkit-tap-highlight-color: transparent;
@@ -537,4 +543,19 @@
 .la .la-loop {
   transform-box: fill-box;
   transform-origin: center;
+}
+
+/* The same frosted glass as the scrolled header pill, for other floating
+   controls (the course-page section tabs). */
+.glass-pill {
+  background-color: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8) brightness(1.06);
+  backdrop-filter: blur(24px) saturate(1.8) brightness(1.06);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(35, 31, 32, 0.06),
+    0 1px 2px rgba(35, 31, 32, 0.06),
+    0 10px 28px -10px rgba(35, 31, 32, 0.22),
+    0 24px 56px -28px rgba(35, 31, 32, 0.28);
 }

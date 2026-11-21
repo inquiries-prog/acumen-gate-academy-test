@@ -12,7 +12,6 @@ import CourseSectionNav from "@/components/courses/CourseSectionNav";
 import DemoCtaBand from "@/components/courses/DemoCtaBand";
 import ExamPattern from "@/components/courses/ExamPattern";
 import SyllabusAccordion from "@/components/courses/SyllabusAccordion";
-import Carousel from "@/components/home/Carousel";
 import DemoVideoTile from "@/components/home/DemoVideoTile";
 import MentorsSection from "@/components/home/MentorsSection";
 import Reveal from "@/components/ui/Reveal";
@@ -20,7 +19,6 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import {
   getBatchesForBranchCode,
   getBranches,
-  getCarouselImages,
   getCourse,
   getCourses,
   getCourseSubjects,
@@ -66,12 +64,11 @@ export default async function CoursePage({ params }: Params) {
   const course = await getCourse(slug);
   if (!course) notFound();
 
-  const [subjects, batches, branches, mentors, carousel, faqs, pedagogy, allCourses] = await Promise.all([
+  const [subjects, batches, branches, mentors, faqs, pedagogy, allCourses] = await Promise.all([
     getCourseSubjects(course.id),
     getBatchesForBranchCode(course.branch_code),
     getBranches(),
     getMentors(),
-    getCarouselImages(),
     getFaqs(),
     getPedagogyPoints(),
     getCourses(),
@@ -196,7 +193,7 @@ export default async function CoursePage({ params }: Params) {
       <CourseSectionNav sections={sections} />
 
       {/* -------------------------------------------------------- overview */}
-      <section id="overview" className="section scroll-mt-32">
+      <section id="overview" className="section scroll-mt-40">
         <div className="container-site grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
           <div>
             <Reveal>
@@ -275,7 +272,7 @@ export default async function CoursePage({ params }: Params) {
 
       {/* -------------------------------------------------------- syllabus */}
       {subjects.length > 0 && (
-        <section id="syllabus" className="section section-alt scroll-mt-32">
+        <section id="syllabus" className="section section-alt scroll-mt-40">
           <div className="container-site grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
             <Reveal variant="left" className="lg:sticky lg:top-40 lg:self-start">
               <p className="eyebrow">
@@ -301,7 +298,7 @@ export default async function CoursePage({ params }: Params) {
 
       {/* ---------------------------------------------------- exam pattern */}
       {isGate && (
-        <section id="exam-pattern" className="section scroll-mt-32">
+        <section id="exam-pattern" className="section scroll-mt-40">
           <div className="container-site">
             <SectionHeading
               eyebrow="Exam pattern"
@@ -316,7 +313,7 @@ export default async function CoursePage({ params }: Params) {
       )}
 
       {/* --------------------------------------------------------- batches */}
-      <section id="batches" className="section section-alt scroll-mt-32">
+      <section id="batches" className="section section-alt scroll-mt-40">
         <div className="container-site">
           <SectionHeading
             eyebrow="Batches & fees"
@@ -336,14 +333,13 @@ export default async function CoursePage({ params }: Params) {
       />
 
       {mentors.length > 0 && (
-        <div id="mentors" className="scroll-mt-32">
+        <div id="mentors" className="scroll-mt-40">
           <MentorsSection mentors={mentors} />
         </div>
       )}
 
-      <Carousel images={carousel} />
 
-      <div id="faq" className="scroll-mt-32">
+      <div id="faq" className="scroll-mt-40">
         <FaqAccordion
           faqs={courseFaqs}
           heading="Before you enroll"

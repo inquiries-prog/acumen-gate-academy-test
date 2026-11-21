@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Carousel from "@/components/home/Carousel";
 import { PedagogyIcon } from "@/components/art/Icons";
 import BranchArt from "@/components/courses/BranchArt";
 import CoursesExplorer from "@/components/courses/CoursesExplorer";
@@ -13,7 +12,6 @@ import Reveal from "@/components/ui/Reveal";
 import SectionHeading from "@/components/ui/SectionHeading";
 import {
   getBatchesForBranchCode,
-  getCarouselImages,
   getCourses,
   getFaqs,
   getPageSeo,
@@ -39,15 +37,12 @@ export async function generateMetadata(): Promise<Metadata> {
  * format, which is where the header menu and homepage cards link.
  *
  * Order: hero -> course grid -> what every batch includes -> classroom vs
- * online -> proof (results wall) -> everything about GATE -> FAQs -> demo CTA.
+ * online -> everything about GATE -> FAQs -> demo CTA. (The results wall was
+ * tried here and removed at the client's request - it lives on the homepage
+ * and the Results page.)
  */
 export default async function CoursesPage() {
-  const [courses, pedagogy, carousel, faqs] = await Promise.all([
-    getCourses(),
-    getPedagogyPoints(),
-    getCarouselImages(),
-    getFaqs(),
-  ]);
+  const [courses, pedagogy, faqs] = await Promise.all([getCourses(), getPedagogyPoints(), getFaqs()]);
 
   const items = await Promise.all(
     courses.map(async (course) => ({ course, batches: await getBatchesForBranchCode(course.branch_code) })),
@@ -184,8 +179,6 @@ export default async function CoursesPage() {
         </div>
       </section>
 
-      {/* Proof */}
-      <Carousel images={carousel} />
 
       <GateGuide />
 
