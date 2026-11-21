@@ -58,9 +58,15 @@ The current `service_role` key was shared over chat during setup. It bypasses
 every row-level security rule, so anyone holding it can read and change all
 student leads and payment records.
 
-Deliberately deferred by the client while the site runs only on a local machine,
-which is a reasonable call at that stage. It must be rotated before the site is
-deployed or the repository is pushed anywhere.
+Deliberately deferred by the client during local development.
+
+**Status (21 Nov 2026):** the code is now pushed to GitHub
+(`inquiries-prog/acumen-gate-academy-test`) and this folder is linked to a Vercel
+project (`acumen-gate-academy-test`). A scan of the full git history found **no
+keys committed**; the key exists only in `.env.local` and wherever it was pasted
+(chat, and Vercel if set there). So the repo itself is safe, but the key has
+still been seen outside this machine and **must be rotated before the real domain
+goes live or real student data arrives.**
 
 **To do it:** Supabase → Settings → API Keys → rotate. That invalidates the
 current anon key too, so update all three values in `.env.local` (and in

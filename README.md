@@ -45,6 +45,10 @@ To enable the admin panel, lead capture and payments, follow
 | **[docs/SETUP.md](docs/SETUP.md)** | Developers — Supabase, environment variables, deployment |
 | **[docs/PENDING.md](docs/PENDING.md)** | Project manager — what's still needed from the client, what blocks launch, and open questions |
 | **[docs/ADMIN-GUIDE.md](docs/ADMIN-GUIDE.md)** | The client — how to run the site day to day |
+| `Acumen_Gate_Academy_SRS (2).md` | The original requirements. Where a later client decision changes it (e.g. Razorpay chosen, fees GST-inclusive), the decision is recorded in PENDING.md and wins over the SRS. |
+
+Every change is also described in its git commit message (`git log`), including
+the reasoning behind it.
 
 ---
 
@@ -74,11 +78,17 @@ unlimited independently-hideable result years.
 
 ## Notes for whoever works on this next
 
-**Payment and messaging providers are undecided** (SRS §12). Both sit behind
-adapters — `src/lib/payments.ts` and `src/lib/messaging.ts` — so choosing one is
-a config change plus one file, not a rewrite. The default stubs let the whole
-flow be tested without moving money or spending on messages. See
-[docs/PENDING.md](docs/PENDING.md).
+**Payments use Razorpay** (Standard Checkout), working on test keys. Going live
+still needs KYC, live keys and the live webhook — see
+[docs/PENDING.md](docs/PENDING.md) A1 and the Razorpay section of
+[docs/SETUP.md](docs/SETUP.md). Batch fees are **GST-inclusive**: the fee is what
+the student pays, and the invoice splits GST out of it.
+
+**The messaging provider (SMS/WhatsApp) is still undecided** (SRS §12). Payments
+and messaging both sit behind adapters — `src/lib/payments.ts` and
+`src/lib/messaging.ts` — so a provider is a config change plus one file, not a
+rewrite. The stubs (`PAYMENT_PROVIDER=stub`, `MESSAGING_PROVIDER=stub`) let the
+whole flow be tested without moving money or spending on messages.
 
 **Popups are mounted once, in `src/app/(site)/layout.tsx`.** SRS §7.1.2 records a
 real bug found in prototyping where the carousel and lightbox broke once routing

@@ -180,6 +180,27 @@ BUSINESS_ADDRESS=
 Keys come from Razorpay Dashboard → Account & Settings → API Keys. Test-mode and
 live-mode keys are separate; test keys start `rzp_test_` and never move real money.
 
+Values are trimmed and unquoted before use, so stray spaces, line breaks or quote
+marks picked up when pasting into a hosting dashboard don't break anything.
+
+**Fees are GST-inclusive.** The fee on a batch is the total the student pays.
+`calculateFees` in `src/lib/payments.ts` splits it into base
+(total × 100 / (100 + `GST_RATE_PERCENT`), i.e. × 100/118 at 18%) and GST (the
+remainder), so the two always add up to the fee exactly. ₹15,000 = ₹12,711.86 +
+₹2,288.14 GST.
+
+**Checking a deployment's payment settings:** open
+`https://<domain>/api/payments/verify` in a browser. It returns something like
+
+```json
+{ "provider": "razorpay", "keyMode": "live", "keySecretSet": true,
+  "webhookSecretSet": true, "gstDetailsSet": true }
+```
+
+It never shows a secret, only whether each is set. Before launch, every field
+should read as above. `"provider": "stub"` or `"keyMode": "test"` on the live
+site means students would not actually be charged.
+
 **How a payment flows** (Razorpay Standard Checkout):
 
 1. `/api/enroll` saves the enrollment as `initiated`, reads the fee from the
@@ -209,6 +230,8 @@ local testing on its own.
   `PAYMENT_WEBHOOK_SECRET`.
 - Swap in the **live** Key ID and Secret. Leaving test keys in production shows
   students a success screen while no money is collected.
+- After deploying, open `/api/payments/verify` (above) and confirm it shows
+  `razorpay`, `live` and `true` everywhere.
 - Run one real low-value payment end to end, then refund it from the dashboard.
 
 `PAYMENT_PROVIDER=stub` brings back the local simulator on `/enroll/checkout`

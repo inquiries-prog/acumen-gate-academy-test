@@ -51,8 +51,10 @@ Use it for anything: a scholarship test, an admission deadline, a new batch.
 
 **Batches, dates & fees** → pick *Offline* or *Online* → **Edit** on a branch.
 
-⚠️ The fee here is **what students are actually charged online**. Please
-double-check it before saving.
+⚠️ The fee here is **what students are actually charged online**, and it
+**already includes 18% GST**. Enter the full amount the student pays (for
+example 15000), not the amount before GST. The invoice works out the GST part
+on its own. Please double-check it before saving.
 
 Each branch can have its own demo video — paste the whole YouTube address and
 we'll pick out what we need.
