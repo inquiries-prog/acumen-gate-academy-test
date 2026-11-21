@@ -1,3 +1,4 @@
+import { EcosystemIcon } from "@/components/art/Icons";
 import Reveal from "@/components/ui/Reveal";
 import type { EcosystemCard } from "@/lib/types";
 
@@ -31,11 +32,15 @@ export default function EcosystemTimeline({ cards }: { cards: EcosystemCard[] })
           </p>
         </Reveal>
 
-        <div className="relative mt-14">
-          {/* The spine. Vertical on mobile, horizontal from lg up. */}
+        {/* group/eco: the spine draws itself (2008 -> 2014 -> 2020) when this
+            block reveals. Vertical on mobile, horizontal from lg up. */}
+        <Reveal className="group/eco relative mt-14">
           <div
             aria-hidden="true"
-            className="absolute left-[22px] top-2 h-[calc(100%-1rem)] w-px bg-gradient-to-b from-line via-line to-transparent lg:left-0 lg:top-[26px] lg:h-px lg:w-full lg:bg-gradient-to-r"
+            className="absolute left-[22px] top-2 h-[calc(100%-1rem)] w-[2px] origin-top scale-y-0 bg-gradient-to-b from-red via-red/40 to-transparent
+                       transition-transform duration-[1600ms] ease-smooth group-[.opacity-100]/eco:scale-y-100
+                       lg:left-0 lg:top-[25px] lg:h-[2px] lg:w-full lg:origin-left lg:scale-x-0 lg:scale-y-100 lg:bg-gradient-to-r
+                       lg:group-[.opacity-100]/eco:scale-x-100"
           />
 
           <ol className="relative grid gap-8 lg:grid-cols-3 lg:gap-8">
@@ -65,6 +70,14 @@ export default function EcosystemTimeline({ cards }: { cards: EcosystemCard[] })
                       : "border-line shadow-card hover:shadow-card-hover"
                   }`}
                 >
+                  <div className="flex items-center justify-between gap-3">
+                  <span
+                    className={`grid h-12 w-12 place-items-center rounded-xl ${
+                      card.highlighted ? "bg-red/[0.08] text-red" : "bg-offwhite text-charcoal"
+                    }`}
+                  >
+                    <EcosystemIcon index={i} />
+                  </span>
                   {card.year && (
                     <span
                       className={`inline-block rounded-full px-3 py-1 font-display text-xs font-bold ${
@@ -74,6 +87,7 @@ export default function EcosystemTimeline({ cards }: { cards: EcosystemCard[] })
                       {card.year}
                     </span>
                   )}
+                  </div>
                   <h3 className="mt-4 font-display text-xl font-bold text-charcoal">{card.name}</h3>
                   <p className="mt-3 text-[15px] leading-relaxed text-body">{card.description}</p>
 
@@ -86,7 +100,7 @@ export default function EcosystemTimeline({ cards }: { cards: EcosystemCard[] })
               </Reveal>
             ))}
           </ol>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

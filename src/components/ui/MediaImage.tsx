@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { CourseScene } from "@/components/art/Scenes";
 
 /**
  * A designed stand-in for an empty slot. `person` is a monogram tile built
@@ -181,47 +182,7 @@ function DesignedPlaceholder({ placeholder }: { placeholder: Placeholder }) {
   );
 }
 
+/** The course card's animated scene (components/art/Scenes.tsx). */
 function ArtIcon({ icon }: { icon: "classroom" | "online" | "gpsc" }) {
-  const common = {
-    viewBox: "0 0 64 64",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: 2,
-    strokeLinecap: "round" as const,
-    strokeLinejoin: "round" as const,
-    "aria-hidden": true,
-    className:
-      "relative h-14 w-14 text-red/70 drop-shadow-[0_8px_16px_rgba(227,30,36,0.18)] sm:h-[88px] sm:w-[88px]",
-  };
-  if (icon === "classroom") {
-    // A lecture board on a stand, with a plotted curve on it.
-    return (
-      <svg {...common}>
-        <rect x="8" y="10" width="48" height="32" rx="3" />
-        <path d="M14 34c6-2 8-14 14-14s8 10 14 8 6-6 8-6" />
-        <path d="M32 42v12M22 58l10-4 10 4" />
-        <path d="M18 14h4M18 18h8" strokeWidth="1.5" className="text-red/40" />
-      </svg>
-    );
-  }
-  if (icon === "online") {
-    // A laptop with a play mark on screen.
-    return (
-      <svg {...common}>
-        <rect x="12" y="12" width="40" height="28" rx="3" />
-        <path d="M6 48h52l-4 6H10z" />
-        <path d="M28 20v12l10-6z" fill="currentColor" className="text-red/60" stroke="none" />
-        <path d="M46 8l4-4M50 12l6-2" strokeWidth="1.5" className="text-red/40" />
-      </svg>
-    );
-  }
-  // A columned building - a government institution.
-  return (
-    <svg {...common}>
-      <path d="M8 24l24-14 24 14z" />
-      <path d="M12 24v26M22 24v26M32 24v26M42 24v26M52 24v26" />
-      <path d="M6 50h52M4 58h56" />
-      <circle cx="32" cy="18" r="2" fill="currentColor" stroke="none" />
-    </svg>
-  );
+  return <CourseScene kind={icon} className="relative h-[88%] w-[88%] max-sm:h-full max-sm:w-full" />;
 }

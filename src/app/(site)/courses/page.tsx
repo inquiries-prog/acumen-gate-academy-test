@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Carousel from "@/components/home/Carousel";
+import { PedagogyIcon } from "@/components/art/Icons";
 import BranchArt from "@/components/courses/BranchArt";
 import CoursesExplorer from "@/components/courses/CoursesExplorer";
 import CoursesHeroActions from "@/components/courses/CoursesHeroActions";
@@ -164,8 +165,8 @@ export default async function CoursesPage() {
             {pedagogy.map((point, i) => (
               <Reveal as="li" key={point.id} delay={(i % 3) * 80}>
                 <div className="group flex h-full items-center gap-4 rounded-2xl border border-line bg-white p-4 shadow-chip transition-all duration-300 ease-smooth hover:-translate-y-0.5 hover:border-red/25 hover:shadow-card">
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-red/[0.08] font-display text-sm font-extrabold text-red transition-colors duration-300 group-hover:bg-red group-hover:text-white">
-                    {String(i + 1).padStart(2, "0")}
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-red/[0.08] text-charcoal transition-colors duration-300 group-hover:bg-red/[0.14]">
+                    <PedagogyIcon index={i} />
                   </span>
                   <span className="text-[15px] font-semibold text-charcoal">{point.text}</span>
                 </div>

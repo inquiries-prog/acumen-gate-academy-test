@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import SuccessBurst from "@/components/ui/SuccessBurst";
+import { Celebration } from "@/components/art/Scenes";
 import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
 import { useFocusTrap } from "@/lib/useFocusTrap";
 import { daysUntil, displayPhone, telHref } from "@/lib/utils";
@@ -222,7 +222,7 @@ function DemoForm({
   if (done) {
     return (
       <div className="py-6 text-center">
-        <SuccessBurst variant="gift" />
+        <Celebration />
         <h3 className="font-display text-2xl font-extrabold animate-reveal" style={{ animationDelay: "250ms" }}>
           Your seat is reserved!
         </h3>

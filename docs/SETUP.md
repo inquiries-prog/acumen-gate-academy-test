@@ -323,6 +323,10 @@ src/
     courses/         Course pages: BranchArt, syllabus, batches, exam
                      pattern, countdown, GATE guide.
     faq/             FAQ accordion and the searchable FAQ page.
+    art/             Animated line illustrations (LineArt + Icons + Scenes):
+                     strokes draw in on scroll, then one gentle loop. Used
+                     in the hero, Why Choose, course cards, About, Results,
+                     success screens and the 404. Rules in globals.css (.la).
     home/ about/     Page sections.
     news/ results/
     admin/           Admin panel building blocks.

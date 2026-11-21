@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ResultsPodium } from "@/components/art/Scenes";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
 import ResultsGallery from "@/components/results/ResultsGallery";
 import ResultsTabs from "@/components/results/ResultsTabs";
@@ -55,7 +56,7 @@ export default async function ResultsPage() {
     <>
       <section className="relative isolate overflow-hidden border-b border-line bg-white">
         <AmbientGlow />
-        <div className="container-site relative py-16 md:py-24">
+        <div className="container-site relative grid items-center gap-10 py-16 md:py-24 lg:grid-cols-[1.25fr_0.75fr]">
           <Reveal className="max-w-3xl">
             <p className="eyebrow">
               <span className="h-1.5 w-1.5 rounded-full bg-red" aria-hidden="true" />
@@ -67,6 +68,7 @@ export default async function ResultsPage() {
               {settings.stat_line}
             </p>
           </Reveal>
+          <ResultsPodium className="mx-auto w-full max-w-[360px] lg:max-w-[420px]" />
         </div>
       </section>
 

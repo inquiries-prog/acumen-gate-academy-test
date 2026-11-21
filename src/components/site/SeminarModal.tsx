@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { displayPhone } from "@/lib/utils";
 import Modal from "@/components/ui/Modal";
-import SuccessBurst from "@/components/ui/SuccessBurst";
+import { Celebration } from "@/components/art/Scenes";
 import { useSiteUI } from "./SiteUI";
 
 /**
@@ -73,7 +73,7 @@ export default function SeminarModal({ open, onClose }: { open: boolean; onClose
     >
       {offer !== null ? (
         <div className="py-3 text-center">
-          <SuccessBurst variant="gift" />
+          <Celebration />
           <h2 className="font-display text-xl font-bold animate-reveal" style={{ animationDelay: "250ms" }}>
             Here&apos;s your exclusive offer
           </h2>

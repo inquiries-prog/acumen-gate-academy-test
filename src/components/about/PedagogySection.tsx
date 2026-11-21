@@ -1,3 +1,4 @@
+import { PedagogyIcon } from "@/components/art/Icons";
 import Reveal from "@/components/ui/Reveal";
 import Spotlight from "@/components/ui/Spotlight";
 import { PEDAGOGY_INTRO } from "@/lib/defaults";
@@ -78,9 +79,12 @@ export default function PedagogySection({ points }: { points: PedagogyPoint[] })
                                hover:-translate-y-1 hover:border-red/25 hover:shadow-card"
                   >
                     <Spotlight size={240} />
-                    <p className="relative text-[15px] font-medium leading-snug text-charcoal">
-                      {point.text}
-                    </p>
+                    <div className="relative flex items-center gap-3.5">
+                      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-red/[0.07] text-charcoal transition-colors duration-300 group-hover:bg-red/[0.12]">
+                        <PedagogyIcon index={i} />
+                      </span>
+                      <p className="text-[15px] font-medium leading-snug text-charcoal">{point.text}</p>
+                    </div>
                   </div>
                 </Reveal>
               ))}

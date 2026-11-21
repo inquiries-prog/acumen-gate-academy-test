@@ -505,3 +505,36 @@
     animation-delay: 0s !important;
   }
 }
+
+/* --- Line-art illustrations (components/art) ------------------------------
+   Strokes marked .la-d draw themselves when the illustration scrolls into
+   view (pathLength="1" makes one dash exactly the stroke's length), staggered
+   by --d. Accents marked .la-f pop in. Looping motion lives on wrapping <g>
+   elements, so it never fights these transforms. Under reduced motion the
+   global rule collapses every transition, so the finished drawing shows. */
+.la .la-d {
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1.3s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s);
+}
+.la.is-drawn .la-d {
+  stroke-dashoffset: 0;
+}
+.la .la-f {
+  opacity: 0;
+  transform: scale(0.4);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    opacity 0.5s ease-out var(--d, 0s),
+    transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) var(--d, 0s);
+}
+.la.is-drawn .la-f {
+  opacity: 1;
+  transform: none;
+}
+/* Loops inside an illustration rotate/bob around their own centre. */
+.la .la-loop {
+  transform-box: fill-box;
+  transform-origin: center;
+}

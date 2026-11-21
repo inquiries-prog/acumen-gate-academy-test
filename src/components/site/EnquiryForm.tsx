@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import SuccessBurst from "@/components/ui/SuccessBurst";
+import { Celebration } from "@/components/art/Scenes";
 import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
 import Magnetic from "@/components/ui/Magnetic";
 import { useSiteUI } from "./SiteUI";
@@ -129,7 +129,7 @@ export default function EnquiryForm({
   if (done) {
     return (
       <div className="py-4 text-center">
-        <SuccessBurst variant="check" />
+        <Celebration />
         <h2 className="font-display text-xl font-bold animate-reveal" style={{ animationDelay: "250ms" }}>
           Thank you!
         </h2>

@@ -1,5 +1,7 @@
 "use client";
 
+import { Hourglass } from "@/components/art/Scenes";
+
 import { useState } from "react";
 import MediaImage from "@/components/ui/MediaImage";
 import type { ResultEntry, ResultYear } from "@/lib/types";
@@ -66,11 +68,7 @@ export default function ResultsTabs({
         {visible.length === 0 ? (
           // Not a dead end: point at the archive that sits just below.
           <div className="mt-8 rounded-2xl border border-line bg-offwhite p-6 text-center sm:p-10">
-            <span className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-red/[0.08] text-red">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M7 4h10v5a5 5 0 01-10 0V4zM12 14v4m-3.5 2.5h7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </span>
+            <Hourglass className="mx-auto h-20 w-20" />
             <h3 className="mt-4 font-display text-lg font-bold">
               We&apos;re adding {activeYear?.label ?? "these"} results
             </h3>

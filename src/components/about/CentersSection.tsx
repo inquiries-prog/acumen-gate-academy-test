@@ -1,5 +1,6 @@
 "use client";
 
+import { CentersRoute } from "@/components/art/Scenes";
 import { useSiteUI } from "@/components/site/SiteUI";
 import type { Center } from "@/lib/types";
 import { telHref } from "@/lib/utils";
@@ -21,6 +22,14 @@ export default function CentersSection({ centers }: { centers: Center[] }) {
       <div className="container-site">
         <p className="eyebrow">Locations</p>
         <h2 className="h-section mt-4">Our Centers</h2>
+
+        {centers.length >= 2 && (
+          <CentersRoute
+            from={centers[0].name}
+            to={centers[1].name}
+            className="mx-auto mt-8 w-full max-w-3xl"
+          />
+        )}
 
         <div className="mt-10 grid gap-6 md:grid-cols-2">
           {centers.map((c) => (

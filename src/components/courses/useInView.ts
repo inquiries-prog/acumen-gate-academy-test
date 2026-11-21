@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from "react";
  *
  * Fails open: no IntersectionObserver or reduced motion means "in view" at once.
  */
-export function useInView<T extends HTMLElement>(margin = "0px 0px -15% 0px") {
+export function useInView<T extends Element>(margin = "0px 0px -15% 0px") {
   const ref = useRef<T | null>(null);
   const [inView, setInView] = useState(false);
 

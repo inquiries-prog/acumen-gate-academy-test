@@ -1,6 +1,8 @@
 "use client";
 
 import { Fragment } from "react";
+import { RankClimb } from "@/components/art/Scenes";
+import BranchArt from "@/components/courses/BranchArt";
 import HeroQuickCapture from "@/components/home/HeroQuickCapture";
 import PressRow from "@/components/home/PressRow";
 import RankStrip from "@/components/home/RankStrip";
@@ -198,13 +200,45 @@ export default function Hero() {
               <div aria-hidden="true" className="absolute inset-0 rounded-[2rem] bg-red/[0.07] blur-2xl" />
             </Parallax>
 
+            {/* The card in orbit: a dashed ring slowly turning behind it, and
+                branch badges (the same artwork as the course pages) floating
+                just outside its edges - never over the form fields. They pop
+                in after the headline has landed, then drift. Decorative. */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute left-1/2 top-1/2 hidden aspect-square w-[128%] -translate-x-1/2 -translate-y-1/2 xl:block"
+            >
+              <div className="h-full w-full rounded-full border-2 border-dashed border-red/15 animate-spin-slow [animation-duration:80s]" />
+            </div>
+            {ORBIT.map((b, i) => (
+              <div
+                key={b.code}
+                aria-hidden="true"
+                className={`pointer-events-none absolute z-10 hidden xl:block ${b.pos}`}
+              >
+                <div className="animate-pop" style={{ animationDelay: `${900 + i * 140}ms` }}>
+                  <div
+                    className="relative grid h-[68px] w-[68px] place-items-center rounded-2xl border border-line bg-white/90 p-1 shadow-card backdrop-blur animate-float"
+                    style={{ animationDelay: `${i * -1.3}s`, animationDuration: `${6 + i}s` }}
+                  >
+                    <BranchArt code={b.code} className="h-full w-full" />
+                    <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-md bg-charcoal px-1.5 py-0.5 font-display text-[10px] font-extrabold text-white">
+                      {b.code}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+
             <div className="relative overflow-hidden rounded-2xl border border-line bg-white shadow-lifted">
               <div className="relative overflow-hidden bg-charcoal px-6 py-5 sm:px-7">
                 <span
                   aria-hidden="true"
                   className="pointer-events-none absolute inset-0 bg-[radial-gradient(80%_160%_at_0%_0%,rgba(227,30,36,0.35),transparent_62%)]"
                 />
-                <div className="relative">
+                {/* A rank line climbing to a star - shape, not data. */}
+                <RankClimb className="pointer-events-none absolute bottom-3 right-5 h-14 w-36 opacity-90" />
+                <div className="relative max-w-[68%]">
                   <h2 className="font-display text-lg font-bold text-white sm:text-xl">
                     Book a free counselling call
                   </h2>
@@ -228,6 +262,17 @@ export default function Hero() {
     </section>
   );
 }
+
+/** Branch badges orbiting the hero card - positions sit outside the card. */
+// Each overlaps the card's edge by only ~10px, so no badge ever covers a
+// form field or the submit button.
+const ORBIT = [
+  { code: "ME", pos: "-left-[58px] top-[14%]" },
+  { code: "CSE", pos: "-right-[58px] top-[34%]" },
+  { code: "CE", pos: "-left-[58px] bottom-[22%]" },
+  { code: "EE", pos: "-right-[58px] bottom-[6%]" },
+  { code: "CH", pos: "-top-[46px] right-[14%]" },
+];
 
 function CheckIcon() {
   return (
