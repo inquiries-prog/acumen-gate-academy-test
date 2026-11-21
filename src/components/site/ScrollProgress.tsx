@@ -13,7 +13,7 @@ import { useEffect, useRef } from "react";
  * Scroll-driven rather than time-based, so it is left running under reduced
  * motion: it only ever moves as far as the reader has scrolled.
  */
-export default function ScrollProgress() {
+export default function ScrollProgress({ className = "" }: { className?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
@@ -46,7 +46,7 @@ export default function ScrollProgress() {
     <span
       ref={ref}
       aria-hidden="true"
-      className="pointer-events-none absolute inset-x-0 bottom-0 h-0.5 origin-left bg-red"
+      className={`pointer-events-none absolute inset-x-0 bottom-0 h-0.5 origin-left bg-red ${className}`}
       style={{ transform: "scaleX(0)" }}
     />
   );
