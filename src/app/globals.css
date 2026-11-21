@@ -276,6 +276,36 @@
 }
 
 @layer base {
+  /* --- Site header sizing ------------------------------------------------
+     Every size in the header comes from these variables (on :root so the
+     courses menu and the course-page tabs can use them too), and each one grows
+     smoothly with the screen width (clamp: a floor for laptops, a ceiling for
+     very large screens), so the bar - and the floating pill it turns into on
+     scroll - looks full at every size instead of leaving empty gaps.
+     Switching to the pill only changes the variables; the elements transition
+     font-size, height and padding, so the whole bar morphs as one. */
+  :root {
+    --hdr-h: clamp(76px, calc(3.2vw + 35px), 92px);
+    --hdr-pill-h: clamp(62px, calc(2.2vw + 34px), 76px);
+    --hdr-logo-h: clamp(48px, calc(1.9vw + 24px), 62px);
+    --hdr-nav-fs: clamp(13.5px, calc(0.55vw + 6.5px), 18px);
+    --hdr-nav-px: clamp(8px, calc(0.9vw - 3.5px), 16px);
+    --hdr-act-fs: clamp(14px, calc(0.45vw + 8.2px), 17.5px);
+    --hdr-btn-h: clamp(44px, calc(1.25vw + 28px), 54px);
+    --hdr-btn-px: clamp(16px, calc(0.9vw + 4.5px), 24px);
+    --hdr-gap: clamp(10px, calc(0.9vw - 1.5px), 22px);
+    --hdr-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .site-header[data-scrolled] {
+    --hdr-logo-h: clamp(42px, calc(1.5vw + 22px), 54px);
+    --hdr-nav-fs: clamp(13px, calc(0.5vw + 6.6px), 17px);
+    --hdr-act-fs: clamp(13.5px, calc(0.42vw + 8.2px), 16.5px);
+    --hdr-btn-h: clamp(40px, calc(1vw + 27px), 50px);
+    --hdr-gap: clamp(8px, calc(0.8vw - 2px), 18px);
+  }
+}
+
+@layer base {
   /* Scrollbar styled to the palette rather than the browser default grey. */
   @supports selector(::-webkit-scrollbar) {
     ::-webkit-scrollbar {

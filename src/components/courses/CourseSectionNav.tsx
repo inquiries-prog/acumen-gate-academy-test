@@ -44,7 +44,7 @@ export default function CourseSectionNav({ sections }: { sections: Array<{ id: s
   return (
     <nav
       aria-label="On this page"
-      className="sticky top-[76px] z-40 border-b border-line bg-white/85 backdrop-blur-xl supports-[backdrop-filter]:bg-white/75"
+      className="sticky top-[var(--hdr-h)] z-40 border-b border-line bg-white/85 backdrop-blur-xl supports-[backdrop-filter]:bg-white/75"
     >
       <div className="container-site">
         <div ref={listRef} className="no-scrollbar relative flex gap-1 overflow-x-auto">

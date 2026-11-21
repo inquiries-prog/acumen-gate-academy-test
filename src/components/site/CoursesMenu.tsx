@@ -80,7 +80,7 @@ export default function CoursesMenu({ active }: { active: boolean }) {
           href="/courses"
           aria-haspopup="true"
           aria-expanded={open}
-          className={`relative flex items-center gap-1 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold transition-colors duration-200
+          className={`relative flex items-center gap-1 whitespace-nowrap rounded-lg px-[var(--hdr-nav-px)] py-2 text-[length:var(--hdr-nav-fs)] font-semibold transition-[color,font-size] duration-700
                       after:absolute after:inset-x-3 after:-bottom-0.5 after:h-0.5 after:rounded-full after:bg-red
                       after:transition-transform after:duration-300 after:ease-smooth hover:text-red ${
                         active || open ? "text-red after:scale-x-100" : "text-charcoal after:scale-x-0"

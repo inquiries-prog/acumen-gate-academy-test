@@ -118,47 +118,49 @@ export default function Header() {
     href === "/courses" ? pathname?.startsWith("/courses") : pathname === href;
 
   return (
-    <header ref={headerRef} className="group/header pointer-events-none sticky top-0 z-50 h-[76px]">
+    <header
+      ref={headerRef}
+      className="site-header group/header pointer-events-none sticky top-0 z-50 h-[var(--hdr-h)]"
+    >
       {/* Two states, switched by data-scrolled on <header> (set once the
           page has scrolled ~24px):
 
-          TOP     - a full-width bar: white, blurred, hairline underneath, with
-                    the full-size actions ("Enquire Now", the phone number on
-                    wide screens, "Free Demo Class FREE"). The menu is centred
-                    in the space between the logo and the actions, so on
-                    laptops it sits a little left of the page centre.
+          TOP      - a full-width bar: white, blurred, hairline underneath,
+                     with the full-size actions.
           SCROLLED - the full-width background fades away and the content
-                    floats as a centred, frosted, rounded pill: a little
-                    narrower, shorter and with compact labels. Inside the pill
-                    the menu is on the true centre (equal outer columns).
+                     floats as a glassy, translucent pill that still spans
+                     most of the screen (a margin of 12-36px each side), a
+                     little shorter, with slightly smaller type.
 
-          Everything animates with CSS transitions on the pill (width,
-          height, margin, padding, radius, background, shadow) - no layout
-          work in JavaScript. The pill is named for the view transition so it
-          stays put while pages cross-fade beneath it. */}
+          Sizes come from the --hdr-* variables in globals.css, which scale
+          with the screen width, so the bar and the pill look full on a
+          laptop and on a 4K monitor alike. The menu links spread out across
+          whatever room is left (justify-evenly), so there is never an empty
+          patch. Everything animates with CSS transitions over 700ms on a
+          soft ease-out; no layout work in JavaScript. The pill is named for
+          the view transition so it stays put while pages cross-fade. */}
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-[76px] border-b border-line/80 bg-white/85 backdrop-blur-xl
-                   transition-[background-color,border-color,backdrop-filter] duration-500 ease-smooth supports-[backdrop-filter]:bg-white/75
+        className="pointer-events-none absolute inset-x-0 top-0 h-[var(--hdr-h)] border-b border-line/80 bg-white/85 backdrop-blur-xl
+                   transition-[background-color,border-color,backdrop-filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] supports-[backdrop-filter]:bg-white/75
                    group-data-[scrolled]/header:border-transparent group-data-[scrolled]/header:!bg-transparent group-data-[scrolled]/header:backdrop-blur-none"
       >
-      <ScrollProgress className="transition-opacity duration-300 group-data-[scrolled]/header:opacity-0" />
+      <ScrollProgress className="transition-opacity duration-500 group-data-[scrolled]/header:opacity-0" />
       <div
-        className="pointer-events-auto relative mx-auto flex h-[76px] w-full max-w-[1600px] items-center justify-between gap-4
-                   rounded-none border border-transparent px-5 sm:px-7 lg:px-10
-                   transition-[max-width,width,height,margin,padding,border-radius,background-color,border-color,box-shadow] duration-500 ease-smooth
-                   xl:grid xl:grid-cols-[auto_minmax(0,1fr)_auto] xl:gap-6
-                   group-data-[scrolled]/header:mt-2.5 group-data-[scrolled]/header:!h-[60px] group-data-[scrolled]/header:!w-[calc(100%-1.5rem)] group-data-[scrolled]/header:!max-w-[1200px]
-                   group-data-[scrolled]/header:rounded-[2rem] group-data-[scrolled]/header:border-line/80 group-data-[scrolled]/header:bg-white/90 group-data-[scrolled]/header:shadow-lifted group-data-[scrolled]/header:backdrop-blur-xl
-                   group-data-[scrolled]/header:!pl-4 group-data-[scrolled]/header:!pr-2 sm:group-data-[scrolled]/header:!pl-5 xl:group-data-[scrolled]/header:!pr-2.5
-                   xl:group-data-[scrolled]/header:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] xl:group-data-[scrolled]/header:gap-4"
+        className="pointer-events-auto relative mx-auto flex h-[var(--hdr-h)] w-full items-center justify-between gap-4
+                   rounded-none border border-transparent px-5 sm:px-7 xl:px-[clamp(28px,2.6vw,64px)]
+                   transition-[width,height,margin,padding,border-radius,background-color,border-color,box-shadow,backdrop-filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]
+                   group-data-[scrolled]/header:mt-3 group-data-[scrolled]/header:!h-[var(--hdr-pill-h)] group-data-[scrolled]/header:!w-[calc(100%-1.5rem)] xl:group-data-[scrolled]/header:!w-[calc(100%-clamp(24px,3.75vw,72px))]
+                   group-data-[scrolled]/header:rounded-[40px] group-data-[scrolled]/header:border-white/70 group-data-[scrolled]/header:bg-white/55 group-data-[scrolled]/header:backdrop-blur-2xl group-data-[scrolled]/header:backdrop-saturate-150
+                   group-data-[scrolled]/header:shadow-[0_24px_60px_-22px_rgba(35,31,32,0.38),0_4px_14px_-6px_rgba(35,31,32,0.12),inset_0_1px_0_rgba(255,255,255,0.85)]
+                   group-data-[scrolled]/header:!pl-4 group-data-[scrolled]/header:!pr-2 sm:group-data-[scrolled]/header:!pl-5 xl:group-data-[scrolled]/header:!pl-[clamp(18px,1.6vw,32px)] xl:group-data-[scrolled]/header:!pr-[clamp(8px,0.6vw,12px)]"
         // The view-transition name lives here, not on the full-width layer: an
         // element with a view-transition-name isolates the backdrop for its
-        // children, which left the pill's frosted blur with nothing to blur.
+        // children, which would leave the pill's frosted blur nothing to blur.
         style={{ viewTransitionName: "site-header" }}
       >
         {/* The pill's own progress line, inset along its bottom edge. */}
-        <ScrollProgress className="!inset-x-10 rounded-full opacity-0 transition-opacity duration-500 group-data-[scrolled]/header:opacity-100" />
-        <Link href="/" className="flex shrink-0 items-center xl:min-w-0 xl:justify-self-start" aria-label="Acumen Gate Academy home">
+        <ScrollProgress className="!inset-x-12 rounded-full opacity-0 transition-opacity duration-700 group-data-[scrolled]/header:opacity-100" />
+        <Link href="/" className="flex shrink-0 items-center" aria-label="Acumen Gate Academy home">
           {settings.logo_url ? (
             // Never recoloured or inverted via CSS filters (SRS 3.2).
             <Image
@@ -167,14 +169,17 @@ export default function Header() {
               width={200}
               height={80}
               priority
-              className="h-12 w-auto max-w-none origin-left transition-transform duration-500 ease-smooth group-data-[scrolled]/header:scale-[0.78] sm:h-[52px]"
+              className="h-12 w-auto max-w-none transition-[height] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] sm:h-[52px] xl:h-[var(--hdr-logo-h)] group-data-[scrolled]/header:h-11 sm:group-data-[scrolled]/header:h-12 xl:group-data-[scrolled]/header:h-[var(--hdr-logo-h)]"
             />
           ) : (
             <LogoFallback />
           )}
         </Link>
 
-        <nav aria-label="Main" className="hidden items-center justify-self-center xl:flex">
+        <nav
+          aria-label="Main"
+          className="mx-[clamp(12px,1.8vw,44px)] hidden min-w-0 flex-1 items-center justify-evenly xl:flex"
+        >
           {navItems.map((item) =>
             item.menu ? (
               <CoursesMenu key={item.label} active={Boolean(isActive(item.href))} />
@@ -182,8 +187,8 @@ export default function Header() {
               <Link
                 key={item.label}
                 href={item.href}
-                className={`relative whitespace-nowrap rounded-lg px-2.5 py-2 text-[13.5px] font-semibold transition-[color,padding,font-size] duration-300
-                            min-[1440px]:px-3 min-[1440px]:text-sm group-data-[scrolled]/header:!px-2.5 group-data-[scrolled]/header:!text-[13px]
+                className={`relative whitespace-nowrap rounded-lg px-[var(--hdr-nav-px)] py-2 text-[length:var(--hdr-nav-fs)] font-semibold
+                            transition-[color,font-size] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]
                             after:absolute after:inset-x-3 after:-bottom-0.5 after:h-0.5 after:rounded-full
                             after:bg-red after:transition-transform after:duration-300 after:ease-smooth
                             hover:text-red ${
@@ -198,32 +203,32 @@ export default function Header() {
           )}
         </nav>
 
-        <div className="hidden min-w-0 items-center gap-3.5 xl:flex xl:justify-self-end group-data-[scrolled]/header:gap-2.5">
+        <div className="hidden shrink-0 items-center gap-[var(--hdr-gap)] transition-[gap] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] xl:flex">
           {/* Contact pill: phone, WhatsApp and chat share one shape. The
-              number shows at the top on wide screens; in the scrolled pill
-              it is an icon (number on hover, and in the menu and footer). */}
-          <div className="flex shrink-0 items-center rounded-full border border-line bg-white p-1 pl-1.5 shadow-chip">
+              number shows where there is room for it (and is always on hover,
+              in the menu and in the footer). */}
+          <div className="flex h-[var(--hdr-btn-h)] shrink-0 items-center rounded-full border border-line bg-white/90 px-1.5 shadow-chip transition-[height] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]">
             <a
               href={telHref(settings.phone)}
               aria-label={`Call ${settings.phone}`}
               title={displayPhone(settings.phone)}
-              className="flex h-8 items-center gap-1.5 rounded-full px-1.5 text-sm font-bold text-charcoal transition-colors hover:text-red"
+              className="flex h-9 items-center gap-1.5 rounded-full px-2 text-[length:var(--hdr-act-fs)] font-bold text-charcoal transition-[color,font-size] duration-700 hover:text-red"
             >
               <PhoneIcon />
-              <span className="hidden whitespace-nowrap pr-0.5 min-[1440px]:inline group-data-[scrolled]/header:!hidden">
+              <span className="hidden whitespace-nowrap pr-0.5 min-[1536px]:inline group-data-[scrolled]/header:!hidden min-[1760px]:group-data-[scrolled]/header:!inline">
                 {displayPhone(settings.phone)}
               </span>
             </a>
             <span aria-hidden="true" className="mx-1 h-5 w-px bg-line" />
-            <WhatsAppLink ariaLabel="Message us on WhatsApp" className="whatsapp-badge h-8 w-8">
-              <WhatsAppIcon size={17} />
+            <WhatsAppLink ariaLabel="Message us on WhatsApp" className="whatsapp-badge h-9 w-9">
+              <WhatsAppIcon size={18} />
             </WhatsAppLink>
             <button
               type="button"
               onClick={() => setChatOpen(true)}
               aria-label="Chat with us"
               title="Chat with us"
-              className="ml-1 grid h-8 w-8 place-items-center rounded-full text-charcoal transition-colors hover:bg-offwhite hover:text-red"
+              className="ml-1 grid h-9 w-9 place-items-center rounded-full text-charcoal transition-colors hover:bg-offwhite hover:text-red"
             >
               <ChatIcon />
             </button>
@@ -231,9 +236,9 @@ export default function Header() {
           <button
             type="button"
             onClick={() => openEnquiry("Header")}
-            className="shrink-0 whitespace-nowrap text-sm font-bold text-charcoal underline-offset-4 transition-colors hover:text-red hover:underline"
+            className="shrink-0 whitespace-nowrap text-[length:var(--hdr-act-fs)] font-bold text-charcoal underline-offset-4 transition-[color,font-size] duration-700 hover:text-red hover:underline"
           >
-            Enquire<span className="group-data-[scrolled]/header:hidden"> Now</span>
+            Enquire<span className="group-data-[scrolled]/header:hidden min-[1600px]:group-data-[scrolled]/header:inline"> Now</span>
           </button>
           <Magnetic className="shrink-0">
             <DemoButton onClick={() => openDemo("Header button")} />
@@ -420,20 +425,20 @@ function DemoButton({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="group relative inline-flex min-h-11 items-center gap-2 overflow-hidden whitespace-nowrap rounded-xl
-                 transition-[min-height,padding,border-radius] group-data-[scrolled]/header:min-h-10 group-data-[scrolled]/header:rounded-full group-data-[scrolled]/header:px-3.5
-                 bg-[length:200%_100%] bg-[linear-gradient(110deg,#E31E24,#A32D2D_45%,#E31E24)] px-4 text-sm font-extrabold
-                 text-white shadow-red-glow transition-all duration-300 ease-smooth animate-gradient-x
-                 hover:-translate-y-0.5 hover:shadow-lifted active:scale-[0.98]"
+      className="group relative inline-flex min-h-[var(--hdr-btn-h)] items-center gap-2 overflow-hidden whitespace-nowrap rounded-[14px]
+                 bg-[length:200%_100%] bg-[linear-gradient(110deg,#E31E24,#A32D2D_45%,#E31E24)] px-[var(--hdr-btn-px)]
+                 text-[length:var(--hdr-act-fs)] font-extrabold text-white shadow-red-glow animate-gradient-x
+                 transition-[min-height,padding,border-radius,font-size,transform,box-shadow] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]
+                 hover:-translate-y-0.5 hover:shadow-lifted active:scale-[0.98] group-data-[scrolled]/header:rounded-[28px]"
     >
       <span aria-hidden="true" className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-700 ease-smooth group-hover:translate-x-full" />
       <span className="relative animate-wiggle">
         <GiftIcon />
       </span>
       <span className="relative">
-        Free Demo<span className="group-data-[scrolled]/header:hidden"> Class</span>
+        Free Demo<span className="group-data-[scrolled]/header:hidden min-[1600px]:group-data-[scrolled]/header:inline"> Class</span>
       </span>
-      <span className="relative rounded-md bg-white px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-red group-data-[scrolled]/header:hidden">
+      <span className="relative rounded-md bg-white px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-red group-data-[scrolled]/header:hidden min-[1760px]:group-data-[scrolled]/header:inline">
         Free
       </span>
     </button>
