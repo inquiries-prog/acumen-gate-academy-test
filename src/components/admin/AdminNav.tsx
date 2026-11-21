@@ -24,6 +24,7 @@ const groups: { heading: string; items: NavItem[] }[] = [
     items: [
       { href: "/admin", label: "Dashboard" },
       { href: "/admin/leads/enquiries", label: "General enquiries" },
+      { href: "/admin/leads/demo", label: "Free demo registrations" },
       { href: "/admin/leads/seminar", label: "Seminar leads" },
       { href: "/admin/leads/enrollments", label: "Paid enrollments" },
     ],
@@ -31,9 +32,9 @@ const groups: { heading: string; items: NavItem[] }[] = [
   {
     heading: "Homepage",
     items: [
-      { href: "/admin/settings", label: "Banner, hero & contact details" },
+      { href: "/admin/settings", label: "Banner, hero, demo & contact" },
       { href: "/admin/c/gallery", label: "Result & press images" },
-      { href: "/admin/c/courses", label: "Our Courses cards" },
+      { href: "/admin/c/courses", label: "Our Courses cards (homepage)" },
       { href: "/admin/c/why-choose", label: "Why Choose Acumen cards" },
       { href: "/admin/c/testimonials", label: "Success stories" },
       { href: "/admin/c/mentors", label: "Mentors" },
@@ -42,6 +43,8 @@ const groups: { heading: string; items: NavItem[] }[] = [
   {
     heading: "Courses & batches",
     items: [
+      { href: "/admin/c/course-pages", label: "Course pages" },
+      { href: "/admin/c/course-syllabus", label: "Course syllabus" },
       { href: "/admin/batches", label: "Batches, dates & fees" },
       { href: "/admin/c/pedagogy", label: "What every batch includes" },
     ],
@@ -52,7 +55,7 @@ const groups: { heading: string; items: NavItem[] }[] = [
       { href: "/admin/about", label: "About Us text" },
       { href: "/admin/c/ecosystem", label: "Ecosystem cards" },
       { href: "/admin/c/centers", label: "Our centers" },
-      { href: "/admin/c/faq", label: "FAQ" },
+      { href: "/admin/c/faq", label: "FAQ page" },
       { href: "/admin/results", label: "Results page" },
       { href: "/admin/c/news", label: "News & Updates" },
     ],

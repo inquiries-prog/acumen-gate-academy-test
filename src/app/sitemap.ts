@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getNewsPosts } from "@/lib/content";
+import { getCourses, getNewsPosts } from "@/lib/content";
 
 /**
  * Content comes from the database, so this page must not stay frozen at the
@@ -14,17 +14,24 @@ const base = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
 /** SRS 13: sitemap for Search Console, including every published news post. */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const posts = await getNewsPosts();
+  const [posts, courses] = await Promise.all([getNewsPosts(), getCourses()]);
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${base}/`, changeFrequency: "weekly", priority: 1 },
+    { url: `${base}/courses`, changeFrequency: "weekly", priority: 0.95 },
     { url: `${base}/about`, changeFrequency: "monthly", priority: 0.9 },
+    { url: `${base}/faq`, changeFrequency: "monthly", priority: 0.75 },
     { url: `${base}/results`, changeFrequency: "monthly", priority: 0.8 },
     { url: `${base}/news`, changeFrequency: "weekly", priority: 0.7 },
   ];
 
   return [
     ...staticRoutes,
+    ...courses.map((c) => ({
+      url: `${base}/courses/${c.slug}`,
+      changeFrequency: "weekly" as const,
+      priority: 0.9,
+    })),
     ...posts.map((p) => ({
       url: `${base}/news/${p.slug}`,
       lastModified: new Date(p.published_at),

@@ -38,13 +38,23 @@ What does **not** work without a database:
 In the Supabase dashboard, open **SQL Editor → New query**, paste the whole of
 `supabase/RUN-THIS-IN-SUPABASE.sql`, and press **Run**.
 
-That file is the three migrations concatenated:
+That file is the four migrations concatenated:
 
 | File | What it does |
 |---|---|
 | `supabase/migrations/0001_init.sql` | All tables, indexes and row-level security |
 | `supabase/migrations/0002_functions.sql` | Sequential GST invoice numbering |
 | `supabase/migrations/0003_storage.sql` | The `media` image bucket and its access rules |
+| `supabase/migrations/0004_courses_demo_faq.sql` | Course pages, course syllabus, several batches per branch, FAQ categories, free demo registrations, GATE countdown and demo settings |
+
+**Upgrading a database set up before 0004?** Run only
+`supabase/migrations/0004_courses_demo_faq.sql`, then `npm run seed` (2.5). It
+only adds tables and columns; existing rows are kept. Until it runs, the site
+still works - course pages and FAQs fall back to the starting content in
+`defaults.ts` - but the FAQ page shows only the About questions, new admin
+screens are empty, saving **Banner, hero, demo & contact** fails (unknown
+columns), and demo bookings can't be stored (the team alert email still goes
+out).
 
 **Supabase will warn about "destructive operations" and "tables without RLS".
 Choose "Run without RLS".** Both warnings are false positives from its static
@@ -92,7 +102,20 @@ npm run seed
 
 Both call the same `runSeed()` in `src/lib/admin/seed-core.ts`, so they cannot
 drift. It only fills sections that are completely empty, so it is safe to run
-twice and can never overwrite an edit.
+twice and can never overwrite an edit. Lists split into groups - FAQ categories,
+form dropdowns, SEO rows - are filled per group, so a new release can add a new
+FAQ category, the demo form's time slots, or the SEO rows for `/courses` and
+`/faq` to a database seeded long ago.
+
+```bash
+npm run seed -- --sample-batches
+```
+
+also loads the **sample** batch details (titles, schedules, start dates,
+language, plus a weekend batch per branch) from `defaults.ts` into an existing
+database. It fills only fields that are blank or still the starting
+placeholder, and never touches fees, demo videos or visibility. Sample data must
+be replaced with the client's real details before launch.
 
 ### 2.6 Move the bundled images into Supabase Storage
 
@@ -214,8 +237,8 @@ site means students would not actually be charged.
    right after paying. Both paths share one function, and only one of them can
    mark an enrollment paid, so nobody gets two invoices.
 
-**Testing locally (test keys):** `npm run dev`, open a batch with a fee, click
-Enroll & Pay. In Checkout use UPI `success@razorpay` (or `failure@razorpay`), or
+**Testing locally (test keys):** `npm run dev`, open a course page, and under
+*Batches & fees* click Enroll & Pay on a batch with a fee. In Checkout use UPI `success@razorpay` (or `failure@razorpay`), or
 card `4100 2800 0000 1007` with any future expiry and any CVV. Test-mode OTP
 prompts accept `754081`. Webhooks cannot reach `localhost`; step 3 covers
 local testing on its own.
@@ -288,23 +311,32 @@ student a confirmation was sent, because it wasn't.
 src/
   app/
     (site)/          Public pages. The layout here owns the header, footer,
-                     all popups and the chat widget.
+                     all popups, the free demo panel and the chat widget.
+      courses/       /courses and /courses/[slug].
+      faq/           /faq.
     admin/           Admin panel. Its own shell, no public chrome.
-    api/             Form handling, payments, admin upload and export.
+    api/             Form handling (enquiry, seminar, demo), payments,
+                     admin upload and export.
   components/
-    site/            Header, footer, popups, chat — the shared UI.
+    site/            Header (+ CoursesMenu), footer, popups, free demo panel
+                     and prompts (DemoDrawer, DemoHooks), chat.
+    courses/         Course pages: BranchArt, syllabus, batches, exam
+                     pattern, countdown, GATE guide.
+    faq/             FAQ accordion and the searchable FAQ page.
     home/ about/     Page sections.
     news/ results/
     admin/           Admin panel building blocks.
     ui/              Modal and image primitives.
   lib/
-    defaults.ts      Every piece of SRS copy, in one place.
+    defaults.ts      Every piece of starting copy, in one place - including
+                     the sample courses, syllabus, batches and FAQs.
+    gate-info.ts     Facts about the GATE exam itself (pattern, timeline).
     content.ts       The single read path: Supabase, falling back to defaults.
     payments.ts      Payment provider adapter + GST calculation.
     messaging.ts     SMS/WhatsApp adapter + lead alert email.
     admin/           Auth, the content registry, and server actions.
 supabase/migrations/ Database schema.
-scripts/             Bulk image importer.
+scripts/             Seeder, bulk image importer, screenshots.
 ```
 
 Two decisions worth knowing about:

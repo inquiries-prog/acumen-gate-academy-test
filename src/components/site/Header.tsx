@@ -7,6 +7,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import AmbientGlow from "@/components/ui/AmbientGlow";
 import Magnetic from "@/components/ui/Magnetic";
+import { GiftIcon } from "./DemoHooks";
+import CoursesMenu, { MobileCoursesList } from "./CoursesMenu";
 import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
 import { useFocusTrap } from "@/lib/useFocusTrap";
 import { displayPhone, telHref } from "@/lib/utils";
@@ -17,10 +19,15 @@ import { useSiteUI } from "./SiteUI";
 /**
  * Global header (SRS 6.1). Sticky on desktop and mobile.
  *
- * Six nav items. "Offline Courses" and "Online Courses" are not pages - they
- * open the batches popup directly (SRS 5). "Contact Us" anchors the footer.
- * A standalone "Faculty" tab and an "Enquire for Batches" tab were both
- * explicitly removed from the final structure - do not add them back.
+ * Six nav items. "Courses" (Nov 2026) replaces the separate "Offline Courses"
+ * and "Online Courses" popups: hovering or focusing it opens a menu of every
+ * course page, and clicking it goes to /courses. "FAQ" is the new FAQ page.
+ * "Contact Us" anchors the footer. A standalone "Faculty" tab and an "Enquire
+ * for Batches" tab were both explicitly removed from the final structure - do
+ * not add them back.
+ *
+ * "Free Demo" is the highlighted button in the bar: it opens the free demo
+ * side panel, and is styled to stand apart from "Enquire Now" on purpose.
  *
  * On phones and tablets the menu is a full-screen panel rather than a narrow
  * drawer: large display-type items, numbered, sliding in from the right with a
@@ -42,7 +49,8 @@ import { useSiteUI } from "./SiteUI";
  * button. Everything SRS 6.1 lists is still there; it is just grouped.
  */
 export default function Header() {
-  const { settings, push, openEnquiry, setChatOpen } = useSiteUI();
+  const { settings, openEnquiry, openDemo, setChatOpen } = useSiteUI();
+  const [mobileCoursesOpen, setMobileCoursesOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement>(null);
@@ -98,13 +106,16 @@ export default function Header() {
   }, [drawerOpen]);
 
   const navItems = [
-    { label: "About Us", href: "/about" as const },
-    { label: "Offline Courses", action: () => push({ kind: "batches", mode: "offline" as const }) },
-    { label: "Online Courses", action: () => push({ kind: "batches", mode: "online" as const }) },
-    { label: "Results", href: "/results" as const },
-    { label: "News & Updates", href: "/news" as const },
-    { label: "Contact Us", href: "/#contact" as const },
+    { label: "About Us", href: "/about" },
+    { label: "Courses", href: "/courses", menu: true },
+    { label: "Results", href: "/results" },
+    { label: "News & Updates", href: "/news" },
+    { label: "FAQ", href: "/faq" },
+    { label: "Contact Us", href: "/#contact" },
   ];
+
+  const isActive = (href: string) =>
+    href === "/courses" ? pathname?.startsWith("/courses") : pathname === href;
 
   return (
     <header ref={headerRef} className="group/header pointer-events-none sticky top-0 z-50 h-[76px]">
@@ -139,9 +150,11 @@ export default function Header() {
           )}
         </Link>
 
-        <nav aria-label="Main" className="hidden items-center gap-1 xl:flex">
+        <nav aria-label="Main" className="hidden items-center gap-0.5 xl:flex">
           {navItems.map((item) =>
-            item.href ? (
+            item.menu ? (
+              <CoursesMenu key={item.label} active={Boolean(isActive(item.href))} />
+            ) : (
               <Link
                 key={item.label}
                 href={item.href}
@@ -149,26 +162,13 @@ export default function Header() {
                             after:absolute after:inset-x-3 after:-bottom-0.5 after:h-0.5 after:rounded-full
                             after:bg-red after:transition-transform after:duration-300 after:ease-smooth
                             hover:text-red ${
-                              pathname === item.href
+                              isActive(item.href)
                                 ? "text-red after:scale-x-100"
                                 : "text-charcoal after:scale-x-0 hover:after:scale-x-100"
                             }`}
               >
                 {item.label}
               </Link>
-            ) : (
-              <button
-                key={item.label}
-                type="button"
-                onClick={item.action}
-                className="relative whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold text-charcoal
-                           transition-colors duration-200 after:absolute after:inset-x-3 after:-bottom-0.5
-                           after:h-0.5 after:origin-center after:scale-x-0 after:rounded-full after:bg-red
-                           after:transition-transform after:duration-300 after:ease-smooth
-                           hover:text-red hover:after:scale-x-100"
-              >
-                {item.label}
-              </button>
             ),
           )}
         </nav>
@@ -192,18 +192,31 @@ export default function Header() {
           <button
             type="button"
             onClick={() => setChatOpen(true)}
-            className="whitespace-nowrap text-sm font-semibold text-charcoal underline-offset-4 transition-colors hover:text-red hover:underline"
+            className="hidden whitespace-nowrap text-sm font-semibold text-charcoal underline-offset-4 transition-colors hover:text-red hover:underline 2xl:inline"
           >
             Chat with us
           </button>
+          <button
+            type="button"
+            onClick={() => openEnquiry("Header")}
+            className="whitespace-nowrap text-sm font-bold text-charcoal underline-offset-4 transition-colors hover:text-red hover:underline"
+          >
+            Enquire Now
+          </button>
           <Magnetic>
-            <button type="button" onClick={() => openEnquiry("Header")} className="btn-primary btn-sm px-5">
-              Enquire Now
-            </button>
+            <DemoButton onClick={() => openDemo("Header button")} />
           </Magnetic>
         </div>
 
         <div className="flex items-center gap-1.5 xl:hidden">
+          <button
+            type="button"
+            onClick={() => openDemo("Header button (mobile)")}
+            className="relative mr-0.5 hidden min-h-10 items-center gap-1.5 overflow-hidden rounded-full bg-[length:200%_100%] bg-[linear-gradient(110deg,#E31E24,#A32D2D,#E31E24)] px-3.5 text-[13px] font-extrabold text-white shadow-red-glow animate-gradient-x min-[400px]:inline-flex"
+          >
+            <GiftIcon size={14} />
+            Free Demo
+          </button>
           <a
             href={telHref(settings.phone)}
             aria-label={`Call ${settings.phone}`}
@@ -264,40 +277,51 @@ export default function Header() {
               const itemClass = `animate-reveal flex min-h-[3.75rem] w-full items-center justify-between gap-4
                                  border-b border-line/70 text-left font-display text-[1.7rem] font-bold
                                  leading-none tracking-tight transition-colors duration-200
-                                 active:text-red ${
-                                   item.href && pathname === item.href ? "text-red" : "text-charcoal"
-                                 }`;
+                                 active:text-red ${isActive(item.href) ? "text-red" : "text-charcoal"}`;
               // Staggered so the list builds down the screen as the panel arrives.
               const style = { animationDelay: `${90 + i * 45}ms` };
-              const inner = (
-                <>
-                  <span className="flex items-baseline gap-3">
-                    <span className="text-xs font-semibold tabular-nums text-muted">0{i + 1}</span>
-                    {item.label}
-                  </span>
+              const label = (
+                <span className="flex items-baseline gap-3">
+                  <span className="text-xs font-semibold tabular-nums text-muted">0{i + 1}</span>
+                  {item.label}
+                </span>
+              );
+
+              if (item.menu) {
+                return (
+                  <div key={item.label} style={style} className="animate-reveal border-b border-line/70">
+                    <button
+                      type="button"
+                      onClick={() => setMobileCoursesOpen((v) => !v)}
+                      aria-expanded={mobileCoursesOpen}
+                      className={`flex min-h-[3.75rem] w-full items-center justify-between gap-4 text-left font-display text-[1.7rem] font-bold leading-none tracking-tight ${
+                        isActive(item.href) ? "text-red" : "text-charcoal"
+                      }`}
+                    >
+                      {label}
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        aria-hidden="true"
+                        className={`shrink-0 text-red transition-transform duration-300 ${mobileCoursesOpen ? "rotate-180" : ""}`}
+                      >
+                        <path d="M5 8l5 5 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </button>
+                    {mobileCoursesOpen && <MobileCoursesList />}
+                  </div>
+                );
+              }
+
+              return (
+                <Link key={item.label} href={item.href} style={style} className={itemClass}>
+                  {label}
                   <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" className="shrink-0 text-red">
                     <path d="M4 10h11m0 0l-4.5-4.5M15 10l-4.5 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
-                </>
-              );
-
-              return item.href ? (
-                <Link key={item.label} href={item.href} style={style} className={itemClass}>
-                  {inner}
                 </Link>
-              ) : (
-                <button
-                  key={item.label}
-                  type="button"
-                  style={style}
-                  onClick={() => {
-                    closeDrawer();
-                    item.action?.();
-                  }}
-                  className={itemClass}
-                >
-                  {inner}
-                </button>
               );
             })}
           </nav>
@@ -330,9 +354,19 @@ export default function Header() {
                   closeDrawer();
                   openEnquiry("Mobile menu");
                 }}
-                className="btn-primary col-span-3"
+                className="btn-secondary col-span-3 min-[400px]:col-span-1"
               >
-                Enquire Now
+                Enquire
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  closeDrawer();
+                  openDemo("Mobile menu");
+                }}
+                className="btn-primary col-span-3 min-[400px]:col-span-2"
+              >
+                <GiftIcon /> Book a Free Demo
               </button>
             </div>
           </div>
@@ -343,6 +377,33 @@ export default function Header() {
       <ScrollProgress />
       </div>
     </header>
+  );
+}
+
+/**
+ * The highlighted "Free Demo" button: a slowly travelling red gradient, a
+ * light sweep on hover, a gift that wiggles and a "FREE" tag - deliberately louder than
+ * "Enquire Now" next to it, because a free class is the easier first step.
+ */
+function DemoButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="group relative inline-flex min-h-10 items-center gap-2 overflow-hidden whitespace-nowrap rounded-xl
+                 bg-[length:200%_100%] bg-[linear-gradient(110deg,#E31E24,#A32D2D_45%,#E31E24)] px-4 text-sm font-extrabold
+                 text-white shadow-red-glow transition-all duration-300 ease-smooth animate-gradient-x
+                 hover:-translate-y-0.5 hover:shadow-lifted active:scale-[0.98]"
+    >
+      <span aria-hidden="true" className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-700 ease-smooth group-hover:translate-x-full" />
+      <span className="relative animate-wiggle">
+        <GiftIcon />
+      </span>
+      <span className="relative">Free Demo Class</span>
+      <span className="relative rounded-md bg-white px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-red">
+        Free
+      </span>
+    </button>
   );
 }
 

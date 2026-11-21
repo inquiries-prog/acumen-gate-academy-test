@@ -1,15 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { useSiteUI } from "@/components/site/SiteUI";
 
 /**
- * "Jump to your branch" - six tiles that open the batch sheet for that branch.
- *
- * Before this, the only route to a specific branch was Courses card -> batches
- * popup -> scroll -> "Know about the batch". A student knows their branch the
- * moment they land; this lets them act on it in one tap. Offline is the lead
- * product, so a tile opens the offline batch; the sheet itself offers the
- * online switch, and the footer line here goes straight to online batches.
+ * "Jump to your branch" - six tiles, each linking to that branch's course page
+ * (/courses/<slug>), which lists its classroom and online batches together.
+ * A student knows their branch the moment they land; this lets them act on it
+ * in one tap.
  *
  * Every branch is visible at every size. On phones that means a 3 x 2 grid of
  * tiles (code large, name beneath) - an earlier version was a sideways scroll
@@ -21,12 +19,15 @@ import { useSiteUI } from "@/components/site/SiteUI";
  * `opacity-100` when it enters the viewport, and each tile transitions from
  * that class with its own delay. Transform and opacity only.
  *
- * Branch data comes from the same provider the popups use, so the tiles are
- * always the branches the admin has marked visible.
+ * Branch and course data come from the site-wide provider, so the tiles are
+ * always the visible branches that have a course page.
  */
 export default function BranchPicker() {
-  const { offline, push } = useSiteUI();
-  const rows = offline.filter((row) => row.branch.visible);
+  const { branches, courses } = useSiteUI();
+  const rows = branches
+    .filter((branch) => branch.visible)
+    .map((branch) => ({ branch, course: courses.find((c) => c.branch_code === branch.code) }))
+    .filter((row): row is { branch: typeof row.branch; course: NonNullable<typeof row.course> } => Boolean(row.course));
 
   if (rows.length === 0) return null;
 
@@ -37,17 +38,16 @@ export default function BranchPicker() {
       </p>
 
       <ul className="mt-3 grid grid-cols-3 gap-2.5 sm:grid-cols-6 lg:grid-cols-2">
-        {rows.map(({ branch }, i) => (
+        {rows.map(({ branch, course }, i) => (
           <li
             key={branch.id}
             className="min-w-0 translate-y-3 opacity-0 transition-[transform,opacity] duration-500 ease-smooth
                        group-[.opacity-100]/picker:translate-y-0 group-[.opacity-100]/picker:opacity-100"
             style={{ transitionDelay: `${i * 55}ms` }}
           >
-            <button
-              type="button"
+            <Link
+              href={`/courses/${course.slug}`}
               data-branch={branch.code}
-              onClick={() => push({ kind: "batchDetail", branchId: branch.id, mode: "offline" })}
               className="group/tile relative flex h-full w-full flex-col items-start gap-1.5 overflow-hidden
                          rounded-xl border border-line bg-white p-3 text-left shadow-chip
                          transition-all duration-300 ease-smooth
@@ -71,20 +71,16 @@ export default function BranchPicker() {
               <span className="relative text-[11.5px] font-semibold leading-tight text-charcoal lg:truncate lg:text-[13px]">
                 {branch.name}
               </span>
-            </button>
+            </Link>
           </li>
         ))}
       </ul>
 
       <p className="mt-4 text-xs leading-relaxed text-muted lg:mt-auto lg:pt-5">
-        Opens the Vadodara offline batch.{" "}
-        <button
-          type="button"
-          onClick={() => push({ kind: "batches", mode: "online" })}
-          className="font-semibold text-red underline-offset-4 hover:underline"
-        >
-          Online instead? See online batches
-        </button>
+        Syllabus, batches and fees for each branch.{" "}
+        <Link href="/courses" className="font-semibold text-red underline-offset-4 hover:underline">
+          See all courses
+        </Link>
       </p>
     </div>
   );

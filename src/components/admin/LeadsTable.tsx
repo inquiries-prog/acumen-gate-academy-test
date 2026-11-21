@@ -8,8 +8,8 @@ import { telHref } from "@/lib/utils";
 /**
  * Lead list (SRS 10).
  *
- * General enquiries and seminar leads are rendered by this same component but
- * always as two SEPARATE screens - the SRS is explicit that they must never be
+ * General enquiries, seminar leads and free demo registrations are rendered by
+ * this same component but always as SEPARATE screens - the SRS is explicit that they must never be
  * merged into one undifferentiated table, because the client follows them up
  * differently.
  *
@@ -24,7 +24,7 @@ export interface LeadColumn {
   primary?: boolean;
 }
 
-export type LeadTable = "general_enquiries" | "seminar_leads";
+export type LeadTable = "general_enquiries" | "seminar_leads" | "demo_registrations";
 
 export default function LeadsTable({
   table,

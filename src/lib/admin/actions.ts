@@ -66,9 +66,9 @@ function buildRow(def: CollectionDef, form: FormData): Record<string, unknown> {
 
   // A blank web address is filled in from the title, so the client never has
   // to think about URLs.
-  if (def.table === "news_posts") {
-    const slug = String(row.slug ?? "").trim();
-    if (!slug) row.slug = slugify(String(row.title ?? "")) || `post-${Date.now()}`;
+  if (def.table === "news_posts" || def.table === "courses") {
+    const slug = slugify(String(row.slug ?? "").trim());
+    row.slug = slug || slugify(String(row.title ?? "")) || `${def.table === "courses" ? "course" : "post"}-${Date.now()}`;
   }
 
   return row;
@@ -147,7 +147,7 @@ export async function saveSiteSettings(formData: FormData): Promise<ActionResult
   try {
     await requireAdmin();
 
-    const booleanFields = ["banner_enabled"];
+    const booleanFields = ["banner_enabled", "demo_nudge_enabled"];
     const row: Record<string, unknown> = { id: true, updated_at: new Date().toISOString() };
 
     for (const [key, value] of formData.entries()) {
@@ -203,6 +203,10 @@ export async function saveBatch(batchId: string, formData: FormData): Promise<Ac
     const videoStart = Number(videoStartRaw);
 
     const row = {
+      title: String(formData.get("title") ?? "").trim(),
+      schedule: String(formData.get("schedule") ?? "").trim(),
+      medium: String(formData.get("medium") ?? "").trim(),
+      badge: String(formData.get("badge") ?? "").trim().slice(0, 24),
       start_date: String(formData.get("start_date") ?? "").trim(),
       duration: String(formData.get("duration") ?? "").trim(),
       faculty: String(formData.get("faculty") ?? "").trim(),
@@ -221,6 +225,57 @@ export async function saveBatch(batchId: string, formData: FormData): Promise<Ac
     return { ok: true, message: "Saved." };
   } catch (err) {
     return { ok: false, message: err instanceof Error ? err.message : "Could not save." };
+  }
+}
+
+/**
+ * Adds a batch to a branch - e.g. a second, weekend batch. It starts hidden
+ * and with online payment off, so nothing half-filled appears on the site
+ * before the client has entered its details and switched it on.
+ */
+export async function createBatch(branchId: string, mode: "offline" | "online"): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    if (mode !== "offline" && mode !== "online") return { ok: false, message: "Unknown batch type." };
+
+    const supabase = client();
+    const { data: siblings } = await supabase
+      .from("batches")
+      .select("sort_order")
+      .eq("branch_id", branchId)
+      .order("sort_order", { ascending: false })
+      .limit(1);
+
+    const { error } = await supabase.from("batches").insert({
+      branch_id: branchId,
+      mode,
+      title: mode === "offline" ? "New classroom batch" : "New online batch",
+      visible: false,
+      enroll_enabled: false,
+      sort_order: ((siblings?.[0]?.sort_order as number | undefined) ?? 0) + 1,
+    });
+    if (error) throw new Error(error.message);
+
+    refreshSite();
+    return { ok: true, message: "Batch added. Fill in its details, then tick 'Show this batch on the website'." };
+  } catch (err) {
+    return { ok: false, message: err instanceof Error ? err.message : "Could not add the batch." };
+  }
+}
+
+/**
+ * Deletes a batch. Past enrollments keep their record: the enrollment's batch
+ * link is cleared, but the batch name, amounts and invoice stay.
+ */
+export async function deleteBatch(batchId: string): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const { error } = await client().from("batches").delete().eq("id", batchId);
+    if (error) throw new Error(error.message);
+    refreshSite();
+    return { ok: true, message: "Batch deleted." };
+  } catch (err) {
+    return { ok: false, message: err instanceof Error ? err.message : "Could not delete the batch." };
   }
 }
 
@@ -341,7 +396,7 @@ export async function deleteResultEntry(id: string): Promise<ActionResult> {
 
 /** Marks a lead contacted, so follow-up can be tracked (SRS 10). */
 export async function setLeadContacted(
-  table: "general_enquiries" | "seminar_leads" | "enrollments",
+  table: "general_enquiries" | "seminar_leads" | "demo_registrations" | "enrollments",
   id: string,
   contacted: boolean,
 ): Promise<ActionResult> {
@@ -357,7 +412,7 @@ export async function setLeadContacted(
 }
 
 export async function saveLeadNotes(
-  table: "general_enquiries" | "seminar_leads",
+  table: "general_enquiries" | "seminar_leads" | "demo_registrations",
   id: string,
   notes: string,
 ): Promise<ActionResult> {

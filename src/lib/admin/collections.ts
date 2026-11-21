@@ -31,6 +31,11 @@ export interface FieldDef {
   /** Hidden from the form, but kept when saving (e.g. sort_order). */
   hidden?: boolean;
   placeholder?: string;
+  /**
+   * For a select whose choices are rows of another table (e.g. "Which
+   * course"). Resolved on the server when the screen loads.
+   */
+  optionsFrom?: { table: string; value: string; label: string; orderBy?: string };
 }
 
 export interface CollectionDef {
@@ -55,6 +60,12 @@ export interface CollectionDef {
   allowDelete?: boolean;
   /** Shown at the top of the screen when there is something to warn about. */
   notice?: string;
+  /**
+   * Groups the list under headings by this field (a select). Long lists that
+   * belong to a parent - syllabus rows per course, FAQs per category - stay
+   * findable this way.
+   */
+  groupBy?: string;
 }
 
 const visibleField: FieldDef = {
@@ -138,10 +149,98 @@ export const collections: CollectionDef[] = [
         label: "What the button opens",
         type: "select",
         options: [
-          { value: "batches_offline", label: "The offline batches popup" },
-          { value: "batches_online", label: "The online batches popup" },
+          { value: "batches_offline", label: "The Courses page, showing classroom courses" },
+          { value: "batches_online", label: "The Courses page, showing online courses" },
           { value: "enquiry", label: "The enquiry form" },
         ],
+      },
+      visibleField,
+      sortField,
+    ],
+  },
+  {
+    slug: "course-pages",
+    table: "courses",
+    title: "Course pages",
+    singular: "course",
+    description:
+      "One page per course, at /courses/<web address>. The batches, dates and fees on each GATE course page come from 'Batches, dates & fees' for the matching branch; the syllabus comes from 'Course syllabus'.",
+    titleField: "title",
+    subtitleField: "tagline",
+    thumbField: "image_url",
+    fields: [
+      { name: "title", label: "Course name", type: "text", required: true, placeholder: "GATE Mechanical Engineering (ME)" },
+      {
+        name: "short_title",
+        label: "Short name",
+        type: "text",
+        help: "Used in the header menu and on small cards, e.g. 'Mechanical'.",
+      },
+      {
+        name: "slug",
+        label: "Web address",
+        type: "text",
+        help: "The end of the page address: gate-mechanical gives /courses/gate-mechanical. Leave blank and one is made from the name. Changing it breaks old links to the page.",
+      },
+      {
+        name: "category",
+        label: "Type of course",
+        type: "select",
+        options: [
+          { value: "gate", label: "GATE (shows the GATE exam pattern)" },
+          { value: "gpsc", label: "GPSC" },
+        ],
+      },
+      {
+        name: "branch_code",
+        label: "Branch",
+        type: "select",
+        optionsFrom: { table: "branches", value: "code", label: "name" },
+        help: "Which branch's batches appear on this page. Choose 'None' for a course without batches (it shows an enquiry button instead).",
+      },
+      { name: "tagline", label: "One-line pitch", type: "textarea", required: true, help: "Shown under the title and on course cards." },
+      { name: "overview", label: "Course overview", type: "longtext", required: true },
+      { name: "highlights", label: "Highlights", type: "longtext", help: "One per line. Shown as a ticked list." },
+      { name: "who_should_join", label: "Who should join", type: "longtext", help: "One per line." },
+      {
+        name: "image_url",
+        label: "Card photo",
+        type: "image",
+        help: "Optional. Without a photo, the card shows the branch's illustration.",
+      },
+      altField,
+      { name: "meta_title", label: "Title shown in Google", type: "text", help: "Keep under about 60 characters." },
+      { name: "meta_description", label: "Description shown in Google", type: "textarea", help: "Keep under about 155 characters." },
+      visibleField,
+      sortField,
+    ],
+  },
+  {
+    slug: "course-syllabus",
+    table: "course_subjects",
+    title: "Course syllabus",
+    singular: "syllabus subject",
+    description:
+      "The syllabus on each course page: one row per subject, with its topics and the marks it typically carries.",
+    titleField: "subject",
+    subtitleField: "weightage",
+    groupBy: "course_id",
+    fields: [
+      {
+        name: "course_id",
+        label: "Course",
+        type: "select",
+        required: true,
+        optionsFrom: { table: "courses", value: "id", label: "title" },
+      },
+      { name: "subject", label: "Subject", type: "text", required: true },
+      { name: "topics", label: "Topics", type: "longtext", help: "One per line." },
+      {
+        name: "weightage",
+        label: "Typical marks",
+        type: "text",
+        placeholder: "≈ 8–10 marks",
+        help: "Free text. The bar on the page is drawn from the largest number in it.",
       },
       visibleField,
       sortField,
@@ -266,10 +365,25 @@ export const collections: CollectionDef[] = [
     title: "Frequently asked questions",
     singular: "question",
     description:
-      "The FAQ on the About page. Write answers as direct, factual statements — search engines and AI assistants quote these.",
+      "Every question on the FAQ page, grouped by category. 'About Acumen' questions also appear on the About page, and 'Courses', 'Fees' and 'Free demo' questions on the course pages. Write answers as direct, factual statements — search engines and AI assistants quote these.",
     titleField: "question",
     subtitleField: "answer",
+    groupBy: "category",
     fields: [
+      {
+        name: "category",
+        label: "Category",
+        type: "select",
+        required: true,
+        options: [
+          { value: "gate", label: "The GATE exam" },
+          { value: "courses", label: "Courses & batches" },
+          { value: "demo", label: "Free demo class" },
+          { value: "fees", label: "Fees & payment" },
+          { value: "online", label: "Online classes" },
+          { value: "about", label: "About Acumen (also shown on the About page)" },
+        ],
+      },
       { name: "question", label: "Question", type: "text", required: true },
       { name: "answer", label: "Answer", type: "longtext", required: true },
       visibleField,
@@ -365,9 +479,10 @@ export const collections: CollectionDef[] = [
     title: "Form dropdown choices",
     singular: "choice",
     description:
-      "The options students can pick in the enquiry and seminar forms. Add a new center or referral source here without needing a developer.",
+      "The options students can pick in the enquiry, seminar and free demo forms. Add a new center, referral source or demo time slot here without needing a developer. 'Enquiry For' is also the list of ways to attend a free demo (online or at a centre).",
     titleField: "label",
     subtitleField: "field_key",
+    groupBy: "field_key",
     fields: [
       {
         name: "field_key",
@@ -379,6 +494,7 @@ export const collections: CollectionDef[] = [
           { value: "enquiry_for", label: "Enquiry For" },
           { value: "heard_about", label: "How did you hear about us?" },
           { value: "interested_for", label: "Interested For (seminar form)" },
+          { value: "demo_slot", label: "Preferred time (free demo form)" },
         ],
       },
       { name: "label", label: "Choice text", type: "text", required: true },

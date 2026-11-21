@@ -18,7 +18,7 @@ const DISMISS_KEY = "aga-banner-dismissed";
  * future campaigns, so a new promotion never needs a code change.
  */
 export default function AnnouncementBanner() {
-  const { settings, push } = useSiteUI();
+  const { settings, push, openDemo } = useSiteUI();
   const [dismissed, setDismissed] = useState(false);
 
   /**
@@ -68,9 +68,11 @@ export default function AnnouncementBanner() {
               ) : (
                 <button
                   type="button"
-                  onClick={() =>
-                    push(action === "enquiry" ? { kind: "enquiry", source: "Announcement banner" } : { kind: "seminar" })
-                  }
+                  onClick={() => {
+                    if (action === "demo") openDemo("Announcement banner");
+                    else if (action === "enquiry") push({ kind: "enquiry", source: "Announcement banner" });
+                    else push({ kind: "seminar" });
+                  }}
                   className="font-bold underline decoration-white/50 underline-offset-4 transition-colors hover:decoration-white"
                 >
                   {label}

@@ -1,6 +1,6 @@
 // Shapes mirror supabase/migrations/0001_init.sql exactly.
 
-export type BannerAction = "seminar" | "enquiry" | "url" | "none";
+export type BannerAction = "seminar" | "enquiry" | "demo" | "url" | "none";
 
 export interface SiteSettings {
   banner_enabled: boolean;
@@ -27,6 +27,17 @@ export interface SiteSettings {
   etude360_logo_url: string;
   final_cta_heading: string;
   final_cta_button: string;
+  /** e.g. "GATE 2027". Shown with the countdown. */
+  gate_exam_label: string;
+  /** ISO date (YYYY-MM-DD) of the first exam day. Blank hides the countdown. */
+  gate_exam_date: string;
+  /** Free demo side panel. */
+  demo_heading: string;
+  demo_subtext: string;
+  /** Whether the gentle one-time "book a free demo" prompt appears. */
+  demo_nudge_enabled: boolean;
+  /** Seconds on the site before that prompt appears. Stored as text. */
+  demo_nudge_seconds: string;
 }
 
 export interface GalleryImage {
@@ -39,6 +50,12 @@ export interface GalleryImage {
   sort_order: number;
 }
 
+/**
+ * What a homepage course card links to. The stored values predate the course
+ * pages (they used to open the batches popups) and are kept so no database
+ * change is needed: `batches_offline` now means the courses page filtered to
+ * offline, `batches_online` to online.
+ */
 export type CourseAction = "batches_offline" | "batches_online" | "enquiry";
 
 export interface CourseCard {
@@ -68,6 +85,14 @@ export interface Batch {
   id: string;
   branch_id: string;
   mode: BatchMode;
+  /** e.g. "Weekday Regular Batch". Blank falls back to "<Mode> batch". */
+  title: string;
+  /** e.g. "Mon-Fri, 5:30-8:30 PM". */
+  schedule: string;
+  /** Teaching language, e.g. "English + Hindi". */
+  medium: string;
+  /** Optional short label on the batch, e.g. "New". */
+  badge: string;
   start_date: string;
   duration: string;
   faculty: string;
@@ -81,10 +106,50 @@ export interface Batch {
   sort_order: number;
 }
 
-/** A branch joined with its batch for one mode - what the batches modal renders. */
-export interface BranchBatch {
-  branch: Branch;
-  batch: Batch | null;
+export type CourseCategory = "gate" | "gpsc";
+
+/** One course page, /courses/<slug>. */
+export interface Course {
+  id: string;
+  slug: string;
+  title: string;
+  short_title: string;
+  category: CourseCategory;
+  /** Batches of the branch with this code are listed on the page. */
+  branch_code: string;
+  tagline: string;
+  overview: string;
+  /** One per line. */
+  highlights: string;
+  /** One per line. */
+  who_should_join: string;
+  image_url: string;
+  alt_text: string;
+  meta_title: string;
+  meta_description: string;
+  visible: boolean;
+  sort_order: number;
+}
+
+/** One syllabus row on a course page. */
+export interface CourseSubject {
+  id: string;
+  course_id: string;
+  subject: string;
+  /** One per line. */
+  topics: string;
+  weightage: string;
+  visible: boolean;
+  sort_order: number;
+}
+
+/** The slice of a course the header menu and popups need on every page. */
+export interface CourseNavItem {
+  slug: string;
+  title: string;
+  short_title: string;
+  category: CourseCategory;
+  branch_code: string;
 }
 
 export interface PedagogyPoint {
@@ -184,8 +249,11 @@ export interface Center {
   sort_order: number;
 }
 
+export type FaqCategory = "gate" | "courses" | "demo" | "fees" | "online" | "about";
+
 export interface Faq {
   id: string;
+  category: FaqCategory;
   question: string;
   answer: string;
   visible: boolean;
@@ -242,6 +310,19 @@ export interface SeminarLead {
   city: string;
   interested_for: string;
   offer_shown: string;
+  contacted: boolean;
+  notes: string;
+  created_at: string;
+}
+
+export interface DemoRegistration {
+  id: string;
+  full_name: string;
+  phone: string;
+  branch: string;
+  mode: string;
+  preferred_slot: string;
+  source: string;
   contacted: boolean;
   notes: string;
   created_at: string;

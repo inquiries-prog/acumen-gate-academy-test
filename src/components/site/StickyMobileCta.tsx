@@ -1,6 +1,8 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { GiftIcon } from "./DemoHooks";
 import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
 import { telHref } from "@/lib/utils";
 import WhatsAppLink from "./WhatsAppLink";
@@ -16,9 +18,15 @@ import { useSiteUI } from "./SiteUI";
  * Hidden until the visitor has scrolled past the hero, so it never covers the
  * hero's own buttons, and hidden whenever a popup or the chat panel is open so
  * it cannot sit on top of them (SRS 3.4).
+ *
+ * The main button is "Free Demo" (Nov 2026): on phones there is no room for
+ * the desktop edge tab, so this is where the free demo hook lives. Enquire
+ * stays one tap away in the header menu and on every page. Course pages show
+ * their own bar (CourseMobileBar) instead of this one.
  */
 export default function StickyMobileCta() {
-  const { openEnquiry, settings, current, chatOpen } = useSiteUI();
+  const { openDemo, settings, current, chatOpen, demo } = useSiteUI();
+  const pathname = usePathname();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -29,7 +37,10 @@ export default function StickyMobileCta() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const hidden = !visible || current !== null || chatOpen;
+  const onCoursePage = /^\/courses\/[^/]+/.test(pathname ?? "");
+  if (onCoursePage) return null;
+
+  const hidden = !visible || current !== null || chatOpen || demo.open;
 
   return (
     <div
@@ -65,10 +76,10 @@ export default function StickyMobileCta() {
         <button
           type="button"
           tabIndex={hidden ? -1 : 0}
-          onClick={() => openEnquiry("Sticky mobile bar")}
+          onClick={() => openDemo("Sticky mobile bar")}
           className="btn-primary flex-[1.4] px-3"
         >
-          Enquire Now
+          <GiftIcon /> Free Demo
         </button>
       </div>
     </div>

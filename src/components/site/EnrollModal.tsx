@@ -3,8 +3,7 @@
 import { useState } from "react";
 import Modal from "@/components/ui/Modal";
 import { calculateFees, formatRupees } from "@/lib/payments";
-import type { BatchMode } from "@/lib/types";
-import { resolve } from "@/lib/utils";
+import { batchDisplayLabel, resolve } from "@/lib/utils";
 import { useSiteUI } from "./SiteUI";
 
 /**
@@ -21,16 +20,14 @@ import { useSiteUI } from "./SiteUI";
  */
 export default function EnrollModal({
   open,
-  branchId,
-  mode,
+  batchId,
   onClose,
 }: {
   open: boolean;
-  branchId: string;
-  mode: BatchMode;
+  batchId: string;
   onClose: () => void;
 }) {
-  const { findBranchBatch, openEnquiry } = useSiteUI();
+  const { findBatch, openEnquiry } = useSiteUI();
   const [step, setStep] = useState<"details" | "summary">("details");
   const [details, setDetails] = useState({
     full_name: "",
@@ -41,12 +38,11 @@ export default function EnrollModal({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const row = findBranchBatch(branchId, mode);
-  if (!row?.batch) return null;
+  const row = findBatch(batchId);
+  if (!row) return null;
 
   const { branch, batch } = row;
-  const modeLabel = mode === "offline" ? "Offline" : "Online";
-  const batchLabel = `${branch.name} (${branch.code}) ${modeLabel}`;
+  const batchLabel = batchDisplayLabel(batch, branch);
   const fees = calculateFees(Number(batch.fees ?? 0));
 
   function handleDetails(e: React.FormEvent<HTMLFormElement>) {
@@ -172,6 +168,7 @@ export default function EnrollModal({
           <dl className="overflow-hidden rounded-xl border border-line">
             <Row label="Batch" value={batchLabel} />
             <Row label="Starts" value={resolve(batch.start_date, "Call us for dates")} />
+            {batch.schedule && <Row label="Schedule" value={batch.schedule} />}
             <Row label="Course fee" value={formatRupees(fees.fee)} />
             {/* GST shown as its own line, as SRS 11.2 requires. */}
             <Row label={`GST @ ${fees.gstRate}%`} value={formatRupees(fees.gst)} />

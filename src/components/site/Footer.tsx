@@ -121,9 +121,10 @@ export default function Footer({
           <h2 className="font-display text-xs font-bold uppercase tracking-[0.16em] text-white/90">Quick Links</h2>
           <ul className="mt-4 space-y-1">
             <FooterLink href="/about">About us</FooterLink>
-            <FooterLink href="/#courses">Courses</FooterLink>
+            <FooterLink href="/courses">Courses</FooterLink>
             <FooterLink href="/results">Results</FooterLink>
             <FooterLink href="/news">News &amp; Updates</FooterLink>
+            <FooterLink href="/faq">FAQ</FooterLink>
           </ul>
         </div>
 

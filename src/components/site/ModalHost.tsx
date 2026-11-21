@@ -1,7 +1,5 @@
 "use client";
 
-import BatchDetailModal from "./BatchDetailModal";
-import BatchesModal from "./BatchesModal";
 import EnquiryModal from "./EnquiryModal";
 import EnrollModal from "./EnrollModal";
 import LightboxModal from "./LightboxModal";
@@ -14,8 +12,8 @@ import { useSiteUI } from "./SiteUI";
  * layout, above the routed page content, so every popup on the site survives
  * navigation (SRS 7.1.2).
  *
- * Closing pops one level rather than clearing the stack, so a visitor who opened
- * a batch detail from the batches list lands back on the list, not on nothing.
+ * Closing pops one level rather than clearing the stack, so a visitor who went
+ * from the enroll sheet to "Ask us to help instead" lands back on the sheet.
  */
 export default function ModalHost() {
   const { current, pop } = useSiteUI();
@@ -34,12 +32,8 @@ export default function ModalHost() {
       );
     case "seminar":
       return <SeminarModal open onClose={pop} />;
-    case "batches":
-      return <BatchesModal open mode={current.mode} onClose={pop} />;
-    case "batchDetail":
-      return <BatchDetailModal open branchId={current.branchId} mode={current.mode} onClose={pop} />;
     case "enroll":
-      return <EnrollModal open branchId={current.branchId} mode={current.mode} onClose={pop} />;
+      return <EnrollModal open batchId={current.batchId} onClose={pop} />;
     case "video":
       return (
         <VideoModal

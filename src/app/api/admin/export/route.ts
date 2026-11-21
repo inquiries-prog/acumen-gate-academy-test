@@ -40,6 +40,21 @@ const EXPORTS = {
       ["notes", "Notes"],
     ],
   },
+  demo: {
+    table: "demo_registrations",
+    filename: "free-demo-registrations",
+    columns: [
+      ["created_at", "Received"],
+      ["full_name", "Name"],
+      ["phone", "Phone"],
+      ["branch", "Branch"],
+      ["mode", "Demo"],
+      ["preferred_slot", "Preferred time"],
+      ["source", "Came from"],
+      ["contacted", "Contacted"],
+      ["notes", "Notes"],
+    ],
+  },
   enrollments: {
     table: "enrollments",
     filename: "enrollments",

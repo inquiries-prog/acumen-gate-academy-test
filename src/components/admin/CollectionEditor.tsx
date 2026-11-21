@@ -32,6 +32,36 @@ export default function CollectionEditor({
   const canDelete = def.allowDelete !== false;
   const editableFields = def.fields.filter((f) => !f.hidden);
 
+  /** A select's stored value shown as its label, e.g. "demo_slot" -> "Preferred time". */
+  function display(fieldName: string | undefined, raw: unknown): string {
+    const value = String(raw ?? "");
+    const field = def.fields.find((f) => f.name === fieldName);
+    return field?.options?.find((o) => o.value === value)?.label ?? value;
+  }
+
+  // Grouped lists keep the group order of the select's options, then any
+  // values that don't match an option (e.g. a deleted course) at the end.
+  const groupField = def.groupBy ? def.fields.find((f) => f.name === def.groupBy) : undefined;
+  const groups: Array<{ key: string; label: string; rows: Row[] }> = [];
+  if (groupField) {
+    const order = (groupField.options ?? []).map((o) => o.value);
+    const keys = Array.from(new Set(rows.map((r) => String(r[groupField.name] ?? ""))));
+    keys.sort((a, b) => {
+      const ia = order.indexOf(a);
+      const ib = order.indexOf(b);
+      return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+    });
+    for (const key of keys) {
+      groups.push({
+        key,
+        label: display(groupField.name, key) || "Not set",
+        rows: rows.filter((r) => String(r[groupField.name] ?? "") === key),
+      });
+    }
+  } else {
+    groups.push({ key: "", label: "", rows });
+  }
+
   function handleSave(id: string | null, formData: FormData) {
     startTransition(async () => {
       const result = await saveCollectionRow(def.slug, id, formData);
@@ -106,12 +136,20 @@ export default function CollectionEditor({
           Nothing here yet.{canCreate && ` Use "Add a ${def.singular}" to create the first one.`}
         </p>
       ) : (
+        groups.map((group) => (
+        <section key={group.key} className="space-y-2.5">
+          {group.label && (
+            <h2 className="flex items-center gap-2 pt-3 text-sm font-bold uppercase tracking-wide text-muted">
+              {group.label}
+              <span className="rounded bg-offwhite px-1.5 py-0.5 text-[11px]">{group.rows.length}</span>
+            </h2>
+          )}
         <ul className="space-y-2.5">
-          {rows.map((row) => {
+          {group.rows.map((row) => {
             const id = String(row[pk]);
             const open = openId === id;
             const title = String(row[def.titleField] ?? "").trim() || `(untitled ${def.singular})`;
-            const subtitle = def.subtitleField ? String(row[def.subtitleField] ?? "") : "";
+            const subtitle = def.subtitleField ? display(def.subtitleField, row[def.subtitleField]) : "";
             const thumb = def.thumbField ? String(row[def.thumbField] ?? "") : "";
 
             return (
@@ -189,6 +227,8 @@ export default function CollectionEditor({
             );
           })}
         </ul>
+        </section>
+        ))
       )}
     </div>
   );
@@ -201,5 +241,6 @@ function defaultFor(fieldName: string): unknown {
   }
   if (fieldName === "show_in_carousel") return true;
   if (fieldName === "published_at") return new Date().toISOString().slice(0, 10);
+  if (fieldName === "category") return "gate";
   return "";
 }

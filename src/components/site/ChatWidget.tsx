@@ -1,6 +1,8 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { announceCoursesMode } from "@/components/courses/CoursesExplorer";
 import AmbientGlow from "@/components/ui/AmbientGlow";
 import { WHATSAPP_DEFAULT_MESSAGE, WHATSAPP_NUMBER } from "@/lib/defaults";
 import { displayPhone, telHref, whatsappHref } from "@/lib/utils";
@@ -22,7 +24,14 @@ import { useSiteUI } from "./SiteUI";
 type Screen = "main" | "offline" | "online" | "seminar" | "fallback";
 
 export default function ChatWidget() {
-  const { chatOpen, setChatOpen, settings, push, openEnquiry } = useSiteUI();
+  const { chatOpen, setChatOpen, settings, push, openEnquiry, openDemo } = useSiteUI();
+  const router = useRouter();
+
+  function goToCourses(mode: "offline" | "online") {
+    setChatOpen(false);
+    announceCoursesMode(mode);
+    router.push(`/courses?mode=${mode}`);
+  }
   const [screen, setScreen] = useState<Screen>("main");
 
   useEffect(() => {
@@ -87,6 +96,15 @@ export default function ChatWidget() {
           <>
             <Bubble>Hi! How can we help you today?</Bubble>
             <Options>
+              <Option
+                primary
+                onClick={() => {
+                  setChatOpen(false);
+                  openDemo("Chat widget");
+                }}
+              >
+                🎁 Book a free demo class
+              </Option>
               <Option onClick={() => setScreen("offline")}>🏫 Offline batch info</Option>
               <Option onClick={() => setScreen("online")}>💻 Online batch info</Option>
               <Option onClick={() => setScreen("seminar")}>🎓 I attended a seminar</Option>
@@ -105,12 +123,9 @@ export default function ChatWidget() {
             <Options>
               <Option
                 primary
-                onClick={() => {
-                  setChatOpen(false);
-                  push({ kind: "batches", mode: "offline" });
-                }}
+                onClick={() => goToCourses("offline")}
               >
-                See offline batches
+                See classroom courses
               </Option>
               <Option onClick={() => setScreen("main")}>← Back to menu</Option>
               <Option onClick={() => setScreen("fallback")}>Something else</Option>
@@ -128,12 +143,9 @@ export default function ChatWidget() {
             <Options>
               <Option
                 primary
-                onClick={() => {
-                  setChatOpen(false);
-                  push({ kind: "batches", mode: "online" });
-                }}
+                onClick={() => goToCourses("online")}
               >
-                See online batches
+                See online courses
               </Option>
               <Option onClick={() => setScreen("main")}>← Back to menu</Option>
               <Option onClick={() => setScreen("fallback")}>Something else</Option>

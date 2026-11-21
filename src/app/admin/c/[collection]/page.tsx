@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import CollectionEditor from "@/components/admin/CollectionEditor";
-import { collections, getCollection } from "@/lib/admin/collections";
+import { collections, getCollection, type CollectionDef } from "@/lib/admin/collections";
 import { readRows } from "@/lib/admin/data";
 
 export const dynamic = "force-dynamic";
@@ -28,10 +28,31 @@ export default async function CollectionPage({ params }: Params) {
   const def = getCollection(collection);
   if (!def) notFound();
 
-  const rows = await readRows<Record<string, unknown>>(
-    def.table,
-    def.orderBy ?? { column: "sort_order" },
-  );
+  const [rows, resolved] = await Promise.all([
+    readRows<Record<string, unknown>>(def.table, def.orderBy ?? { column: "sort_order" }),
+    resolveOptions(def),
+  ]);
 
-  return <CollectionEditor def={def} rows={rows} />;
+  return <CollectionEditor def={resolved} rows={rows} />;
+}
+
+/**
+ * Fills in select fields whose choices come from another table ("Which
+ * course", "Which branch"). A field that isn't required gets a "None" choice.
+ */
+async function resolveOptions(def: CollectionDef): Promise<CollectionDef> {
+  const fields = await Promise.all(
+    def.fields.map(async (field) => {
+      if (!field.optionsFrom) return field;
+      const { table, value, label, orderBy } = field.optionsFrom;
+      const rows = await readRows<Record<string, unknown>>(table, { column: orderBy ?? "sort_order" });
+      const options = rows.map((r) => ({ value: String(r[value] ?? ""), label: String(r[label] ?? r[value] ?? "") }));
+      return {
+        ...field,
+        optionsFrom: undefined,
+        options: field.required ? options : [{ value: "", label: "None" }, ...options],
+      };
+    }),
+  );
+  return { ...def, fields };
 }

@@ -90,3 +90,53 @@ export function toParagraphs(text: string): string[] {
     .map((p) => p.trim())
     .filter(Boolean);
 }
+
+/** Splits an admin "one per line" field into its non-empty lines. */
+export function toLines(text: string | null | undefined): string[] {
+  return (text ?? "")
+    .split(/\r?\n/)
+    .map((line) => line.replace(/^[\s•\-*]+/, "").trim())
+    .filter(Boolean);
+}
+
+export function modeLabel(mode: "offline" | "online"): string {
+  return mode === "offline" ? "Offline" : "Live online";
+}
+
+/**
+ * The name a batch is shown and invoiced under, e.g.
+ * "Mechanical Engineering (ME) - Weekend Batch · Vadodara". Used in the enroll
+ * sheet, the enrollment record and lead sources, so all three agree.
+ */
+export function batchDisplayLabel(
+  batch: { mode: "offline" | "online"; title?: string | null },
+  branch: { name: string; code: string } | null | undefined,
+): string {
+  const course = branch ? `${branch.name} (${branch.code})` : "GATE";
+  const title = (batch.title ?? "").trim() || `${batch.mode === "offline" ? "Offline" : "Online"} batch`;
+  return `${course} - ${title}`;
+}
+
+/** Whole days from today until an ISO date, or null if blank/invalid/past. */
+export function daysUntil(isoDate: string, now = new Date()): number | null {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(isoDate ?? "")) return null;
+  const [y, m, d] = isoDate.split("-").map(Number);
+  const target = Date.UTC(y, m - 1, d);
+  const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  const days = Math.round((target - today) / 86_400_000);
+  return days >= 0 ? days : null;
+}
+
+/**
+ * A price for display: "₹45,000", or "₹12,711.86" when there are paise.
+ * Marketing surfaces use this; invoices and payment screens keep
+ * formatRupees (lib/payments), which always shows paise.
+ */
+export function formatPrice(amount: number): string {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+}

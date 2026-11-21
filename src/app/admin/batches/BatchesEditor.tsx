@@ -2,18 +2,20 @@
 
 import { useState, useTransition } from "react";
 import { SaveButton, StatusMessage } from "@/components/admin/Fields";
-import { saveBatch, type ActionResult } from "@/lib/admin/actions";
+import { createBatch, deleteBatch, saveBatch, type ActionResult } from "@/lib/admin/actions";
 import { PLACEHOLDER } from "@/lib/defaults";
 import type { Batch, Branch } from "@/lib/types";
 
 /**
  * Batch management (SRS 9.2).
  *
- * One row per branch per mode, matching what a visitor sees in the batches
- * popup. Changing a date, a fee, the assigned faculty, or the demo video is
- * meant to take well under a minute and never involve a developer (SRS 9.3).
+ * Grouped by branch, for the chosen mode (classroom / online). A branch can
+ * run several batches per mode - a weekday and a weekend batch, say - and
+ * every visible batch appears on that branch's course page under "Batches &
+ * fees". Changing a date, a fee, the faculty or the demo video is meant to
+ * take well under a minute and never involve a developer (SRS 9.3).
  *
- * The demo video is per branch and per mode - not one global video.
+ * The demo video is per batch - not one global video.
  */
 export default function BatchesEditor({
   branches,
@@ -25,17 +27,15 @@ export default function BatchesEditor({
   const [mode, setMode] = useState<"offline" | "online">("offline");
   const [openId, setOpenId] = useState<string | null>(null);
   const [status, setStatus] = useState<ActionResult | null>(null);
-  const [, startTransition] = useTransition();
+  const [pending, startTransition] = useTransition();
 
-  const rows = branches
-    .map((branch) => ({
-      branch,
-      batch: batches.find((b) => b.branch_id === branch.id && b.mode === mode) ?? null,
-    }))
-    .filter((r) => r.batch);
+  const groups = branches.map((branch) => ({
+    branch,
+    rows: batches.filter((b) => b.branch_id === branch.id && b.mode === mode),
+  }));
 
-  const usingPlaceholderFees = batches.some(
-    (b) => b.start_date === PLACEHOLDER || b.faculty === PLACEHOLDER,
+  const usingPlaceholders = batches.some(
+    (b) => b.visible && (b.start_date === PLACEHOLDER || b.faculty === PLACEHOLDER || !b.start_date),
   );
 
   function handleSave(batchId: string, formData: FormData) {
@@ -46,21 +46,35 @@ export default function BatchesEditor({
     });
   }
 
+  function handleAdd(branchId: string) {
+    startTransition(async () => setStatus(await createBatch(branchId, mode)));
+  }
+
+  function handleDelete(batch: Batch, label: string) {
+    if (!window.confirm(`Delete "${label}"? Students will no longer see it. This can't be undone.`)) return;
+    startTransition(async () => {
+      const result = await deleteBatch(batch.id);
+      setStatus(result);
+      if (result.ok) setOpenId(null);
+    });
+  }
+
   return (
     <div className="space-y-5">
       <header>
         <h1 className="text-2xl font-bold">Batches, dates &amp; fees</h1>
         <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-body">
-          What students see when they open the offline or online batches popup, and in the
-          &ldquo;Know about the batch&rdquo; details.
+          Every batch shown under &ldquo;Batches &amp; fees&rdquo; on each branch&apos;s course page. A branch can
+          have more than one batch of each type - for example a weekday and a weekend batch. Students can enroll
+          and pay online for any batch with a fee and online payment switched on.
         </p>
       </header>
 
-      {usingPlaceholderFees && (
+      {usingPlaceholders && (
         <p className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-900">
-          Some batches still have starting placeholder values for the start date, faculty or fee.
-          Please replace them with the real details before the site goes live — the fee shown here is
-          the amount students are charged online.
+          Some visible batches still have a missing start date or faculty, or sample details. Please replace them
+          with the real details before the site goes live - the fee shown here is the amount students are charged
+          online.
         </p>
       )}
 
@@ -81,140 +95,188 @@ export default function BatchesEditor({
                 : "border-line bg-white text-charcoal hover:border-red/40"
             }`}
           >
-            {m === "offline" ? "Offline batches" : "Online batches"}
+            {m === "offline" ? "Classroom batches" : "Online batches"}
           </button>
         ))}
       </div>
 
-      <ul className="space-y-2.5">
-        {rows.map(({ branch, batch }) => {
-          if (!batch) return null;
-          const open = openId === batch.id;
-          const summary = [
-            batch.start_date === PLACEHOLDER || !batch.start_date
-              ? "No start date set"
-              : `Starts ${batch.start_date}`,
-            batch.fees ? `₹${Number(batch.fees).toLocaleString("en-IN")} incl. GST` : "No fee set",
-          ].join(" · ");
+      {groups.map(({ branch, rows }) => (
+        <section key={branch.id} className="space-y-2.5">
+          <div className="flex items-center justify-between gap-3 pt-2">
+            <h2 className="text-sm font-bold uppercase tracking-wide text-muted">
+              {branch.name} <span className="text-charcoal">({branch.code})</span>
+            </h2>
+            <button
+              type="button"
+              disabled={pending}
+              onClick={() => handleAdd(branch.id)}
+              className="text-xs font-bold text-red hover:underline disabled:opacity-50"
+            >
+              + Add a {mode === "offline" ? "classroom" : "online"} batch
+            </button>
+          </div>
 
-          return (
-            <li key={batch.id} className="card overflow-hidden">
-              <div className="flex items-center gap-3 p-3.5">
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-bold text-charcoal">
-                    {branch.name} <span className="text-muted">({branch.code})</span>
-                  </p>
-                  <p className="truncate text-xs text-muted">{summary}</p>
-                </div>
-                {!batch.visible && (
-                  <span className="shrink-0 rounded bg-offwhite px-2 py-1 text-[11px] font-bold text-muted">
-                    Hidden
-                  </span>
-                )}
-                <button
-                  type="button"
-                  onClick={() => setOpenId(open ? null : batch.id)}
-                  className="btn-secondary shrink-0"
-                >
-                  {open ? "Close" : "Edit"}
-                </button>
-              </div>
+          {rows.length === 0 && (
+            <p className="rounded-lg border border-dashed border-line bg-offwhite px-4 py-3 text-xs text-muted">
+              No {mode === "offline" ? "classroom" : "online"} batch for this branch.
+            </p>
+          )}
 
-              {open && (
-                <div className="border-t border-line bg-offwhite/50 p-5">
-                  <form action={(fd) => handleSave(batch.id, fd)} className="space-y-4">
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <Text
-                        name="start_date"
-                        label="Start date"
-                        defaultValue={batch.start_date === PLACEHOLDER ? "" : batch.start_date}
-                        placeholder="e.g. 12 January 2026"
-                        help="Written however you want it to appear on the site."
-                      />
-                      <Text
-                        name="duration"
-                        label="Duration"
-                        defaultValue={batch.duration === PLACEHOLDER ? "" : batch.duration}
-                        placeholder="e.g. 12 months"
-                      />
+          <ul className="space-y-2.5">
+            {rows.map((batch) => {
+              const open = openId === batch.id;
+              const label = batch.title || `${branch.code} ${mode === "offline" ? "classroom" : "online"} batch`;
+              const summary = [
+                batch.start_date === PLACEHOLDER || !batch.start_date ? "No start date set" : `Starts ${batch.start_date}`,
+                batch.schedule || null,
+                batch.fees ? `₹${Number(batch.fees).toLocaleString("en-IN")} incl. GST` : "No fee set",
+              ]
+                .filter(Boolean)
+                .join(" · ");
+
+              return (
+                <li key={batch.id} className="card overflow-hidden">
+                  <div className="flex items-center gap-3 p-3.5">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-bold text-charcoal">{label}</p>
+                      <p className="truncate text-xs text-muted">{summary}</p>
                     </div>
+                    {!batch.visible && (
+                      <span className="shrink-0 rounded bg-offwhite px-2 py-1 text-[11px] font-bold text-muted">Hidden</span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setOpenId(open ? null : batch.id)}
+                      className="btn-secondary shrink-0"
+                    >
+                      {open ? "Close" : "Edit"}
+                    </button>
+                  </div>
 
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <Text
-                        name="faculty"
-                        label="Faculty assigned"
-                        defaultValue={batch.faculty === PLACEHOLDER ? "" : batch.faculty}
-                        placeholder="e.g. Er. Mukesh Rai"
-                      />
-                      <Text
-                        name="seats"
-                        label="Seats"
-                        defaultValue={batch.seats}
-                        placeholder="e.g. 40"
-                        help="Optional."
-                      />
+                  {open && (
+                    <div className="border-t border-line bg-offwhite/50 p-5">
+                      <form action={(fd) => handleSave(batch.id, fd)} className="space-y-4">
+                        <div className="grid gap-4 sm:grid-cols-[1fr,160px]">
+                          <Text
+                            name="title"
+                            label="Batch name"
+                            defaultValue={batch.title ?? ""}
+                            placeholder="e.g. Weekend Batch · Vadodara"
+                            help="Shown as the heading of this batch on the course page."
+                          />
+                          <Text
+                            name="badge"
+                            label="Small label"
+                            defaultValue={batch.badge ?? ""}
+                            placeholder="e.g. New"
+                            help="Optional, a word or two."
+                          />
+                        </div>
+
+                        <div className="grid gap-4 sm:grid-cols-2">
+                          <Text
+                            name="start_date"
+                            label="Start date"
+                            defaultValue={batch.start_date === PLACEHOLDER ? "" : batch.start_date}
+                            placeholder="e.g. 12 January 2027"
+                            help="Written however you want it to appear on the site."
+                          />
+                          <Text
+                            name="schedule"
+                            label="Days & timings"
+                            defaultValue={batch.schedule ?? ""}
+                            placeholder="e.g. Mon–Fri · 5:30–8:30 PM"
+                          />
+                        </div>
+
+                        <div className="grid gap-4 sm:grid-cols-3">
+                          <Text
+                            name="duration"
+                            label="Duration"
+                            defaultValue={batch.duration === PLACEHOLDER ? "" : batch.duration}
+                            placeholder="e.g. 12 months"
+                          />
+                          <Text
+                            name="medium"
+                            label="Teaching language"
+                            defaultValue={batch.medium ?? ""}
+                            placeholder="e.g. English + Hindi"
+                          />
+                          <Text name="seats" label="Batch size" defaultValue={batch.seats} placeholder="e.g. 40" help="Optional." />
+                        </div>
+
+                        <Text
+                          name="faculty"
+                          label="Faculty assigned"
+                          defaultValue={batch.faculty === PLACEHOLDER ? "" : batch.faculty}
+                          placeholder="e.g. Er. Mukesh Rai"
+                        />
+
+                        <div>
+                          <label htmlFor={`fees-${batch.id}`} className="field-label">
+                            Course fee (₹, including GST - what the student pays)
+                          </label>
+                          <input
+                            id={`fees-${batch.id}`}
+                            name="fees"
+                            type="number"
+                            min="0"
+                            step="1"
+                            defaultValue={batch.fees ?? ""}
+                            className="field"
+                          />
+                          <p className="mt-1.5 text-xs text-muted">
+                            The full amount the student pays, with 18% GST already included - the invoice works out
+                            the GST part. Leave blank to hide the fee and turn off online payment for this batch.
+                          </p>
+                        </div>
+
+                        <div className="grid gap-4 sm:grid-cols-[1fr,140px]">
+                          <Text
+                            name="video_id"
+                            label="Demo video"
+                            defaultValue={batch.video_id}
+                            placeholder="Paste the YouTube link or video ID"
+                            help="Each batch can have its own demo lecture. Paste the whole YouTube address — we'll pick out what we need."
+                          />
+                          <Text
+                            name="video_start"
+                            label="Start at (seconds)"
+                            defaultValue={String(batch.video_start ?? 0)}
+                            help="Optional."
+                          />
+                        </div>
+
+                        <Checkbox
+                          name="enroll_enabled"
+                          label="Allow students to enroll and pay online for this batch"
+                          defaultChecked={batch.enroll_enabled}
+                        />
+                        <Checkbox name="visible" label="Show this batch on the website" defaultChecked={batch.visible} />
+
+                        <div className="flex flex-wrap gap-2 border-t border-line pt-4">
+                          <SaveButton />
+                          <button type="button" onClick={() => setOpenId(null)} className="btn-secondary">
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            disabled={pending}
+                            onClick={() => handleDelete(batch, label)}
+                            className="btn-ghost ml-auto text-red hover:bg-red/5"
+                          >
+                            Delete batch
+                          </button>
+                        </div>
+                      </form>
                     </div>
-
-                    <div>
-                      <label htmlFor={`fees-${batch.id}`} className="field-label">
-                        Course fee (₹, including GST - what the student pays)
-                      </label>
-                      <input
-                        id={`fees-${batch.id}`}
-                        name="fees"
-                        type="number"
-                        min="0"
-                        step="1"
-                        defaultValue={batch.fees ?? ""}
-                        className="field"
-                      />
-                      <p className="mt-1.5 text-xs text-muted">
-                        This is what students are charged online, with 18% GST added on top and
-                        shown separately. Leave blank to hide the fee and turn off online payment for
-                        this batch.
-                      </p>
-                    </div>
-
-                    <div className="grid gap-4 sm:grid-cols-[1fr,140px]">
-                      <Text
-                        name="video_id"
-                        label="Demo video"
-                        defaultValue={batch.video_id}
-                        placeholder="Paste the YouTube link or video ID"
-                        help="Each branch can have its own demo lecture. Paste the whole YouTube address — we'll pick out what we need."
-                      />
-                      <Text
-                        name="video_start"
-                        label="Start at (seconds)"
-                        defaultValue={String(batch.video_start ?? 0)}
-                        help="Optional."
-                      />
-                    </div>
-
-                    <Checkbox
-                      name="enroll_enabled"
-                      label="Allow students to enroll and pay online for this batch"
-                      defaultChecked={batch.enroll_enabled}
-                    />
-                    <Checkbox
-                      name="visible"
-                      label="Show this batch on the website"
-                      defaultChecked={batch.visible}
-                    />
-
-                    <div className="flex gap-2 border-t border-line pt-4">
-                      <SaveButton />
-                      <button type="button" onClick={() => setOpenId(null)} className="btn-secondary">
-                        Cancel
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              )}
-            </li>
-          );
-        })}
-      </ul>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ))}
     </div>
   );
 }

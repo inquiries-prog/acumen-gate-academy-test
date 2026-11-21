@@ -153,6 +153,48 @@ const config: Config = {
           "0%, 100%": { transform: "translateX(0)" },
           "50%": { transform: "translateX(4px)" },
         },
+        /* A light sweeping down the free-demo edge tab, every few seconds. */
+        sweepY: {
+          "0%, 60%": { transform: "translateY(-110%)" },
+          "100%": { transform: "translateY(110%)" },
+        },
+        /* The gift icon's small attention shake, then a long rest. */
+        wiggle: {
+          "0%, 80%, 100%": { transform: "rotate(0deg)" },
+          "84%": { transform: "rotate(-14deg)" },
+          "88%": { transform: "rotate(12deg)" },
+          "92%": { transform: "rotate(-8deg)" },
+          "96%": { transform: "rotate(5deg)" },
+        },
+        /* Header courses menu opening. */
+        dropIn: {
+          from: { opacity: "0", transform: "translateY(-8px) scale(.985)" },
+          to: { opacity: "1", transform: "translateY(0) scale(1)" },
+        },
+        /* Slow travel of a gradient, for the highlighted demo button. */
+        gradientX: {
+          "0%, 100%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+        },
+        /* Branch artwork: a line drawing itself, then holding. */
+        drawLoop: {
+          "0%": { strokeDashoffset: "300" },
+          "45%, 100%": { strokeDashoffset: "0" },
+        },
+        /* Small orbit for decorative dots around the artwork. */
+        orbit: {
+          from: { transform: "rotate(0deg) translateX(var(--r, 90px)) rotate(0deg)" },
+          to: { transform: "rotate(360deg) translateX(var(--r, 90px)) rotate(-360deg)" },
+        },
+        /* Flowing dashes - current in a wire, fluid in a pipe. */
+        dashFlow: {
+          to: { strokeDashoffset: "-40" },
+        },
+        /* Signal-wave bob for the electronics/electrical art. */
+        bob: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-6px)" },
+        },
       },
       animation: {
         // Slow + continuous per SRS 7.1.2 - the client explicitly asked for this
@@ -183,6 +225,17 @@ const config: Config = {
         "nudge-x": "nudgeX 1.4s ease-in-out infinite",
         "draw-stroke": "drawStroke .6s cubic-bezier(0.16,1,0.3,1) both",
         shine: "shine 1.2s cubic-bezier(0.16,1,0.3,1) 1.6s both",
+        "sweep-y": "sweepY 4.5s cubic-bezier(0.16,1,0.3,1) infinite",
+        wiggle: "wiggle 5s ease-in-out infinite",
+        "drop-in": "dropIn .28s cubic-bezier(0.16,1,0.3,1) both",
+        "gradient-x": "gradientX 6s ease-in-out infinite",
+        "draw-loop": "drawLoop 2.6s cubic-bezier(0.16,1,0.3,1) both",
+        orbit: "orbit 18s linear infinite",
+        "orbit-slow": "orbit 28s linear infinite reverse",
+        "dash-flow": "dashFlow 1.6s linear infinite",
+        "spin-gear": "spinSlow 12s linear infinite",
+        "spin-gear-reverse": "spinSlow 9s linear infinite reverse",
+        bob: "bob 3.2s ease-in-out infinite",
       },
       transitionTimingFunction: {
         // Decelerating curve - motion that settles rather than stops dead.

@@ -7,6 +7,8 @@ import Rail from "@/components/ui/Rail";
 import Reveal from "@/components/ui/Reveal";
 import Spotlight from "@/components/ui/Spotlight";
 import SectionHeading from "@/components/ui/SectionHeading";
+import { useRouter } from "next/navigation";
+import { announceCoursesMode } from "@/components/courses/CoursesExplorer";
 import { useSiteUI } from "@/components/site/SiteUI";
 import { DEMO_VIDEO_ID, DEMO_VIDEO_START } from "@/lib/defaults";
 import type { CourseCard } from "@/lib/types";
@@ -16,7 +18,9 @@ import type { CourseCard } from "@/lib/types";
  *
  * The third card is GPSC Coaching, a fixed card, not a generic admin-addable
  * slot: that idea was considered and dropped (SRS 15.3). Each card's button
- * target is stored per card, so what a card opens stays admin-controlled.
+ * target is stored per card, so what a card opens stays admin-controlled:
+ * "batches_offline" / "batches_online" now go to the courses page filtered to
+ * that format (they used to open the batches popups).
  *
  * Cards reveal on scroll with a short stagger, which is what stops a row of
  * three landing as one flat block.
@@ -33,18 +37,21 @@ import type { CourseCard } from "@/lib/types";
  * from the placeholder automatically.
  */
 export default function CoursesSection({ cards }: { cards: CourseCard[] }) {
-  const { push, openEnquiry, offline } = useSiteUI();
+  const { openEnquiry, batches } = useSiteUI();
+  const router = useRouter();
 
-  const demoBatch = offline.find((row) => row.batch?.video_id)?.batch;
+  const demoBatch = batches.find((b) => b.mode === "offline" && b.video_id);
   const demo = {
     id: demoBatch?.video_id || DEMO_VIDEO_ID,
     start: demoBatch?.video_id ? demoBatch.video_start : DEMO_VIDEO_START,
   };
 
   function handleClick(card: CourseCard) {
-    if (card.action === "batches_offline") push({ kind: "batches", mode: "offline" });
-    else if (card.action === "batches_online") push({ kind: "batches", mode: "online" });
-    else openEnquiry(`Course card: ${card.title}`);
+    if (card.action === "batches_offline" || card.action === "batches_online") {
+      const mode = card.action === "batches_offline" ? "offline" : "online";
+      announceCoursesMode(mode);
+      router.push(`/courses?mode=${mode}`);
+    } else openEnquiry(`Course card: ${card.title}`);
   }
 
   return (

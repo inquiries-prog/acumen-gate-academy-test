@@ -18,9 +18,12 @@ import type {
   Batch,
   Branch,
   Center,
+  Course,
   CourseCard,
+  CourseSubject,
   EcosystemCard,
   Faq,
+  FaqCategory,
   FormOption,
   GalleryImage,
   LegalPage,
@@ -92,6 +95,16 @@ export const siteSettings: SiteSettings = {
   etude360_logo_url: "",
   final_cta_heading: "Ready to start your GATE journey?",
   final_cta_button: "Talk to us",
+  // SAMPLE (Nov 2026): the official GATE 2027 dates are announced by the
+  // organising IIT. GATE is usually held on the first weekends of February.
+  // Editable in admin -> Banner, hero & contact details.
+  gate_exam_label: "GATE 2027",
+  gate_exam_date: "2027-02-06",
+  demo_heading: "Sit in on a free GATE demo class",
+  demo_subtext:
+    "A real live lecture with an Acumen mentor, a doubt-clearing slot, and a study plan for your branch. No fee, no obligation.",
+  demo_nudge_enabled: true,
+  demo_nudge_seconds: "25",
 };
 
 // --- SRS 7.1.4 -------------------------------------------------------------
@@ -105,7 +118,7 @@ export const courseCards: CourseCard[] = [
     image_url: "",
     alt_text: "Students in an Acumen Gate Academy classroom in Vadodara",
     action: "batches_offline",
-    button_label: "Click to know upcoming batches",
+    button_label: "Explore classroom courses",
     visible: true,
     sort_order: 1,
   },
@@ -118,7 +131,7 @@ export const courseCards: CourseCard[] = [
     image_url: "",
     alt_text: "Acumen Gate Academy live online GATE batch",
     action: "batches_online",
-    button_label: "Click to know upcoming batches",
+    button_label: "Explore online courses",
     visible: true,
     sort_order: 2,
   },
@@ -148,44 +161,82 @@ export const branches: Branch[] = [
 ];
 
 /**
- * One batch per branch per mode.
- * Fees are the client's real figures (Nov 2026), GST-inclusive: ₹15,000
- * online, ₹45,000 offline. start_date / duration / faculty are still
- * ILLUSTRATIVE PLACEHOLDERS pending from the client (SRS 12). Every field is
- * admin-editable; nothing here is referenced by code.
+ * Batches. A branch can run several per mode - here, offline weekday and
+ * weekend batches and one live online batch for each branch.
+ *
+ * Fees are the client's real figures (Nov 2026), GST-inclusive: Rs 15,000
+ * online, Rs 45,000 offline. Titles, start dates, schedules, durations and
+ * languages are SAMPLE DATA for the course pages (Nov 2026) and must be
+ * replaced with the client's real details before launch - see PENDING A4.
+ * Every field is admin-editable; nothing here is referenced by code.
  */
-export const batches: Batch[] = branches.flatMap((b, i) => {
-  const base = {
+const SAMPLE_BATCHES: Array<
+  Pick<Batch, "mode" | "title" | "start_date" | "schedule" | "duration" | "medium" | "badge"> & {
+    key: string;
+    fees: number;
+    seats: string;
+  }
+> = [
+  {
+    key: "offline-weekday",
+    mode: "offline",
+    title: "Weekday Regular Batch · Vadodara",
+    start_date: "4 January 2027",
+    schedule: "Mon–Fri · 5:30–8:30 PM",
     duration: "12 months",
-    faculty: PLACEHOLDER,
-    fees_note: "",
+    medium: "English + Hindi",
+    badge: "New",
+    fees: 45000,
+    seats: "40",
+  },
+  {
+    key: "offline-weekend",
+    mode: "offline",
+    title: "Weekend Batch · Vadodara",
+    start_date: "9 January 2027",
+    schedule: "Sat & Sun · 9:30 AM–4:30 PM",
+    duration: "14 months",
+    medium: "English + Hindi",
+    badge: "",
+    fees: 45000,
+    seats: "40",
+  },
+  {
+    key: "online",
+    mode: "online",
+    title: "Live Online Batch",
+    start_date: "11 January 2027",
+    schedule: "Mon–Sat · 7:00–9:00 PM, live + recordings",
+    duration: "12 months",
+    medium: "English + Hindi",
+    badge: "",
+    fees: 15000,
     seats: "",
+  },
+];
+
+export const batches: Batch[] = branches.flatMap((b, i) =>
+  SAMPLE_BATCHES.map((sample, j) => ({
+    id: `batch-${b.code.toLowerCase()}-${sample.key}`,
+    branch_id: b.id,
+    mode: sample.mode,
+    title: sample.title,
+    start_date: sample.start_date,
+    schedule: sample.schedule,
+    duration: sample.duration,
+    medium: sample.medium,
+    badge: sample.badge,
+    faculty: PLACEHOLDER,
+    fees: sample.fees,
+    fees_note: "",
+    seats: sample.seats,
     video_id: DEMO_VIDEO_ID,
     video_start: DEMO_VIDEO_START,
     enroll_enabled: true,
     visible: true,
-  };
-  return [
-    {
-      ...base,
-      id: `batch-${b.code.toLowerCase()}-offline`,
-      branch_id: b.id,
-      mode: "offline" as const,
-      fees: 45000,
-      start_date: PLACEHOLDER,
-      sort_order: i + 1,
-    },
-    {
-      ...base,
-      id: `batch-${b.code.toLowerCase()}-online`,
-      branch_id: b.id,
-      mode: "online" as const,
-      fees: 15000,
-      start_date: PLACEHOLDER,
-      sort_order: i + 1,
-    },
-  ];
-});
+    sort_order: i * 10 + j + 1,
+  })),
+);
 
 // --- SRS 7.1.6 / 7.2.4: the 9-point pedagogy checklist ---------------------
 export const pedagogyPoints: PedagogyPoint[] = [
@@ -455,8 +506,19 @@ export const centers: Center[] = [
   },
 ];
 
+// --- FAQ page categories, in display order --------------------------------
+export const FAQ_CATEGORIES: Array<{ key: FaqCategory; label: string; blurb: string }> = [
+  { key: "gate", label: "The GATE exam", blurb: "Eligibility, pattern, marking and what a score is worth." },
+  { key: "courses", label: "Courses & batches", blurb: "Which batch fits you and how the course runs." },
+  { key: "demo", label: "Free demo class", blurb: "What happens in a demo and how to book one." },
+  { key: "fees", label: "Fees & payment", blurb: "What you pay, GST and paying online." },
+  { key: "online", label: "Online classes", blurb: "Live classes, recordings and doubt support." },
+  { key: "about", label: "About Acumen", blurb: "Our centres, faculty and placement support." },
+];
+
 // --- SRS 7.2.8: ten FAQs, answers transcribed verbatim --------------------
-export const faqs: Faq[] = [
+// These ten are the About page set (category "about").
+const aboutFaqs = [
   {
     question: "Is Acumen Gate Academy the best GATE coaching in Vadodara?",
     answer:
@@ -506,6 +568,163 @@ export const faqs: Faq[] = [
     answer:
       "This is exactly why Acumen designs its batch schedules around your college's academic calendar - including end-semester and mid-semester exam periods - so GATE classes never directly conflict with your college exams. We also recommend students treat GATE-relevant college subjects as dual-purpose study time, rather than two separate efforts. Our mentors work with students individually to adjust pacing during heavier college exam periods, so preparation continues without falling behind.",
   },
+];
+
+/**
+ * SAMPLE FAQs for the /faq page (Nov 2026). GATE facts reflect the exam as run
+ * in recent cycles; the organising IIT can change details each year, so these
+ * should be checked against the GATE 2027 information brochure. Answers about
+ * Acumen's own process are written as safe defaults and should be confirmed by
+ * the client - see PENDING.
+ */
+const sampleFaqs: Array<{ category: FaqCategory; question: string; answer: string }> = [
+  // The GATE exam
+  {
+    category: "gate",
+    question: "What is GATE?",
+    answer:
+      "GATE (Graduate Aptitude Test in Engineering) is a national computer-based exam conducted jointly by IISc Bengaluru and seven IITs on rotation. A GATE score is used for M.Tech and PhD admissions at the IITs, IISc and NITs, for recruitment by many public sector undertakings (PSUs), and for several government scientific and engineering posts.",
+  },
+  {
+    category: "gate",
+    question: "Who is eligible to write GATE?",
+    answer:
+      "Students in the third or higher year of an undergraduate degree in engineering, technology, architecture, science, commerce or arts, and anyone who has already completed such a degree, can apply. There is no age limit and no limit on the number of attempts.",
+  },
+  {
+    category: "gate",
+    question: "What is the GATE exam pattern?",
+    answer:
+      "GATE is a 3-hour computer-based test with 65 questions worth 100 marks. General Aptitude carries 15 marks (10 questions). The remaining 85 marks cover the subject paper, of which engineering mathematics is usually about 13 marks. Questions are multiple choice (MCQ), multiple select (MSQ) or numerical answer type (NAT).",
+  },
+  {
+    category: "gate",
+    question: "Is there negative marking in GATE?",
+    answer:
+      "Only for multiple choice questions: a wrong answer loses 1/3 of a mark on a 1-mark question and 2/3 of a mark on a 2-mark question. Multiple select and numerical answer questions carry no negative marking.",
+  },
+  {
+    category: "gate",
+    question: "How long is a GATE score valid?",
+    answer:
+      "A GATE score is valid for three years from the date the results are announced. PSUs usually accept only the score from a specific recent year, so always check each recruitment notification.",
+  },
+  {
+    category: "gate",
+    question: "When is GATE held?",
+    answer:
+      "GATE is normally held over the first two weekends of February, with registration opening around late August and results announced in March. The exact dates for each year are announced by the organising institute.",
+  },
+  {
+    category: "gate",
+    question: "Can I write two GATE papers?",
+    answer:
+      "Yes. Candidates can appear in up to two papers, chosen from the combinations the organising institute allows that year.",
+  },
+  // Courses & batches
+  {
+    category: "courses",
+    question: "Which batch should I join: weekday, weekend or online?",
+    answer:
+      "Weekday batches suit students who live in or near Vadodara and can attend in the evening. Weekend batches suit students whose college timetable fills the week. Live online batches suit students outside Vadodara or anyone who needs flexibility. Every batch follows the same nine-point structure, and our counsellors will help you choose. Book a free demo class or call us.",
+  },
+  {
+    category: "courses",
+    question: "How long is a GATE course?",
+    answer:
+      "Our full GATE courses run for about 12 months, covering the complete syllabus for your branch, followed by revision, a national-level test series and post-GATE guidance. The exact duration of each batch is shown on its course page.",
+  },
+  {
+    category: "courses",
+    question: "Will classes clash with my college exams?",
+    answer:
+      "No. Every Acumen batch schedule is planned around university end-semester and mid-semester exams, so your GATE preparation supports your degree rather than competing with it.",
+  },
+  {
+    category: "courses",
+    question: "Do you provide study material?",
+    answer:
+      "Yes. Every enrolled student gets books in soft copy on the Acumen app, weekly assignments and tests, and access to our national-level test series.",
+  },
+  {
+    category: "courses",
+    question: "Can I switch from an online batch to an offline batch later?",
+    answer:
+      "Please speak with our team. Where seats are available we will do our best to help you move, and any difference in fee is worked out with you before the switch.",
+  },
+  // Free demo class
+  {
+    category: "demo",
+    question: "Is the demo class really free?",
+    answer:
+      "Yes. The demo class costs nothing and there is no obligation to enroll. It is the best way to see how our mentors teach before you decide.",
+  },
+  {
+    category: "demo",
+    question: "What happens in a free demo class?",
+    answer:
+      "You attend a real lecture on a core topic from your branch, taught by an Acumen mentor, followed by a short doubt-clearing slot. Afterwards a counsellor can talk you through a study plan and the batch options that fit your college schedule.",
+  },
+  {
+    category: "demo",
+    question: "Can I attend the demo class online?",
+    answer:
+      "Yes. When you book, you can choose an online demo or attend in person at our Vadodara centre.",
+  },
+  {
+    category: "demo",
+    question: "How do I book a free demo class?",
+    answer:
+      "Tap 'Free Demo Class' anywhere on the website and fill in your name, phone number and branch. Our team will call you to confirm the date and time.",
+  },
+  // Fees & payment
+  {
+    category: "fees",
+    question: "Does the course fee include GST?",
+    answer:
+      "Yes. The fee shown on each course page is the full amount you pay, including 18% GST. Your GST invoice shows the base fee and the GST amount separately.",
+  },
+  {
+    category: "fees",
+    question: "How can I pay the fee?",
+    answer:
+      "You can enroll and pay online from any course page using UPI, debit or credit card, or net banking through our secure payment partner. You can also pay at our Vadodara centre.",
+  },
+  {
+    category: "fees",
+    question: "Will I get an invoice?",
+    answer: "Yes. A GST tax invoice is emailed to you as soon as your online payment is confirmed.",
+  },
+  {
+    category: "fees",
+    question: "What if my payment fails?",
+    answer:
+      "If money left your account but the payment did not complete, your bank normally reverses it automatically. Either way, call us and our team will help you finish enrolling. Your details are saved, so you won't need to start again.",
+  },
+  // Online classes
+  {
+    category: "online",
+    question: "Are online classes live or recorded?",
+    answer:
+      "Online batches are taught live, so you can ask questions in class. Every lecture is also recorded on the Acumen app, so you can revise or catch up on a class you missed.",
+  },
+  {
+    category: "online",
+    question: "How do online students clear doubts?",
+    answer:
+      "In the live class itself, in mentoring sessions, and by reaching our team directly. Online students can call, message, or walk in to our Vadodara centre like any classroom student.",
+  },
+  {
+    category: "online",
+    question: "Do online students get the same test series?",
+    answer:
+      "Yes. Online students get the same weekly tests, assignments and national-level test series as classroom students.",
+  },
+];
+
+export const faqs: Faq[] = [
+  ...aboutFaqs.map((f) => ({ ...f, category: "about" as const })),
+  ...sampleFaqs,
 ].map((f, i) => ({ id: `faq-${i + 1}`, ...f, visible: true, sort_order: i + 1 }));
 
 // --- SRS 8.1 / 8.2: every dropdown list is admin-editable data -------------
@@ -542,6 +761,19 @@ export const formOptions: FormOption[] = [
   ...["Offline batch", "Online batch"].map((label, i) => ({
     id: `opt-interested-${i + 1}`,
     field_key: "interested_for",
+    label,
+    visible: true,
+    sort_order: i + 1,
+  })),
+  // SAMPLE demo slots (Nov 2026) - the free demo form's "Preferred time".
+  ...[
+    "Saturday · 11:00 AM (Online)",
+    "Saturday · 4:00 PM (Vadodara centre)",
+    "Sunday · 11:00 AM (Online)",
+    "Any day - please call me",
+  ].map((label, i) => ({
+    id: `opt-demo-slot-${i + 1}`,
+    field_key: "demo_slot",
     label,
     visible: true,
     sort_order: i + 1,
@@ -592,6 +824,18 @@ export const pageSeo: PageSeo[] = [
     meta_title: "GATE & PSU Recruitment News | Acumen Gate Academy",
     meta_description:
       "Recruitment notifications and GATE announcements that matter to engineering students in Gujarat, explained in terms of what they mean for your preparation.",
+  },
+  {
+    path: "/courses",
+    meta_title: "GATE Coaching Courses in Vadodara & Online | Acumen Gate Academy",
+    meta_description:
+      "GATE courses for Mechanical, Civil, Computer Science, Electrical, Electronics and Chemical Engineering, plus GPSC coaching. Offline in Vadodara or live online, with full syllabus, batches and fees.",
+  },
+  {
+    path: "/faq",
+    meta_title: "GATE FAQs: Exam, Courses, Fees & Demo Class | Acumen Gate Academy",
+    meta_description:
+      "Answers on GATE eligibility, exam pattern and marking, choosing a batch, fees and GST, online classes, and booking a free demo class at Acumen Gate Academy.",
   },
   {
     path: "/results",
@@ -724,3 +968,281 @@ const pressClippings: GalleryImage[] = [
 }));
 
 export const galleryImages: GalleryImage[] = [...resultPosts, ...pressClippings];
+
+// ===========================================================================
+// Course pages (/courses and /courses/<slug>)
+//
+// SAMPLE CONTENT (Nov 2026). Overviews and highlights are written from what
+// the SRS already says about Acumen. Syllabus subjects follow the official
+// GATE syllabus for each paper; the "typical marks" are approximate ranges
+// from recent papers and should be checked by the faculty before launch -
+// see docs/PENDING.md. Everything here is admin-editable.
+// ===========================================================================
+
+const GATE_WHO_SHOULD_JOIN = [
+  "Engineering students from 2nd year onwards who want to start early",
+  "Final-year students preparing for GATE alongside their degree",
+  "Graduates taking a focused attempt for M.Tech, PSU jobs or research",
+  "Working engineers who want a structured, mentor-led plan",
+].join("\n");
+
+const GATE_COMMON_HIGHLIGHTS = [
+  "Complete branch syllabus taught from basics to GATE level",
+  "Weekly assignments, chapter tests and a national-level test series",
+  "Live and recorded lectures with books in soft copy on the Acumen app",
+  "Personal mentoring, with schedules planned around your university exams",
+  "Post-GATE guidance for M.Tech admissions and PSU recruitment",
+];
+
+interface CourseSeed {
+  code: string;
+  slug: string;
+  title: string;
+  short: string;
+  tagline: string;
+  overview: string;
+  extraHighlight: string;
+  /** subject, typical marks, topics */
+  subjects: Array<[string, string, string[]]>;
+}
+
+const MATHS: [string, string, string[]] = [
+  "Engineering Mathematics",
+  "≈ 13 marks",
+  [
+    "Linear algebra",
+    "Calculus",
+    "Differential equations",
+    "Complex variables",
+    "Probability and statistics",
+    "Numerical methods",
+  ],
+];
+
+const APTITUDE: [string, string, string[]] = [
+  "General Aptitude",
+  "15 marks",
+  [
+    "Verbal aptitude",
+    "Quantitative aptitude",
+    "Analytical aptitude",
+    "Spatial aptitude",
+  ],
+];
+
+const GATE_COURSES: CourseSeed[] = [
+  {
+    code: "ME",
+    slug: "gate-mechanical",
+    title: "GATE Mechanical Engineering (ME)",
+    short: "Mechanical",
+    tagline: "From engineering mechanics to manufacturing - the full ME paper, taught by mentors who have topped it.",
+    overview:
+      "Our GATE Mechanical Engineering course covers the complete ME syllabus, from engineering mechanics and strength of materials through thermal sciences, design and manufacturing. Concepts are built from first principles and then drilled with GATE-level problems every week, so students can handle both the conceptual 1-mark questions and the long numerical 2-mark questions under exam time.",
+    extraHighlight: "Dedicated problem-solving sessions for thermal sciences and manufacturing, the two heaviest ME sections",
+    subjects: [
+      ["Engineering Mechanics", "≈ 4–6 marks", ["Free-body diagrams and equilibrium", "Friction", "Trusses and frames", "Virtual work", "Kinematics and dynamics of rigid bodies", "Impulse, momentum and collisions"]],
+      ["Mechanics of Materials", "≈ 7–9 marks", ["Stress, strain and elastic constants", "Mohr's circle", "Shear force and bending moment", "Bending and shear stresses", "Deflection of beams", "Torsion", "Columns and strain energy", "Thin cylinders"]],
+      ["Theory of Machines", "≈ 5–7 marks", ["Velocity and acceleration analysis", "Cams", "Gears and gear trains", "Flywheels and governors", "Balancing", "Gyroscope"]],
+      ["Vibrations", "≈ 2–4 marks", ["Free and forced vibration", "Damping", "Resonance and isolation", "Critical speed of shafts"]],
+      ["Machine Design", "≈ 4–6 marks", ["Static and fatigue design", "Theories of failure", "Joints", "Shafts", "Gears", "Bearings", "Brakes and clutches", "Springs"]],
+      ["Fluid Mechanics", "≈ 7–9 marks", ["Fluid properties and statics", "Buoyancy", "Control-volume analysis", "Bernoulli's equation", "Viscous flow", "Boundary layer", "Flow through pipes"]],
+      ["Heat Transfer", "≈ 5–7 marks", ["Conduction and fins", "Lumped capacitance", "Free and forced convection", "Radiation", "Heat exchangers (LMTD and NTU)"]],
+      ["Thermodynamics", "≈ 4–6 marks", ["Laws of thermodynamics", "Entropy and exergy", "Properties of pure substances", "Ideal and real gases"]],
+      ["Power Plant, IC Engines & Refrigeration", "≈ 5–7 marks", ["Rankine and Brayton cycles", "IC engine cycles", "Vapour compression refrigeration", "Psychrometry", "Turbomachinery"]],
+      ["Materials & Manufacturing", "≈ 12–15 marks", ["Engineering materials", "Casting", "Forming", "Joining", "Machining and machine tools", "Metrology and inspection", "Computer-integrated manufacturing"]],
+      ["Industrial Engineering", "≈ 4–6 marks", ["Forecasting", "Scheduling", "Inventory control", "Linear programming", "Queuing", "PERT and CPM"]],
+    ],
+  },
+  {
+    code: "CE",
+    slug: "gate-civil",
+    title: "GATE Civil Engineering (CE)",
+    short: "Civil",
+    tagline: "Structures, geotech, water and transport - every CE section, with design codes made simple.",
+    overview:
+      "Our GATE Civil Engineering course takes students through all seven sections of the CE paper - structural, geotechnical, water resources, environmental, transportation and geomatics engineering, plus mathematics and aptitude. Mentors who have written the books Civil students study from teach the design-code questions step by step, so the long numerical problems stop being the ones students skip.",
+    extraHighlight: "Code-based design practice for RCC and steel, taught by the authors of our Civil foundation books",
+    subjects: [
+      ["Solid Mechanics", "≈ 8–10 marks", ["Bending moment and shear force", "Simple stress and strain", "Bending and shear stresses", "Torsion", "Mohr's circle", "Deflection of beams", "Columns"]],
+      ["Structural Analysis", "≈ 4–6 marks", ["Determinate and indeterminate structures", "Force and displacement methods", "Influence lines", "Matrix methods", "Stability"]],
+      ["Concrete Structures", "≈ 4–6 marks", ["Working stress and limit state design", "Beams and slabs", "Columns and footings", "Prestressed concrete basics"]],
+      ["Steel Structures", "≈ 3–5 marks", ["Tension and compression members", "Beams", "Connections", "Plastic analysis"]],
+      ["Construction Materials & Management", "≈ 3–5 marks", ["Concrete, steel, bricks and timber", "Construction planning", "PERT and CPM", "Cost estimation"]],
+      ["Geotechnical Engineering", "≈ 14–17 marks", ["Soil properties and classification", "Permeability and seepage", "Compaction and consolidation", "Shear strength", "Earth pressure", "Shallow and deep foundations", "Slope stability"]],
+      ["Fluid Mechanics & Hydraulics", "≈ 8–10 marks", ["Fluid properties and statics", "Bernoulli's equation", "Pipe flow", "Open channel flow", "Hydraulic jump", "Dimensional analysis"]],
+      ["Hydrology & Irrigation", "≈ 4–6 marks", ["Hydrologic cycle", "Hydrographs", "Flood estimation", "Groundwater", "Crop water requirement", "Canal design"]],
+      ["Environmental Engineering", "≈ 10–12 marks", ["Water quality", "Water and wastewater treatment", "Air pollution", "Noise pollution", "Solid waste management"]],
+      ["Transportation Engineering", "≈ 8–10 marks", ["Highway geometric design", "Pavement materials and design", "Traffic engineering", "Intersections and signals"]],
+      ["Geomatics Engineering", "≈ 3–5 marks", ["Surveying principles", "Levelling and traversing", "Curves", "Photogrammetry", "Remote sensing and GIS"]],
+    ],
+  },
+  {
+    code: "CSE",
+    slug: "gate-computer-science",
+    title: "GATE Computer Science & IT (CS)",
+    short: "Computer Science",
+    tagline: "Algorithms to operating systems - the CS paper taught for the way GATE actually asks it.",
+    overview:
+      "Our GATE Computer Science course covers every core CS subject, from discrete mathematics and data structures through theory of computation, operating systems, databases and networks. GATE CS rewards precise reasoning more than memory, so classes focus on tracing algorithms, writing proofs and solving previous-year questions until the patterns are second nature.",
+    extraHighlight: "Taught by CS mentors recognised among India's best GATE faculty, with topic-wise previous-year practice",
+    subjects: [
+      ["Discrete Mathematics", "within ≈ 13 marks", ["Propositional and first-order logic", "Sets, relations and functions", "Graph theory", "Combinatorics", "Groups"]],
+      ["Digital Logic", "≈ 4–6 marks", ["Boolean algebra", "Combinational circuits", "Sequential circuits", "Number representation"]],
+      ["Computer Organization & Architecture", "≈ 6–9 marks", ["Machine instructions and addressing modes", "ALU and datapath", "Pipelining", "Memory hierarchy and cache", "I/O interface"]],
+      ["Programming & Data Structures", "≈ 8–11 marks", ["Programming in C", "Recursion", "Arrays, stacks and queues", "Linked lists", "Trees and binary search trees", "Heaps and graphs"]],
+      ["Algorithms", "≈ 7–10 marks", ["Searching and sorting", "Hashing", "Asymptotic complexity", "Greedy, divide and conquer, dynamic programming", "Graph algorithms"]],
+      ["Theory of Computation", "≈ 6–8 marks", ["Regular expressions and finite automata", "Context-free grammars and push-down automata", "Turing machines", "Undecidability"]],
+      ["Compiler Design", "≈ 3–5 marks", ["Lexical analysis", "Parsing", "Syntax-directed translation", "Intermediate code generation", "Runtime environments"]],
+      ["Operating System", "≈ 7–10 marks", ["Processes and threads", "CPU scheduling", "Synchronisation and deadlock", "Memory management and virtual memory", "File systems"]],
+      ["Databases", "≈ 6–8 marks", ["ER model", "Relational algebra and SQL", "Normal forms", "Indexing", "Transactions and concurrency control"]],
+      ["Computer Networks", "≈ 6–9 marks", ["Layering and switching", "Data link layer", "IP addressing and routing", "TCP and UDP", "Application layer protocols"]],
+    ],
+  },
+  {
+    code: "EE",
+    slug: "gate-electrical",
+    title: "GATE Electrical Engineering (EE)",
+    short: "Electrical",
+    tagline: "Machines, power systems and control - built up from circuits to the toughest EE numericals.",
+    overview:
+      "Our GATE Electrical Engineering course covers the full EE paper, from electric circuits and electromagnetic fields to electrical machines, power systems, control, measurements and power electronics. Because EE subjects build on each other, the course is sequenced so that circuits and signals are solid before machines and power systems begin.",
+    extraHighlight: "A sequenced plan where circuits and signals are secure before machines and power systems begin",
+    subjects: [
+      ["Electric Circuits", "≈ 8–11 marks", ["Network elements and theorems", "Transient response", "Sinusoidal steady state", "Resonance", "Two-port networks", "Three-phase circuits"]],
+      ["Electromagnetic Fields", "≈ 3–5 marks", ["Coulomb's and Gauss's laws", "Electric field and potential", "Capacitance", "Biot-Savart and Ampere's laws", "Inductance"]],
+      ["Signals & Systems", "≈ 6–8 marks", ["Continuous and discrete signals", "LTI systems", "Fourier series and transform", "Laplace and z-transform", "Sampling"]],
+      ["Electrical Machines", "≈ 10–13 marks", ["Transformers", "DC machines", "Induction machines", "Synchronous machines"]],
+      ["Power Systems", "≈ 10–13 marks", ["Transmission lines and cables", "Per-unit system", "Load flow", "Fault analysis", "Protection", "Stability", "Economic load dispatch"]],
+      ["Control Systems", "≈ 7–9 marks", ["Block diagrams and signal flow graphs", "Time response", "Routh-Hurwitz and root locus", "Bode and Nyquist", "Compensators", "State space"]],
+      ["Electrical & Electronic Measurements", "≈ 4–6 marks", ["Bridges and potentiometers", "Measurement of power and energy", "Instrument transformers", "Oscilloscopes", "Error analysis"]],
+      ["Analog & Digital Electronics", "≈ 7–9 marks", ["Diode and transistor circuits", "Op-amps", "Combinational and sequential logic", "ADCs and DACs", "Microprocessor basics"]],
+      ["Power Electronics", "≈ 7–9 marks", ["Power semiconductor devices", "Rectifiers", "DC-DC converters", "Inverters", "Drives"]],
+    ],
+  },
+  {
+    code: "EC",
+    slug: "gate-electronics",
+    title: "GATE Electronics & Communication (EC)",
+    short: "Electronics",
+    tagline: "Devices, circuits and communications - the EC paper made clear, one building block at a time.",
+    overview:
+      "Our GATE Electronics & Communication course covers every section of the EC paper: networks and signals, electronic devices, analog and digital circuits, control systems, communications and electromagnetics. Mentors teach the physics behind each device and circuit before the shortcuts, so students can solve unfamiliar questions rather than only the ones they have seen before.",
+    extraHighlight: "Concept-first teaching of devices and circuits, then speed drills for the numerical questions",
+    subjects: [
+      ["Networks, Signals & Systems", "≈ 12–15 marks", ["Network theorems", "Transient and steady-state analysis", "Two-port networks", "Fourier, Laplace and z-transforms", "LTI systems", "Sampling"]],
+      ["Electronic Devices", "≈ 6–9 marks", ["Semiconductor physics", "PN junction", "BJT and MOSFET", "Photodiodes and LEDs", "Device fabrication basics"]],
+      ["Analog Circuits", "≈ 9–12 marks", ["Diode circuits", "BJT and MOSFET amplifiers", "Op-amp circuits", "Feedback and oscillators", "Filters"]],
+      ["Digital Circuits", "≈ 8–10 marks", ["Number systems and Boolean algebra", "Combinational circuits", "Sequential circuits", "Data converters", "Semiconductor memories"]],
+      ["Control Systems", "≈ 7–9 marks", ["Block diagrams", "Time and frequency response", "Stability analysis", "Compensators", "State-space models"]],
+      ["Communications", "≈ 10–12 marks", ["Random processes", "Analog modulation", "Information theory", "Digital modulation", "Error-correcting codes"]],
+      ["Electromagnetics", "≈ 7–9 marks", ["Maxwell's equations", "Plane waves", "Transmission lines", "Waveguides", "Antennas basics"]],
+    ],
+  },
+  {
+    code: "CH",
+    slug: "gate-chemical",
+    title: "GATE Chemical Engineering (CH)",
+    short: "Chemical",
+    tagline: "Transport phenomena to reaction engineering - the CH paper, problem by problem.",
+    overview:
+      "Our GATE Chemical Engineering course covers the full CH paper, from process calculations and thermodynamics through fluid mechanics, heat and mass transfer, reaction engineering, process control and plant design. Chemical Engineering questions are long and numerical, so every topic is paired with timed problem practice from the first week.",
+    extraHighlight: "Timed numerical practice in every topic - CH questions reward speed as much as understanding",
+    subjects: [
+      ["Process Calculations & Thermodynamics", "≈ 10–12 marks", ["Material and energy balances", "Recycle, bypass and purge", "Laws of thermodynamics", "Phase equilibria", "Chemical reaction equilibria"]],
+      ["Fluid Mechanics & Mechanical Operations", "≈ 10–13 marks", ["Fluid statics", "Flow through pipes and packed beds", "Pumps and compressors", "Size reduction", "Filtration and settling"]],
+      ["Heat Transfer", "≈ 7–9 marks", ["Conduction, convection and radiation", "Heat exchangers", "Boiling and condensation", "Evaporators"]],
+      ["Mass Transfer", "≈ 10–12 marks", ["Diffusion", "Mass transfer coefficients", "Distillation", "Absorption", "Extraction and drying"]],
+      ["Chemical Reaction Engineering", "≈ 10–12 marks", ["Rate laws and kinetics", "Ideal reactors", "Non-ideal reactors and RTD", "Catalysis"]],
+      ["Instrumentation & Process Control", "≈ 6–8 marks", ["Measurement of process variables", "Transfer functions", "Controllers", "Stability and tuning"]],
+      ["Plant Design & Economics", "≈ 4–6 marks", ["Cost estimation", "Depreciation", "Profitability analysis", "Optimum design"]],
+      ["Chemical Technology", "≈ 3–5 marks", ["Inorganic chemical industries", "Petroleum refining", "Polymers", "Natural products"]],
+    ],
+  },
+];
+
+export const courses: Course[] = [
+  ...GATE_COURSES.map((c, i) => ({
+    id: `course-${c.slug}`,
+    slug: c.slug,
+    title: c.title,
+    short_title: c.short,
+    category: "gate" as const,
+    branch_code: c.code,
+    tagline: c.tagline,
+    overview: c.overview,
+    highlights: [...GATE_COMMON_HIGHLIGHTS.slice(0, 2), c.extraHighlight, ...GATE_COMMON_HIGHLIGHTS.slice(2)].join("\n"),
+    who_should_join: GATE_WHO_SHOULD_JOIN,
+    image_url: "",
+    alt_text: `${c.title} coaching at Acumen Gate Academy`,
+    meta_title: `${c.title} Coaching in Vadodara & Online | Acumen Gate Academy`,
+    meta_description: `${c.title} coaching at Acumen Gate Academy: full syllabus, offline batches in Vadodara and live online batches, fees, start dates and a free demo class.`,
+    visible: true,
+    sort_order: i + 1,
+  })),
+  {
+    id: "course-gpsc-engineering",
+    slug: "gpsc-engineering",
+    title: "GPSC Coaching for Engineering Roles",
+    short_title: "GPSC",
+    category: "gpsc",
+    branch_code: "",
+    tagline: "Class 1, 2 and 3 engineering posts in Gujarat state service - general studies and technical, together.",
+    overview:
+      "Dedicated GPSC coaching for engineering roles, covering GPSC Class 1, Class 2 and Class 3 exams, for students and professionals preparing for Gujarat state government engineering services. The course combines general studies and current affairs with the technical subjects of your branch, so preparation for both papers moves forward together.",
+    highlights: [
+      "Covers GPSC Class 1, Class 2 and Class 3 engineering posts",
+      "General studies, current affairs and Gujarat-specific topics",
+      "Technical subjects for your branch, taught by GATE faculty",
+      "Regular tests in the GPSC pattern",
+      "Interview guidance once you clear the written exams",
+    ].join("\n"),
+    who_should_join: [
+      "Engineering graduates aiming for Gujarat state government posts",
+      "GATE aspirants who want a parallel government-job route",
+      "Working engineers preparing for Class 1 or Class 2 posts",
+    ].join("\n"),
+    image_url: "",
+    alt_text: "GPSC coaching for engineering roles at Acumen Gate Academy",
+    meta_title: "GPSC Coaching for Engineers in Vadodara | Acumen Gate Academy",
+    meta_description:
+      "GPSC coaching for Class 1, 2 and 3 engineering posts: general studies, current affairs and technical subjects, at Acumen Gate Academy, Vadodara.",
+    visible: true,
+    sort_order: GATE_COURSES.length + 1,
+  },
+];
+
+const GPSC_SUBJECTS: Array<[string, string, string[]]> = [
+  ["General Studies", "", ["History and culture of Gujarat and India", "Geography", "Indian polity and constitution", "Indian and Gujarat economy", "General science"]],
+  ["Current Affairs", "", ["National and international events", "Gujarat state schemes and policies", "Science and technology"]],
+  ["Reasoning & Aptitude", "", ["Logical reasoning", "Quantitative aptitude", "Data interpretation"]],
+  ["Technical Subjects", "", ["Core subjects of your engineering branch", "Previous-year GPSC technical papers", "Short-answer and objective practice"]],
+  ["Interview Guidance", "", ["Personality test preparation", "Mock interviews", "Current-affairs discussion"]],
+];
+
+export const courseSubjects: CourseSubject[] = [
+  ...GATE_COURSES.flatMap((c) =>
+    [APTITUDE, MATHS, ...c.subjects].map(([subject, weightage, topics], j) => ({
+      id: `subject-${c.slug}-${j + 1}`,
+      course_id: `course-${c.slug}`,
+      subject,
+      // GATE CS folds discrete mathematics into its maths section.
+      weightage: c.code === "CSE" && subject === "Engineering Mathematics" ? "≈ 13 marks (with discrete maths)" : weightage,
+      topics:
+        c.code === "CSE" && subject === "Engineering Mathematics"
+          ? ["Linear algebra", "Calculus", "Probability and statistics"].join("\n")
+          : topics.join("\n"),
+      visible: true,
+      sort_order: j + 1,
+    })),
+  ),
+  ...GPSC_SUBJECTS.map(([subject, weightage, topics], j) => ({
+    id: `subject-gpsc-engineering-${j + 1}`,
+    course_id: "course-gpsc-engineering",
+    subject,
+    weightage,
+    topics: topics.join("\n"),
+    visible: true,
+    sort_order: j + 1,
+  })),
+];

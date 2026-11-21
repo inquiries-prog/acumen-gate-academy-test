@@ -14,9 +14,11 @@ import type {
   AboutBlock,
   Batch,
   Branch,
-  BranchBatch,
   Center,
+  Course,
   CourseCard,
+  CourseNavItem,
+  CourseSubject,
   EcosystemCard,
   Faq,
   FormOption,
@@ -102,18 +104,57 @@ export const getBranches = cache(async (): Promise<Branch[]> =>
   (await readTable<Branch>("branches", D.branches)).filter((b) => b.visible),
 );
 
-export const getBatches = cache(
-  async (): Promise<Batch[]> => readTable<Batch>("batches", D.batches),
+/**
+ * Every batch, newest columns defaulted. A database that has not yet run
+ * migration 0004 returns rows without title/schedule/medium/badge; filling
+ * them here means no component has to guard against undefined.
+ */
+export const getBatches = cache(async (): Promise<Batch[]> =>
+  (await readTable<Batch>("batches", D.batches)).map((b) => ({
+    ...b,
+    title: b.title ?? "",
+    schedule: b.schedule ?? "",
+    medium: b.medium ?? "",
+    badge: b.badge ?? "",
+  })),
 );
 
-/** Branch rows for one mode - exactly what the batches modal (SRS 7.1.6) needs. */
-export async function getBranchBatches(mode: "offline" | "online"): Promise<BranchBatch[]> {
+/** Visible batches of one branch, offline first, in display order. */
+export async function getBatchesForBranchCode(code: string): Promise<Batch[]> {
+  if (!code) return [];
   const [branches, batches] = await Promise.all([getBranches(), getBatches()]);
-  return branches.map((branch) => ({
-    branch,
-    batch: batches.find((b) => b.branch_id === branch.id && b.mode === mode && b.visible) ?? null,
-  }));
+  const branch = branches.find((b) => b.code === code);
+  if (!branch) return [];
+  return batches
+    .filter((b) => b.branch_id === branch.id && b.visible)
+    .sort((a, b) =>
+      a.mode === b.mode ? a.sort_order - b.sort_order : a.mode === "offline" ? -1 : 1,
+    );
 }
+
+export const getCourses = cache(async (): Promise<Course[]> =>
+  (await readTable<Course>("courses", D.courses)).filter((c) => c.visible),
+);
+
+export async function getCourse(slug: string): Promise<Course | null> {
+  return (await getCourses()).find((c) => c.slug === slug) ?? null;
+}
+
+/** Just what the header menu needs, for every page. */
+export const getCourseNav = cache(async (): Promise<CourseNavItem[]> =>
+  (await getCourses()).map(({ slug, title, short_title, category, branch_code }) => ({
+    slug,
+    title,
+    short_title,
+    category,
+    branch_code,
+  })),
+);
+
+export const getCourseSubjects = cache(async (courseId: string): Promise<CourseSubject[]> => {
+  const all = await readTable<CourseSubject>("course_subjects", D.courseSubjects);
+  return all.filter((s) => s.course_id === courseId && s.visible !== false);
+});
 
 export const getPedagogyPoints = cache(
   async (): Promise<PedagogyPoint[]> => readTable<PedagogyPoint>("pedagogy_points", D.pedagogyPoints),
@@ -176,8 +217,11 @@ export const getCenters = cache(
   async (): Promise<Center[]> => readTable<Center>("centers", D.centers),
 );
 
+/** Before migration 0004 there is no category column: those are About FAQs. */
 export const getFaqs = cache(async (): Promise<Faq[]> =>
-  (await readTable<Faq>("faqs", D.faqs)).filter((f) => f.visible),
+  (await readTable<Faq>("faqs", D.faqs))
+    .filter((f) => f.visible)
+    .map((f) => ({ ...f, category: f.category ?? "about" })),
 );
 
 export const getFormOptions = cache(async (): Promise<Record<string, string[]>> => {
@@ -199,7 +243,8 @@ export const getUniversities = cache(async (): Promise<University[]> =>
 
 export const getPageSeo = cache(async (path: string): Promise<PageSeo | null> => {
   const rows = await readTable<PageSeo>("page_seo", D.pageSeo, { column: "path" });
-  return rows.find((r) => r.path === path) ?? null;
+  // Pages added after the database was seeded fall back to their starting copy.
+  return rows.find((r) => r.path === path) ?? D.pageSeo.find((r) => r.path === path) ?? null;
 });
 
 export const getLegalPage = cache(async (slug: string): Promise<LegalPage | null> => {

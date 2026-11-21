@@ -55,16 +55,9 @@ export default async function AboutPage() {
   const story = blocks.story;
   const different = blocks.different;
 
-  // SRS 13: FAQ answers are written to be extracted, so mark them up as such.
-  const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqs.map((f) => ({
-      "@type": "Question",
-      name: f.question,
-      acceptedAnswer: { "@type": "Answer", text: f.answer },
-    })),
-  };
+  // The About page shows its own category; every question, with the FAQPage
+  // markup search engines read, lives on /faq (one page per question set).
+  const aboutFaqs = faqs.filter((f) => f.category === "about");
 
   return (
     <>
@@ -161,7 +154,7 @@ export default async function AboutPage() {
       <PressStrip images={press} />
 
       {/* 8. FAQ */}
-      <FaqAccordion faqs={faqs} />
+      <FaqAccordion faqs={aboutFaqs} />
 
       {/* 9. Closing CTA */}
       <FinalCta
@@ -170,12 +163,6 @@ export default async function AboutPage() {
         source="About page CTA"
       />
 
-      {faqs.length > 0 && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-        />
-      )}
     </>
   );
 }

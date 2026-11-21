@@ -54,15 +54,32 @@ the reasoning behind it.
 
 ## What's built
 
-**Public site** — Homepage, About Us, News & Updates (with a page per post),
-Results, Privacy and Terms. Six-item header, announcement banner, four-column
-footer.
+**Public site** — Homepage, About Us, Courses (a hub page plus one page per
+course), FAQ, News & Updates (with a page per post), Results, Privacy and Terms.
+Six-item header (About Us · Courses ▾ · Results · News & Updates · FAQ · Contact
+Us) with a hover menu of every course, announcement banner, four-column footer.
 
-**Lead capture** — two distinct flows kept as two separate lists: the general
-enquiry popup and the seminar-attendee popup with per-college offers.
+**Courses** (added Nov 2026, replacing the Offline/Online batches popups) —
+`/courses` lists six GATE branches (ME, CE, CSE, EE, EC, CH) and GPSC with a
+Classroom / Online switch (`?mode=offline|online`), plus an "About the GATE
+exam" guide. Each `/courses/<slug>` page has an overview, the syllabus with
+typical marks, the GATE exam pattern, every batch of that branch (classroom and
+online together, several per mode allowed) with fees and Enroll & Pay, a demo
+lecture, mentors, results and FAQs. Branch artwork is original animated SVG
+(`components/courses/BranchArt.tsx`), used until course photos are uploaded.
 
-**Batches** — a spacious modal listing all six branches (ME, CE, CSE, EE, EC, CH)
-for offline and online, each with enquiry, batch detail and an inline demo video.
+**Free demo class** — a highlighted header button, a tab on the right edge
+(desktop), the main button of the phone sticky bar, and a once-per-visit
+reminder all open one side panel (`components/site/DemoDrawer.tsx`). Bookings go
+to their own lead list. A live countdown to the GATE exam (date set in admin)
+appears on course pages, the menu and the panel.
+
+**Lead capture** — three distinct flows kept as three separate lists: the
+general enquiry popup, the seminar-attendee popup with per-college offers, and
+free demo class registrations.
+
+**FAQ page** — every question, grouped into six categories with search. The only
+page carrying FAQPage structured data; About and course pages show subsets.
 
 **Enrollment and payment** — the full flow from §11: details form, GST summary,
 gateway hand-off, sequential tax invoice, paid-enrollment list, and capture of
@@ -70,9 +87,11 @@ abandoned or failed payments.
 
 **Guided chat widget** — rule-based, button-driven, with no free-text input.
 
-**Admin panel** — every piece of content in the SRS is editable, with plain
-language labels, image upload with preview, lead management with CSV export, and
-unlimited independently-hideable result years.
+**Admin panel** — every piece of content is editable, with plain language
+labels, image upload with preview, lead management with CSV export, and
+unlimited independently-hideable result years. Course pages, the course
+syllabus, batches (add/delete, several per branch), FAQ categories, the demo
+form's time slots, the GATE countdown and the demo reminder all have screens.
 
 ---
 
@@ -89,6 +108,12 @@ and messaging both sit behind adapters — `src/lib/payments.ts` and
 `src/lib/messaging.ts` — so a provider is a config change plus one file, not a
 rewrite. The stubs (`PAYMENT_PROVIDER=stub`, `MESSAGING_PROVIDER=stub`) let the
 whole flow be tested without moving money or spending on messages.
+
+**The course pages replaced popups that the SRS specified** (§5, §7.1.6): the
+client asked for this in Nov 2026. The stored course-card actions
+`batches_offline` / `batches_online` were kept and now link to the courses page,
+so no data had to change. Everything that changed from the SRS is listed in
+[docs/PENDING.md](docs/PENDING.md) §E.
 
 **Popups are mounted once, in `src/app/(site)/layout.tsx`.** SRS §7.1.2 records a
 real bug found in prototyping where the carousel and lightbox broke once routing

@@ -2,8 +2,9 @@
 
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
 import type {
-  BatchMode,
-  BranchBatch,
+  Batch,
+  Branch,
+  CourseNavItem,
   GalleryImage,
   PedagogyPoint,
   SiteSettings,
@@ -20,7 +21,14 @@ import type {
  * routes never unmounts or resets it.
  *
  * Popups form a stack rather than a single slot, so chained flows work and
- * "close" steps back: batches -> batch detail -> enroll, or batches -> enquiry.
+ * "close" steps back: enroll -> enquiry, video -> enquiry.
+ *
+ * Courses used to live in two popups (offline / online batches). They are now
+ * real pages under /courses, so the only course popup left is the enroll
+ * sheet, opened from a batch on a course page.
+ *
+ * The free demo side panel is separate from the stack: it slides in from the
+ * side over whatever page is open and has its own open/closed state.
  */
 
 /** Values a caller already knows, carried into the enquiry popup. */
@@ -28,12 +36,18 @@ export interface EnquiryPrefill {
   phone?: string;
 }
 
+/** Values a caller already knows, carried into the free demo panel. */
+export interface DemoPrefill {
+  /** Matches a "branch" form option label, e.g. "Mechanical Engineering (ME)". */
+  branch?: string;
+  /** Matches an "enquiry_for" form option label, e.g. "Online". */
+  mode?: string;
+}
+
 export type ModalEntry =
   | { kind: "enquiry"; source: string; batchLabel?: string; prefill?: EnquiryPrefill }
   | { kind: "seminar" }
-  | { kind: "batches"; mode: BatchMode }
-  | { kind: "batchDetail"; branchId: string; mode: BatchMode }
-  | { kind: "enroll"; branchId: string; mode: BatchMode }
+  | { kind: "enroll"; batchId: string }
   | { kind: "video"; videoId: string; start?: number; title?: string }
   | { kind: "lightbox"; images: GalleryImage[]; index: number };
 
@@ -41,9 +55,16 @@ export interface SiteData {
   settings: SiteSettings;
   formOptions: Record<string, string[]>;
   universities: University[];
-  offline: BranchBatch[];
-  online: BranchBatch[];
+  branches: Branch[];
+  batches: Batch[];
+  courses: CourseNavItem[];
   pedagogy: PedagogyPoint[];
+}
+
+interface DemoState {
+  open: boolean;
+  source: string;
+  prefill?: DemoPrefill;
 }
 
 interface SiteUIContextValue extends SiteData {
@@ -59,9 +80,12 @@ interface SiteUIContextValue extends SiteData {
   setChatOpen: (open: boolean) => void;
   /** True while a lightbox is open, so the carousel pauses (SRS 7.1.2). */
   lightboxOpen: boolean;
-  batchesFor: (mode: BatchMode) => BranchBatch[];
-  findBranchBatch: (branchId: string, mode: BatchMode) => BranchBatch | null;
   openEnquiry: (source: string, batchLabel?: string, prefill?: EnquiryPrefill) => void;
+  demo: DemoState;
+  /** Opens the free demo side panel. `source` is recorded against the lead. */
+  openDemo: (source: string, prefill?: DemoPrefill) => void;
+  closeDemo: () => void;
+  findBatch: (batchId: string) => { batch: Batch; branch: Branch | null } | null;
 }
 
 const SiteUIContext = createContext<SiteUIContextValue | null>(null);
@@ -81,30 +105,38 @@ export function SiteUIProvider({
 }) {
   const [stack, setStack] = useState<ModalEntry[]>([]);
   const [chatOpen, setChatOpen] = useState(false);
+  const [demo, setDemo] = useState<DemoState>({ open: false, source: "" });
 
   const push = useCallback((entry: ModalEntry) => setStack((s) => [...s, entry]), []);
   const pop = useCallback(() => setStack((s) => s.slice(0, -1)), []);
   const replace = useCallback((entry: ModalEntry) => setStack([entry]), []);
   const closeAll = useCallback(() => setStack([]), []);
 
-  const batchesFor = useCallback(
-    (mode: BatchMode) => (mode === "offline" ? data.offline : data.online),
-    [data.offline, data.online],
-  );
-
-  const findBranchBatch = useCallback(
-    (branchId: string, mode: BatchMode) =>
-      batchesFor(mode).find((bb) => bb.branch.id === branchId) ?? null,
-    [batchesFor],
-  );
-
   const openEnquiry = useCallback(
     (source: string, batchLabel?: string, prefill?: EnquiryPrefill) => {
       // Closing the chat first stops it sitting on top of the form on mobile.
       setChatOpen(false);
+      setDemo((d) => ({ ...d, open: false }));
       push({ kind: "enquiry", source, batchLabel, prefill });
     },
     [push],
+  );
+
+  const openDemo = useCallback((source: string, prefill?: DemoPrefill) => {
+    setChatOpen(false);
+    setStack([]);
+    setDemo({ open: true, source, prefill });
+  }, []);
+
+  const closeDemo = useCallback(() => setDemo((d) => ({ ...d, open: false })), []);
+
+  const findBatch = useCallback(
+    (batchId: string) => {
+      const batch = data.batches.find((b) => b.id === batchId);
+      if (!batch) return null;
+      return { batch, branch: data.branches.find((b) => b.id === batch.branch_id) ?? null };
+    },
+    [data.batches, data.branches],
   );
 
   const current = stack.length > 0 ? stack[stack.length - 1] : null;
@@ -121,9 +153,11 @@ export function SiteUIProvider({
       chatOpen,
       setChatOpen,
       lightboxOpen: stack.some((e) => e.kind === "lightbox"),
-      batchesFor,
-      findBranchBatch,
       openEnquiry,
+      demo,
+      openDemo,
+      closeDemo,
+      findBatch,
     }),
     [
       data,
@@ -134,9 +168,11 @@ export function SiteUIProvider({
       replace,
       closeAll,
       chatOpen,
-      batchesFor,
-      findBranchBatch,
       openEnquiry,
+      demo,
+      openDemo,
+      closeDemo,
+      findBatch,
     ],
   );
 

@@ -17,6 +17,8 @@ export default async function AdminDashboard() {
   const [
     enquiries,
     enquiriesNew,
+    demos,
+    demosNew,
     seminar,
     seminarNew,
     paid,
@@ -26,6 +28,8 @@ export default async function AdminDashboard() {
   ] = await Promise.all([
     countRows("general_enquiries"),
     countRows("general_enquiries", { contacted: false }),
+    countRows("demo_registrations"),
+    countRows("demo_registrations", { contacted: false }),
     countRows("seminar_leads"),
     countRows("seminar_leads", { contacted: false }),
     countRows("enrollments", { status: "paid" }),
@@ -34,7 +38,10 @@ export default async function AdminDashboard() {
     countRows("result_entries"),
   ]);
 
-  const recentEnquiries = await countRecent("general_enquiries", 7);
+  const [recentEnquiries, recentDemos] = await Promise.all([
+    countRecent("general_enquiries", 7),
+    countRecent("demo_registrations", 7),
+  ]);
 
   const payment = getPaymentProvider();
   const messaging = getMessagingProvider();
@@ -95,19 +102,27 @@ export default async function AdminDashboard() {
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <p className="mt-1.5 text-sm text-body">
           {recentEnquiries > 0
-            ? `${recentEnquiries} new enquir${recentEnquiries === 1 ? "y" : "ies"} in the last 7 days.`
-            : "No new enquiries in the last 7 days."}
+            ? `${recentEnquiries} new enquir${recentEnquiries === 1 ? "y" : "ies"}`
+            : "No new enquiries"}
+          {recentDemos > 0 ? ` and ${recentDemos} free demo booking${recentDemos === 1 ? "" : "s"}` : ""} in the
+          last 7 days.
         </p>
       </header>
 
       <section>
         <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-muted">Leads</h2>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           <StatCard
             href="/admin/leads/enquiries"
             label="General enquiries"
             value={enquiries}
             badge={enquiriesNew > 0 ? `${enquiriesNew} to call` : undefined}
+          />
+          <StatCard
+            href="/admin/leads/demo"
+            label="Free demo bookings"
+            value={demos}
+            badge={demosNew > 0 ? `${demosNew} to confirm` : undefined}
           />
           <StatCard
             href="/admin/leads/seminar"
@@ -130,6 +145,8 @@ export default async function AdminDashboard() {
         <div className="grid gap-2.5 sm:grid-cols-2">
           <QuickLink href="/admin/settings" title="Change the announcement banner" />
           <QuickLink href="/admin/batches" title="Update a batch date or fee" />
+          <QuickLink href="/admin/c/course-pages" title="Edit a course page" />
+          <QuickLink href="/admin/c/faq" title="Add a question to the FAQ" />
           <QuickLink href="/admin/c/news" title="Post a recruitment update" />
           <QuickLink href="/admin/results" title="Add this year's results" />
           <QuickLink href="/admin/c/gallery" title="Upload result or press images" />

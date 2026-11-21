@@ -53,6 +53,18 @@ Supabase and in the defaults. The invoice splits GST back out, e.g. ₹15,000 =
 **Still needed:** real start dates and faculty. The admin **Batches** screen
 shows a warning while those placeholders remain.
 
+**Course pages (Nov 2026) use SAMPLE batch details** to show the layout: batch
+names, start dates, days and timings, duration, language and a weekend batch
+per branch, all in `src/lib/defaults.ts`. The live database still has its
+original one-offline-one-online batch per branch (no dates); the samples can be
+loaded with `npm run seed -- --sample-batches` once 0004 is run (see A6). Either
+way, every sample must be replaced with the real batches before launch.
+
+**Live data check (21 Nov 2026):** the **ME online batch is priced at ₹1** in
+the live database (every other batch is ₹15,000 / ₹45,000). Probably left from
+payment testing. A student could currently pay ₹1 for it. Not changed - needs
+the client's go-ahead: set it back to 15000 in **Batches, dates & fees**.
+
 ### A5. Rotate the Supabase service_role key — **BEFORE GOING PUBLIC**
 The current `service_role` key was shared over chat during setup. It bypasses
 every row-level security rule, so anyone holding it can read and change all
@@ -74,6 +86,32 @@ Vercel's environment variables, if deployed) straight afterwards.
 
 ---
 
+### A6. Run migration 0004 on the live database — **BLOCKS DEPLOYING the Nov 2026 changes**
+The course pages, free demo and FAQ page need
+`supabase/migrations/0004_courses_demo_faq.sql`, then `npm run seed` (see
+SETUP 2.2 and 2.5). Not run yet - it changes the live database, so it waits for
+the client's go-ahead. Until it runs: demo bookings are not saved (only emailed,
+if email is set up), the FAQ page shows only the About questions, and the new
+admin screens are empty.
+
+### A7. Review the sample content added for the course pages
+Added Nov 2026 as **sample data**, all admin-editable:
+- **Syllabus "typical marks"** per subject: approximate ranges from recent
+  GATE papers. The faculty should check them, branch by branch.
+- **Course overviews, highlights and taglines** - written from what the SRS
+  says about Acumen. The client should confirm they're accurate.
+- **The 23 new FAQs** (GATE exam, courses, demo, fees, online). GATE facts
+  reflect recent cycles and should be checked against the GATE 2027 brochure.
+  Answers about Acumen's process (switching batches, paying at the centre,
+  failed payments) are safe defaults the client must confirm.
+- **GPSC syllabus** - a generic outline, to be replaced by the real course plan.
+- **GATE 2027 exam date** for the countdown: 6 February 2027 is a placeholder
+  (GATE is usually the first weekends of February). Update in admin once the
+  official date is announced.
+- **Demo time slots** (Sat 11 AM online, etc.) - placeholders.
+- **What happens in a demo class** (live lecture + doubt slot + study plan) -
+  needs the client's confirmation that this is how demos run.
+
 ## B. Non-blocking, but the site is weaker without them
 
 | # | Item | Effect while missing |
@@ -92,6 +130,7 @@ Vercel's environment variables, if deployed) straight afterwards.
 | B10 | Mentor photos (§7.1.9) | Mentor cards (and student cards without a photo) show a monogram tile built from the name - "UT" for Dr. Umashankar Tripathi. Uploads replace it. |
 | B11 | Google Business Profile (§13) | Not a development task, but it affects "best GATE coaching in Vadodara" rankings more than the website does. |
 | B12 | Who owns News publishing (§12) | Decides whether `/news` launches with the one seed post or more. |
+| B13 | Course photos | Course cards show original branch illustrations until a photo is uploaded per course (**Course pages → Card photo**). Real classroom photos would help. |
 
 ---
 
@@ -204,8 +243,7 @@ Per SRS §2.2 and §15, so nobody adds them by mistake:
 - **No AI chatbot.** The chat widget is rule-based with no free-text input.
   Adding AI is a separately-scoped feature (§8.3), not a quiet upgrade.
 - **No "Download the App" button** anywhere, in any state — not even disabled
-  (§8.4, §15.4). The batch row layout can take a fourth action when the time
-  comes.
+  (§8.4, §15.4), including on the course pages.
 - **No separate Faculty page** (§2.2, §15.1). Faculty live only in the homepage
   mentors section.
 - **No "Notes by Rohit Sir" annotation tool** (§2.2, §15.9).
@@ -219,3 +257,30 @@ Per SRS §2.2 and §15, so nobody adds them by mistake:
 - **No email field on the general enquiry form** (§8.1, §15.2). Confirmations go
   by SMS/WhatsApp. Email is collected only in the payment flow, where an invoice
   legally requires it.
+
+---
+
+## E. Changes from the SRS (client request, Nov 2026)
+
+Recorded so nobody "fixes" them back to the SRS:
+
+- **Offline/Online batches popups replaced by course pages** (§5, §7.1.6). The
+  header's "Offline Courses" and "Online Courses" became one **Courses** item
+  with a hover menu; `/courses` and `/courses/<slug>` replace the batches popup
+  and the "Know about the batch" popup. Enroll & Pay is unchanged (§11), now
+  started from a batch on the course page.
+- **The header gained an FAQ tab** (still six items - two course items became
+  one) and a highlighted **Free Demo Class** button.
+- **Several batches per branch and mode** are allowed (the unique constraint
+  on `batches (branch_id, mode)` was dropped).
+- **The phone sticky bar's main button is "Free Demo"**, not "Enquire Now".
+  Enquire stays in the header menu and on every page.
+- **A one-time "book a free demo" reminder** appears after 25 seconds or on
+  exit intent, once per visit, never after booking. Switchable in admin.
+- **FAQPage structured data moved from About to /faq**, which now holds every
+  question; About shows only the "About Acumen" category.
+- **A GATE exam countdown** appears on course pages, the menu and the demo
+  panel. It is not a statistic about Acumen, so the one-headline-number rule
+  (§15.7) still holds. No new totals or counters were added.
+- **No urgency was invented**: no "seats filling fast", no fake timers. The
+  batch "Small label" (e.g. "New") and "Batch size" are admin text.

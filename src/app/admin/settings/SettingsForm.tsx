@@ -58,6 +58,7 @@ export default function SettingsForm({ settings }: { settings: SiteSettings }) {
             options={[
               { value: "seminar", label: "The seminar offer form" },
               { value: "enquiry", label: "The enquiry form" },
+              { value: "demo", label: "The free demo class form" },
               { value: "url", label: "A page on the website" },
               { value: "none", label: "Nothing — plain text only" },
             ]}
@@ -91,6 +92,54 @@ export default function SettingsForm({ settings }: { settings: SiteSettings }) {
           defaultValue={settings.stat_line}
           help="This is the only headline number used anywhere on the site. Don't add a second, different total elsewhere — inconsistent numbers hurt credibility with Google and with parents."
         />
+      </Section>
+
+      <Section
+        title="Free demo class"
+        description="The side panel that opens from every 'Free Demo' button, and the small reminder that appears once per visit."
+      >
+        <Text name="demo_heading" label="Panel heading" defaultValue={settings.demo_heading} />
+        <Text
+          name="demo_subtext"
+          label="Line under the heading"
+          defaultValue={settings.demo_subtext}
+          help="One or two sentences: what happens in a demo class."
+        />
+        <Checkbox
+          name="demo_nudge_enabled"
+          label="Show a gentle reminder to book a free demo"
+          defaultChecked={settings.demo_nudge_enabled !== false}
+          help="A small card in the corner, at most once per visit, and never after someone has booked."
+        />
+        <Text
+          name="demo_nudge_seconds"
+          label="Show the reminder after (seconds on the site)"
+          defaultValue={settings.demo_nudge_seconds}
+          help="e.g. 25. On a computer it also appears if the visitor moves to leave the page."
+        />
+        <p className="text-xs leading-relaxed text-muted">
+          The demo form&apos;s &ldquo;Preferred time&rdquo; choices are in Form dropdown choices.
+        </p>
+      </Section>
+
+      <Section
+        title="GATE exam countdown"
+        description="The live countdown on the course pages, the courses menu and the free demo panel. Update it each year once the official dates are announced."
+      >
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Text
+            name="gate_exam_label"
+            label="Exam name"
+            defaultValue={settings.gate_exam_label}
+            help='e.g. "GATE 2027"'
+          />
+          <Text
+            name="gate_exam_date"
+            label="First exam day"
+            defaultValue={settings.gate_exam_date}
+            help="Written as YYYY-MM-DD, e.g. 2027-02-06. Leave blank to hide the countdown."
+          />
+        </div>
       </Section>
 
       <Section title="Closing section" description="The dark band near the bottom of most pages.">

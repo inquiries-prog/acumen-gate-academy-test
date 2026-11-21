@@ -12,6 +12,7 @@ import { getBatches, getBranches } from "@/lib/content";
 import { notifyTeam } from "@/lib/messaging";
 import { calculateFees, getPaymentProvider } from "@/lib/payments";
 import { getServiceClient } from "@/lib/supabase";
+import { batchDisplayLabel } from "@/lib/utils";
 
 /**
  * Starts an enrollment (SRS 11).
@@ -56,9 +57,9 @@ export async function POST(request: Request) {
   }
 
   const branch = branches.find((b) => b.id === batch.branch_id);
-  const batch_label = `${branch?.name ?? "GATE"} (${branch?.code ?? "-"}) ${
-    batch.mode === "offline" ? "Offline" : "Online"
-  }`;
+  // Built server-side from the batch record, the same way the enroll sheet
+  // shows it, so the invoice names exactly the batch the student chose.
+  const batch_label = batchDisplayLabel(batch, branch);
 
   const feeValue = Number(batch.fees ?? 0);
   if (!feeValue || feeValue <= 0) {
