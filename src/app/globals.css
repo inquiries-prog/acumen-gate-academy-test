@@ -297,7 +297,7 @@
     --hdr-gap: clamp(8px, calc(0.6vw + 0.3px), 14px);
     /* Scrolled: a compact capsule, clearly narrower than the screen. */
     --hdr-pill-h: clamp(58px, calc(1vw + 45px), 66px);
-    --hdr-pill-w: min(calc(100% - 24px), clamp(1150px, calc(36vw + 690px), 1400px));
+    --hdr-pill-w: min(calc(100% - 24px), clamp(1100px, calc(30vw + 680px), 1280px));
     --hdr-ease: cubic-bezier(0.22, 1, 0.36, 1);
   }
   .site-header[data-scrolled] {
