@@ -146,20 +146,25 @@ export default function Header() {
       >
       <ScrollProgress className="transition-opacity duration-500 group-data-[scrolled]/header:opacity-0" />
       <div
-        className="pointer-events-auto relative mx-auto flex h-[var(--hdr-h)] w-full items-center justify-between gap-4
-                   rounded-none border border-transparent px-5 sm:px-7 xl:px-[clamp(28px,2.6vw,64px)]
-                   transition-[width,height,margin,padding,border-radius,background-color,border-color,box-shadow,backdrop-filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]
-                   group-data-[scrolled]/header:mt-3 group-data-[scrolled]/header:!h-[var(--hdr-pill-h)] group-data-[scrolled]/header:!w-[calc(100%-1.5rem)] xl:group-data-[scrolled]/header:!w-[calc(100%-clamp(24px,3.75vw,72px))]
-                   group-data-[scrolled]/header:rounded-[40px] group-data-[scrolled]/header:border-white/70 group-data-[scrolled]/header:bg-white/55 group-data-[scrolled]/header:backdrop-blur-2xl group-data-[scrolled]/header:backdrop-saturate-150
-                   group-data-[scrolled]/header:shadow-[0_24px_60px_-22px_rgba(35,31,32,0.38),0_4px_14px_-6px_rgba(35,31,32,0.12),inset_0_1px_0_rgba(255,255,255,0.85)]
-                   group-data-[scrolled]/header:!pl-4 group-data-[scrolled]/header:!pr-2 sm:group-data-[scrolled]/header:!pl-5 xl:group-data-[scrolled]/header:!pl-[clamp(18px,1.6vw,32px)] xl:group-data-[scrolled]/header:!pr-[clamp(8px,0.6vw,12px)]"
+        className="hdr-pill pointer-events-auto relative mx-auto flex h-[var(--hdr-h)] w-full items-center justify-between gap-4
+                   rounded-none border border-transparent px-5 sm:px-7 xl:pl-[clamp(28px,2.6vw,64px)] xl:pr-[clamp(14px,1.1vw,26px)]
+                   transition-[width,height,margin,padding,border-radius,background,border-color,box-shadow,backdrop-filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]
+                   group-data-[scrolled]/header:mt-3 group-data-[scrolled]/header:!h-[var(--hdr-pill-h)] group-data-[scrolled]/header:!w-[calc(100%-1.5rem)] xl:group-data-[scrolled]/header:!w-[var(--hdr-pill-w)] group-data-[scrolled]/header:rounded-[40px]
+                   group-data-[scrolled]/header:!pl-4 group-data-[scrolled]/header:!pr-2 sm:group-data-[scrolled]/header:!pl-5 xl:group-data-[scrolled]/header:!pl-[clamp(18px,1.3vw,26px)] xl:group-data-[scrolled]/header:!pr-[clamp(8px,0.5vw,10px)]"
         // The view-transition name lives here, not on the full-width layer: an
         // element with a view-transition-name isolates the backdrop for its
         // children, which would leave the pill's frosted blur nothing to blur.
         style={{ viewTransitionName: "site-header" }}
       >
-        {/* The pill's own progress line, inset along its bottom edge. */}
-        <ScrollProgress className="!inset-x-12 rounded-full opacity-0 transition-opacity duration-700 group-data-[scrolled]/header:opacity-100" />
+        {/* The pill's own progress bar: a faint track along its bottom edge
+            with the red fill on top, so it reads as progress, not a stray
+            underline. */}
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-8 bottom-0 h-0.5 overflow-hidden rounded-full bg-charcoal/[0.07] opacity-0 transition-opacity duration-700 group-data-[scrolled]/header:opacity-100"
+        >
+          <ScrollProgress className="rounded-full" />
+        </span>
         <Link href="/" className="flex shrink-0 items-center" aria-label="Acumen Gate Academy home">
           {settings.logo_url ? (
             // Never recoloured or inverted via CSS filters (SRS 3.2).
@@ -207,7 +212,7 @@ export default function Header() {
           {/* Contact pill: phone, WhatsApp and chat share one shape. The
               number shows where there is room for it (and is always on hover,
               in the menu and in the footer). */}
-          <div className="flex h-[var(--hdr-btn-h)] shrink-0 items-center rounded-full border border-line bg-white/90 px-1.5 shadow-chip transition-[height] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]">
+          <div className="hdr-chip flex h-[var(--hdr-btn-h)] shrink-0 items-center rounded-full border border-line bg-white/90 px-1 shadow-chip transition-[height,background-color,border-color,box-shadow] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]">
             <a
               href={telHref(settings.phone)}
               aria-label={`Call ${settings.phone}`}
@@ -215,20 +220,20 @@ export default function Header() {
               className="flex h-9 items-center gap-1.5 rounded-full px-2 text-[length:var(--hdr-act-fs)] font-bold text-charcoal transition-[color,font-size] duration-700 hover:text-red"
             >
               <PhoneIcon />
-              <span className="hidden whitespace-nowrap pr-0.5 min-[1536px]:inline group-data-[scrolled]/header:!hidden min-[1760px]:group-data-[scrolled]/header:!inline">
+              <span className="hidden whitespace-nowrap pr-0.5 min-[1536px]:inline group-data-[scrolled]/header:!hidden">
                 {displayPhone(settings.phone)}
               </span>
             </a>
             <span aria-hidden="true" className="mx-1 h-5 w-px bg-line" />
-            <WhatsAppLink ariaLabel="Message us on WhatsApp" className="whatsapp-badge h-9 w-9">
-              <WhatsAppIcon size={18} />
+            <WhatsAppLink ariaLabel="Message us on WhatsApp" className="whatsapp-badge h-[calc(var(--hdr-btn-h)-10px)] w-[calc(var(--hdr-btn-h)-10px)] transition-[width,height] duration-700">
+              <WhatsAppIcon size={16} />
             </WhatsAppLink>
             <button
               type="button"
               onClick={() => setChatOpen(true)}
               aria-label="Chat with us"
               title="Chat with us"
-              className="ml-1 grid h-9 w-9 place-items-center rounded-full text-charcoal transition-colors hover:bg-offwhite hover:text-red"
+              className="ml-0.5 grid h-[calc(var(--hdr-btn-h)-10px)] w-[calc(var(--hdr-btn-h)-10px)] place-items-center rounded-full text-charcoal transition-colors hover:bg-offwhite hover:text-red"
             >
               <ChatIcon />
             </button>
@@ -238,7 +243,7 @@ export default function Header() {
             onClick={() => openEnquiry("Header")}
             className="shrink-0 whitespace-nowrap text-[length:var(--hdr-act-fs)] font-bold text-charcoal underline-offset-4 transition-[color,font-size] duration-700 hover:text-red hover:underline"
           >
-            Enquire<span className="group-data-[scrolled]/header:hidden min-[1600px]:group-data-[scrolled]/header:inline"> Now</span>
+            Enquire<span className="group-data-[scrolled]/header:hidden"> Now</span>
           </button>
           <Magnetic className="shrink-0">
             <DemoButton onClick={() => openDemo("Header button")} />
@@ -436,9 +441,9 @@ function DemoButton({ onClick }: { onClick: () => void }) {
         <GiftIcon />
       </span>
       <span className="relative">
-        Free Demo<span className="group-data-[scrolled]/header:hidden min-[1600px]:group-data-[scrolled]/header:inline"> Class</span>
+        Free Demo<span className="group-data-[scrolled]/header:hidden"> Class</span>
       </span>
-      <span className="relative rounded-md bg-white px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-red group-data-[scrolled]/header:hidden min-[1760px]:group-data-[scrolled]/header:inline">
+      <span className="relative rounded-md bg-white px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-red group-data-[scrolled]/header:hidden">
         Free
       </span>
     </button>
