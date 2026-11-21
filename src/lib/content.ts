@@ -38,6 +38,9 @@ import type {
 
 type Order = { column: string; ascending?: boolean };
 
+/** Tables already reported as missing, so each is warned about once per process. */
+const warnedMissing = new Set<string>();
+
 /**
  * Reads a table, falling back to seed data. Uses the service client when
  * available so admin screens see rows that public RLS policies would hide
@@ -59,6 +62,19 @@ async function readTable<T>(
     }
     const { data, error } = await query;
     if (error) {
+      // A table a newer migration adds, on a database that hasn't run it yet
+      // (PostgREST code PGRST205). Expected during an upgrade and handled by
+      // the fallback, so it is a one-time warning, not an error - an error
+      // here would raise the Next.js dev overlay on every page.
+      if (error.code === "PGRST205") {
+        if (!warnedMissing.has(table)) {
+          warnedMissing.add(table);
+          console.warn(
+            `[content] table "${table}" doesn't exist yet - using starting content. Run the latest migration in supabase/migrations (see docs/SETUP.md 2.2).`,
+          );
+        }
+        return fallback;
+      }
       console.error(`[content] ${table}:`, error.message);
       return fallback;
     }
