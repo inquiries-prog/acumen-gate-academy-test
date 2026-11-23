@@ -116,6 +116,19 @@ Added Nov 2026 as **sample data**, all admin-editable:
 - **What happens in a demo class** (live lecture + doubt slot + study plan) -
   needs the client's confirmation that this is how demos run.
 
+### A8. Check the GATE 2026 results transcribed from the success posts
+The Results page (redesigned 23 Nov 2026) is driven by 56 entries read off
+the client's own posts in `public/assets/results/`: first names as printed,
+the AIR where the post shows one (22 students), branch only where the post
+states it. Please check them in admin -> Results page. One conflict to
+resolve: Gurudutt Dave's post says **AIR 75 (EC)**, while the homepage rank
+strip and the Divya Bhaskar clipping description say **AIR 73**
+(`HERO_RANKS` / `defaults.ts`). Which is right?
+
+The live `result_entries` table is still empty; the page shows these
+entries from `defaults.ts` until the first entry is added in admin - at which
+point only admin entries show, so add (or seed) all of them together.
+
 ## B. Non-blocking, but the site is weaker without them
 
 | # | Item | Effect while missing |
@@ -286,5 +299,10 @@ Recorded so nobody "fixes" them back to the SRS:
 - **A GATE exam countdown** appears on course pages, the menu and the demo
   panel. It is not a statistic about Acumen, so the one-headline-number rule
   (§15.7) still holds. No new totals or counters were added.
+- **Results page rank milestones** (Nov 2026): the hero shows best AIR and
+  how many students placed in the top 100 / 500 / 1000 and qualified, as
+  the national institutes do. These are per-year counts of the named
+  students on the page, worked out live from the entries - not a new
+  marketing total; "10,000+" remains the one headline number.
 - **No urgency was invented**: no "seats filling fast", no fake timers. The
   batch "Small label" (e.g. "New") and "Batch size" are admin text.

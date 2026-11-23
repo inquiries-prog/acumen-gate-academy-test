@@ -101,7 +101,12 @@ questions also show on the course pages.
 
 ### Add this year's results
 
-**Results page**.
+The Results page builds itself from **Results page** in admin: the podium,
+the rank ladder, the milestone tiles and the wall of champions all come from
+those entries. For each student add their name, **AIR** (two ranks for two
+papers, e.g. `52 & 425`; leave blank if they qualified without a rank to
+share), branch if you like, and their success post as the photo - the page
+cuts the face out of the circle on the post automatically.
 
 1. **+ Add a year** — e.g. "GATE 2027". You can add years forever.
 2. Click the year, then **+ Add a student** for each result.

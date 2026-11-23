@@ -393,8 +393,87 @@ export const resultYears: ResultYear[] = [
   { id: "year-2024", label: "GATE 2024", year: 2024, visible: true, sort_order: 3 },
 ];
 
-/** No result entries are seeded - real student names and AIRs come from the client. */
-export const resultEntries: ResultEntry[] = [];
+/**
+ * GATE 2026 results, transcribed from the client's own published success
+ * posts in public/assets/results/ (read Nov 2026): the name and the All India
+ * Rank exactly as printed on each post, and the branch where the post states
+ * one. "air" is blank for a post that says "Qualified in GATE 26" without a
+ * rank; two ranks mean two papers. Every row is admin-editable
+ * (Results page), and each points at its post for the photo.
+ */
+const RESULTS_2026: Array<[file: number, name: string, air: string, branch: string]> = [
+  [1, "Siddharth", "", ""],
+  [2, "Nishita", "", ""],
+  [3, "Aditya", "", ""],
+  [4, "Neel", "", ""],
+  [5, "Arya", "", ""],
+  [6, "Jhanvi", "", ""],
+  [7, "Harsh", "", ""],
+  [8, "Ayush", "", ""],
+  [9, "Shubham", "", ""],
+  [10, "Devshree", "", ""],
+  [11, "Rohan", "", ""],
+  [12, "Arjun", "306", ""],
+  [13, "Krish", "", ""],
+  [15, "Dhruv", "", ""],
+  [16, "Mukund", "", ""],
+  [18, "Kirtan", "", ""],
+  [19, "Nakshatra", "", ""],
+  [20, "Naishadh", "", ""],
+  [21, "Atharv", "", ""],
+  [24, "Pranil", "", ""],
+  [25, "Dev", "", ""],
+  [26, "Darshita", "1642", ""],
+  [28, "Naitik", "269", ""],
+  [30, "Aditya Singh", "914", ""],
+  [32, "Dhyey", "370 & 2215", ""],
+  [33, "Samir", "1941", ""],
+  [34, "Samarth", "1282", ""],
+  [36, "Rohan", "1170", ""],
+  [39, "Neer Choksi", "267 & 1814", "Civil & Environmental"],
+  [40, "Gurudutt Dave", "75", "Electronics (EC)"],
+  [46, "Harsh", "", ""],
+  [47, "Nisha", "", ""],
+  [49, "Pratham", "", ""],
+  [50, "Hemik", "", ""],
+  [52, "Shubham", "", ""],
+  [53, "Piyush", "", ""],
+  [54, "Zaina", "", ""],
+  [57, "Hitarth", "", ""],
+  [58, "Suraj", "", ""],
+  [59, "Harin", "", ""],
+  [61, "Shivam", "", ""],
+  [62, "Sahil", "", ""],
+  [63, "Dhruv", "", ""],
+  [64, "Himanshu", "", ""],
+  [66, "Jay", "861", ""],
+  [67, "Vrushti", "1197", ""],
+  [72, "Ansh", "622", ""],
+  [73, "Shreyansh", "52 & 425", ""],
+  [77, "Deep", "1463", ""],
+  [78, "Rahul", "1838", ""],
+  [79, "Payal", "983", ""],
+  [80, "Munir", "683", ""],
+  [81, "Keval", "683", "Environmental Science"],
+  [82, "Dhruv", "1343", "Environmental Science"],
+  [83, "Pramod", "776", "Environmental Science"],
+  [84, "Rohit", "500", "Environmental Science"],
+];
+
+export const resultEntries: ResultEntry[] = RESULTS_2026.map(([file, name, air, branch], i) => ({
+  id: `result-2026-${file}`,
+  year_id: "year-2026",
+  student_name: name,
+  image_url: `/assets/results/${file}.png`,
+  alt_text: air
+    ? `${name}, Acumen Gate Academy student, All India Rank ${air.replace("&", "and")} in GATE 2026`
+    : `${name}, Acumen Gate Academy student, qualified GATE 2026`,
+  university: "",
+  branch,
+  air,
+  visible: true,
+  sort_order: i + 1,
+}));
 
 // --- SRS 7.3: the CPCB seed post, written from the facts given in the SRS --
 export const newsPosts: NewsPost[] = [

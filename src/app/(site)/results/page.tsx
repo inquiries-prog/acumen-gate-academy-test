@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
-import { ResultsPodium } from "@/components/art/Scenes";
+import PressStrip from "@/components/about/PressStrip";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
-import ResultsGallery from "@/components/results/ResultsGallery";
-import ResultsTabs from "@/components/results/ResultsTabs";
+import ChampionsWall from "@/components/results/ChampionsWall";
+import RankLadder from "@/components/results/RankLadder";
+import ResultsHero from "@/components/results/ResultsHero";
 import FinalCta from "@/components/site/FinalCta";
-import AmbientGlow from "@/components/ui/AmbientGlow";
-import Reveal from "@/components/ui/Reveal";
 import {
-  getGalleryImages,
   getPageSeo,
+  getPressStripImages,
   getResultEntries,
   getSiteSettings,
   getTestimonials,
@@ -34,53 +33,49 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * Results (SRS 7.4).
+ * Results (SRS 7.4) - redesigned Nov 2026 after looking at how the national
+ * GATE institutes present a results year.
  *
- * Three sections, kept deliberately separate: the data-forward results grid
- * ("prove it with numbers"), the narrative testimonials ("prove it with
- * stories"), and a closing CTA. The two proof sections are not merged - the SRS
- * asks for both jobs to be served distinctly.
+ *   1. Hero      - the year's top three on a podium with their own faces, and
+ *                  a ladder of rank milestones worked out from the entries.
+ *   2. Ladder    - every ranked student plotted on an AIR scale.
+ *   3. Wall      - every student as a face card: year tabs, rank filters,
+ *                  name search, the original post a tap away, and an open
+ *                  "your name here" seat that books the free demo.
+ *   4. Press     - the newspaper coverage.
+ *   5. Stories   - testimonials ("prove it with stories", kept separate from
+ *                  the numbers as SRS 7.4 asks), then the closing CTA.
+ *
+ * Everything is driven by the Results page entries in admin (year, name,
+ * AIR, branch, photo). Faces are cut from each student's success post.
  */
 export default async function ResultsPage() {
-  const [years, entries, testimonials, settings, gallery] = await Promise.all([
+  const [years, entries, testimonials, settings, press] = await Promise.all([
     getVisibleResultYears(),
     getResultEntries(),
     getTestimonials("results"),
     getSiteSettings(),
-    getGalleryImages(),
+    getPressStripImages(),
   ]);
 
-  const resultPosts = gallery.filter((image) => image.kind === "result");
+  // The hero and ladder feature the latest year that has results.
+  const featured = years.find((y) => entries.some((e) => e.year_id === y.id));
+  const featuredEntries = featured ? entries.filter((e) => e.year_id === featured.id) : [];
 
   return (
     <>
-      <section className="relative isolate overflow-hidden border-b border-line bg-white">
-        <AmbientGlow />
-        <div className="container-site relative grid items-center gap-10 py-16 md:py-24 lg:grid-cols-[1.25fr_0.75fr]">
-          <Reveal className="max-w-3xl">
-            <p className="eyebrow">
-              <span className="h-1.5 w-1.5 rounded-full bg-red" aria-hidden="true" />
-              Results
-            </p>
-            <h1 className="mt-6 text-display-lg">Our students&apos; GATE results</h1>
-            {/* Reuses the one site-wide headline number - no second total. */}
-            <p className="mt-6 font-display text-2xl font-extrabold text-gradient-red sm:text-3xl">
-              {settings.stat_line}
-            </p>
-          </Reveal>
-          <ResultsPodium className="mx-auto w-full max-w-[360px] lg:max-w-[420px]" />
-        </div>
-      </section>
+      <ResultsHero
+        entries={featuredEntries}
+        yearLabel={featured?.label ?? years[0]?.label ?? "GATE"}
+        statLine={settings.stat_line}
+      />
 
-      {/* Section 1 - GATE Results */}
-      <ResultsTabs years={years} entries={entries} />
+      {featured && <RankLadder entries={featuredEntries} yearLabel={featured.label} />}
 
-      {/* The rest of the result-post archive that the homepage doesn't show. */}
-      <div className="section-alt">
-        <ResultsGallery images={resultPosts} />
-      </div>
+      <ChampionsWall years={years} entries={entries} />
 
-      {/* Section 2 - What Our Students Say */}
+      <PressStrip images={press} />
+
       <TestimonialsSection
         testimonials={testimonials}
         showViewAll={false}
@@ -88,7 +83,6 @@ export default async function ResultsPage() {
         title="What Our Students Say"
       />
 
-      {/* Section 3 - Closing CTA */}
       <FinalCta
         heading="Your rank could be on this page next year."
         buttonLabel="Talk to us"

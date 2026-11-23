@@ -217,6 +217,17 @@ export const getResultEntries = cache(async (): Promise<ResultEntry[]> => {
   const rows = await readTable<ResultEntry>("result_entries", D.resultEntries, [
     { column: "sort_order" },
   ]);
+  // The starting entries refer to the starting year ids ("year-2026"). A
+  // seeded database has its own ids for the same years, so when we are
+  // showing the starting entries, point them at the live year with the same
+  // label ("GATE 2026").
+  if (rows === D.resultEntries) {
+    const years = await getAllResultYears();
+    const idFor = new Map(
+      D.resultYears.map((dy) => [dy.id, years.find((y) => y.label === dy.label)?.id ?? dy.id]),
+    );
+    return rows.filter((e) => e.visible).map((e) => ({ ...e, year_id: idFor.get(e.year_id) ?? e.year_id }));
+  }
   return rows.filter((e) => e.visible);
 });
 
