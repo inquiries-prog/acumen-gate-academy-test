@@ -973,10 +973,9 @@ export const galleryImages: GalleryImage[] = [...resultPosts, ...pressClippings]
 // Course pages (/courses and /courses/<slug>)
 //
 // SAMPLE CONTENT (Nov 2026). Overviews and highlights are written from what
-// the SRS already says about Acumen. Syllabus subjects follow the official
-// GATE syllabus for each paper; the "typical marks" are approximate ranges
-// from recent papers and should be checked by the faculty before launch -
-// see docs/PENDING.md. Everything here is admin-editable.
+// the SRS already says about Acumen. The syllabus is transcribed from the
+// official GATE 2027 PDFs (see OFFICIAL_SYLLABUS below); the "≈ marks" are
+// Acumen's estimates, not official. Everything here is admin-editable.
 // ===========================================================================
 
 const GATE_WHO_SHOULD_JOIN = [
@@ -1002,33 +1001,7 @@ interface CourseSeed {
   tagline: string;
   overview: string;
   extraHighlight: string;
-  /** subject, typical marks, topics */
-  subjects: Array<[string, string, string[]]>;
 }
-
-const MATHS: [string, string, string[]] = [
-  "Engineering Mathematics",
-  "≈ 13 marks",
-  [
-    "Linear algebra",
-    "Calculus",
-    "Differential equations",
-    "Complex variables",
-    "Probability and statistics",
-    "Numerical methods",
-  ],
-];
-
-const APTITUDE: [string, string, string[]] = [
-  "General Aptitude",
-  "15 marks",
-  [
-    "Verbal aptitude",
-    "Quantitative aptitude",
-    "Analytical aptitude",
-    "Spatial aptitude",
-  ],
-];
 
 const GATE_COURSES: CourseSeed[] = [
   {
@@ -1040,19 +1013,6 @@ const GATE_COURSES: CourseSeed[] = [
     overview:
       "Our GATE Mechanical Engineering course covers the complete ME syllabus, from engineering mechanics and strength of materials through thermal sciences, design and manufacturing. Concepts are built from first principles and then drilled with GATE-level problems every week, so students can handle both the conceptual 1-mark questions and the long numerical 2-mark questions under exam time.",
     extraHighlight: "Dedicated problem-solving sessions for thermal sciences and manufacturing, the two heaviest ME sections",
-    subjects: [
-      ["Engineering Mechanics", "≈ 4–6 marks", ["Free-body diagrams and equilibrium", "Friction", "Trusses and frames", "Virtual work", "Kinematics and dynamics of rigid bodies", "Impulse, momentum and collisions"]],
-      ["Mechanics of Materials", "≈ 7–9 marks", ["Stress, strain and elastic constants", "Mohr's circle", "Shear force and bending moment", "Bending and shear stresses", "Deflection of beams", "Torsion", "Columns and strain energy", "Thin cylinders"]],
-      ["Theory of Machines", "≈ 5–7 marks", ["Velocity and acceleration analysis", "Cams", "Gears and gear trains", "Flywheels and governors", "Balancing", "Gyroscope"]],
-      ["Vibrations", "≈ 2–4 marks", ["Free and forced vibration", "Damping", "Resonance and isolation", "Critical speed of shafts"]],
-      ["Machine Design", "≈ 4–6 marks", ["Static and fatigue design", "Theories of failure", "Joints", "Shafts", "Gears", "Bearings", "Brakes and clutches", "Springs"]],
-      ["Fluid Mechanics", "≈ 7–9 marks", ["Fluid properties and statics", "Buoyancy", "Control-volume analysis", "Bernoulli's equation", "Viscous flow", "Boundary layer", "Flow through pipes"]],
-      ["Heat Transfer", "≈ 5–7 marks", ["Conduction and fins", "Lumped capacitance", "Free and forced convection", "Radiation", "Heat exchangers (LMTD and NTU)"]],
-      ["Thermodynamics", "≈ 4–6 marks", ["Laws of thermodynamics", "Entropy and exergy", "Properties of pure substances", "Ideal and real gases"]],
-      ["Power Plant, IC Engines & Refrigeration", "≈ 5–7 marks", ["Rankine and Brayton cycles", "IC engine cycles", "Vapour compression refrigeration", "Psychrometry", "Turbomachinery"]],
-      ["Materials & Manufacturing", "≈ 12–15 marks", ["Engineering materials", "Casting", "Forming", "Joining", "Machining and machine tools", "Metrology and inspection", "Computer-integrated manufacturing"]],
-      ["Industrial Engineering", "≈ 4–6 marks", ["Forecasting", "Scheduling", "Inventory control", "Linear programming", "Queuing", "PERT and CPM"]],
-    ],
   },
   {
     code: "CE",
@@ -1063,19 +1023,6 @@ const GATE_COURSES: CourseSeed[] = [
     overview:
       "Our GATE Civil Engineering course takes students through all seven sections of the CE paper - structural, geotechnical, water resources, environmental, transportation and geomatics engineering, plus mathematics and aptitude. Mentors who have written the books Civil students study from teach the design-code questions step by step, so the long numerical problems stop being the ones students skip.",
     extraHighlight: "Code-based design practice for RCC and steel, taught by the authors of our Civil foundation books",
-    subjects: [
-      ["Solid Mechanics", "≈ 8–10 marks", ["Bending moment and shear force", "Simple stress and strain", "Bending and shear stresses", "Torsion", "Mohr's circle", "Deflection of beams", "Columns"]],
-      ["Structural Analysis", "≈ 4–6 marks", ["Determinate and indeterminate structures", "Force and displacement methods", "Influence lines", "Matrix methods", "Stability"]],
-      ["Concrete Structures", "≈ 4–6 marks", ["Working stress and limit state design", "Beams and slabs", "Columns and footings", "Prestressed concrete basics"]],
-      ["Steel Structures", "≈ 3–5 marks", ["Tension and compression members", "Beams", "Connections", "Plastic analysis"]],
-      ["Construction Materials & Management", "≈ 3–5 marks", ["Concrete, steel, bricks and timber", "Construction planning", "PERT and CPM", "Cost estimation"]],
-      ["Geotechnical Engineering", "≈ 14–17 marks", ["Soil properties and classification", "Permeability and seepage", "Compaction and consolidation", "Shear strength", "Earth pressure", "Shallow and deep foundations", "Slope stability"]],
-      ["Fluid Mechanics & Hydraulics", "≈ 8–10 marks", ["Fluid properties and statics", "Bernoulli's equation", "Pipe flow", "Open channel flow", "Hydraulic jump", "Dimensional analysis"]],
-      ["Hydrology & Irrigation", "≈ 4–6 marks", ["Hydrologic cycle", "Hydrographs", "Flood estimation", "Groundwater", "Crop water requirement", "Canal design"]],
-      ["Environmental Engineering", "≈ 10–12 marks", ["Water quality", "Water and wastewater treatment", "Air pollution", "Noise pollution", "Solid waste management"]],
-      ["Transportation Engineering", "≈ 8–10 marks", ["Highway geometric design", "Pavement materials and design", "Traffic engineering", "Intersections and signals"]],
-      ["Geomatics Engineering", "≈ 3–5 marks", ["Surveying principles", "Levelling and traversing", "Curves", "Photogrammetry", "Remote sensing and GIS"]],
-    ],
   },
   {
     code: "CSE",
@@ -1086,18 +1033,6 @@ const GATE_COURSES: CourseSeed[] = [
     overview:
       "Our GATE Computer Science course covers every core CS subject, from discrete mathematics and data structures through theory of computation, operating systems, databases and networks. GATE CS rewards precise reasoning more than memory, so classes focus on tracing algorithms, writing proofs and solving previous-year questions until the patterns are second nature.",
     extraHighlight: "Taught by CS mentors recognised among India's best GATE faculty, with topic-wise previous-year practice",
-    subjects: [
-      ["Discrete Mathematics", "within ≈ 13 marks", ["Propositional and first-order logic", "Sets, relations and functions", "Graph theory", "Combinatorics", "Groups"]],
-      ["Digital Logic", "≈ 4–6 marks", ["Boolean algebra", "Combinational circuits", "Sequential circuits", "Number representation"]],
-      ["Computer Organization & Architecture", "≈ 6–9 marks", ["Machine instructions and addressing modes", "ALU and datapath", "Pipelining", "Memory hierarchy and cache", "I/O interface"]],
-      ["Programming & Data Structures", "≈ 8–11 marks", ["Programming in C", "Recursion", "Arrays, stacks and queues", "Linked lists", "Trees and binary search trees", "Heaps and graphs"]],
-      ["Algorithms", "≈ 7–10 marks", ["Searching and sorting", "Hashing", "Asymptotic complexity", "Greedy, divide and conquer, dynamic programming", "Graph algorithms"]],
-      ["Theory of Computation", "≈ 6–8 marks", ["Regular expressions and finite automata", "Context-free grammars and push-down automata", "Turing machines", "Undecidability"]],
-      ["Compiler Design", "≈ 3–5 marks", ["Lexical analysis", "Parsing", "Syntax-directed translation", "Intermediate code generation", "Runtime environments"]],
-      ["Operating System", "≈ 7–10 marks", ["Processes and threads", "CPU scheduling", "Synchronisation and deadlock", "Memory management and virtual memory", "File systems"]],
-      ["Databases", "≈ 6–8 marks", ["ER model", "Relational algebra and SQL", "Normal forms", "Indexing", "Transactions and concurrency control"]],
-      ["Computer Networks", "≈ 6–9 marks", ["Layering and switching", "Data link layer", "IP addressing and routing", "TCP and UDP", "Application layer protocols"]],
-    ],
   },
   {
     code: "EE",
@@ -1108,17 +1043,6 @@ const GATE_COURSES: CourseSeed[] = [
     overview:
       "Our GATE Electrical Engineering course covers the full EE paper, from electric circuits and electromagnetic fields to electrical machines, power systems, control, measurements and power electronics. Because EE subjects build on each other, the course is sequenced so that circuits and signals are solid before machines and power systems begin.",
     extraHighlight: "A sequenced plan where circuits and signals are secure before machines and power systems begin",
-    subjects: [
-      ["Electric Circuits", "≈ 8–11 marks", ["Network elements and theorems", "Transient response", "Sinusoidal steady state", "Resonance", "Two-port networks", "Three-phase circuits"]],
-      ["Electromagnetic Fields", "≈ 3–5 marks", ["Coulomb's and Gauss's laws", "Electric field and potential", "Capacitance", "Biot-Savart and Ampere's laws", "Inductance"]],
-      ["Signals & Systems", "≈ 6–8 marks", ["Continuous and discrete signals", "LTI systems", "Fourier series and transform", "Laplace and z-transform", "Sampling"]],
-      ["Electrical Machines", "≈ 10–13 marks", ["Transformers", "DC machines", "Induction machines", "Synchronous machines"]],
-      ["Power Systems", "≈ 10–13 marks", ["Transmission lines and cables", "Per-unit system", "Load flow", "Fault analysis", "Protection", "Stability", "Economic load dispatch"]],
-      ["Control Systems", "≈ 7–9 marks", ["Block diagrams and signal flow graphs", "Time response", "Routh-Hurwitz and root locus", "Bode and Nyquist", "Compensators", "State space"]],
-      ["Electrical & Electronic Measurements", "≈ 4–6 marks", ["Bridges and potentiometers", "Measurement of power and energy", "Instrument transformers", "Oscilloscopes", "Error analysis"]],
-      ["Analog & Digital Electronics", "≈ 7–9 marks", ["Diode and transistor circuits", "Op-amps", "Combinational and sequential logic", "ADCs and DACs", "Microprocessor basics"]],
-      ["Power Electronics", "≈ 7–9 marks", ["Power semiconductor devices", "Rectifiers", "DC-DC converters", "Inverters", "Drives"]],
-    ],
   },
   {
     code: "EC",
@@ -1129,15 +1053,6 @@ const GATE_COURSES: CourseSeed[] = [
     overview:
       "Our GATE Electronics & Communication course covers every section of the EC paper: networks and signals, electronic devices, analog and digital circuits, control systems, communications and electromagnetics. Mentors teach the physics behind each device and circuit before the shortcuts, so students can solve unfamiliar questions rather than only the ones they have seen before.",
     extraHighlight: "Concept-first teaching of devices and circuits, then speed drills for the numerical questions",
-    subjects: [
-      ["Networks, Signals & Systems", "≈ 12–15 marks", ["Network theorems", "Transient and steady-state analysis", "Two-port networks", "Fourier, Laplace and z-transforms", "LTI systems", "Sampling"]],
-      ["Electronic Devices", "≈ 6–9 marks", ["Semiconductor physics", "PN junction", "BJT and MOSFET", "Photodiodes and LEDs", "Device fabrication basics"]],
-      ["Analog Circuits", "≈ 9–12 marks", ["Diode circuits", "BJT and MOSFET amplifiers", "Op-amp circuits", "Feedback and oscillators", "Filters"]],
-      ["Digital Circuits", "≈ 8–10 marks", ["Number systems and Boolean algebra", "Combinational circuits", "Sequential circuits", "Data converters", "Semiconductor memories"]],
-      ["Control Systems", "≈ 7–9 marks", ["Block diagrams", "Time and frequency response", "Stability analysis", "Compensators", "State-space models"]],
-      ["Communications", "≈ 10–12 marks", ["Random processes", "Analog modulation", "Information theory", "Digital modulation", "Error-correcting codes"]],
-      ["Electromagnetics", "≈ 7–9 marks", ["Maxwell's equations", "Plane waves", "Transmission lines", "Waveguides", "Antennas basics"]],
-    ],
   },
   {
     code: "CH",
@@ -1148,18 +1063,712 @@ const GATE_COURSES: CourseSeed[] = [
     overview:
       "Our GATE Chemical Engineering course covers the full CH paper, from process calculations and thermodynamics through fluid mechanics, heat and mass transfer, reaction engineering, process control and plant design. Chemical Engineering questions are long and numerical, so every topic is paired with timed problem practice from the first week.",
     extraHighlight: "Timed numerical practice in every topic - CH questions reward speed as much as understanding",
-    subjects: [
-      ["Process Calculations & Thermodynamics", "≈ 10–12 marks", ["Material and energy balances", "Recycle, bypass and purge", "Laws of thermodynamics", "Phase equilibria", "Chemical reaction equilibria"]],
-      ["Fluid Mechanics & Mechanical Operations", "≈ 10–13 marks", ["Fluid statics", "Flow through pipes and packed beds", "Pumps and compressors", "Size reduction", "Filtration and settling"]],
-      ["Heat Transfer", "≈ 7–9 marks", ["Conduction, convection and radiation", "Heat exchangers", "Boiling and condensation", "Evaporators"]],
-      ["Mass Transfer", "≈ 10–12 marks", ["Diffusion", "Mass transfer coefficients", "Distillation", "Absorption", "Extraction and drying"]],
-      ["Chemical Reaction Engineering", "≈ 10–12 marks", ["Rate laws and kinetics", "Ideal reactors", "Non-ideal reactors and RTD", "Catalysis"]],
-      ["Instrumentation & Process Control", "≈ 6–8 marks", ["Measurement of process variables", "Transfer functions", "Controllers", "Stability and tuning"]],
-      ["Plant Design & Economics", "≈ 4–6 marks", ["Cost estimation", "Depreciation", "Profitability analysis", "Optimum design"]],
-      ["Chemical Technology", "≈ 3–5 marks", ["Inorganic chemical industries", "Petroleum refining", "Polymers", "Natural products"]],
-    ],
   },
 ];
+
+/**
+ * The GATE 2027 syllabus for each paper, transcribed from the official IIT
+ * Madras (organising institute) PDFs, checked Nov 2026:
+ *   https://gate2027.iitm.ac.in/static/doc/GATE2027_Syllabus/<CODE>_GATE2027_Syllabus.pdf
+ * Subjects follow the official Sections and sub-headings, in order; topics use
+ * the official wording, split into short chips.
+ *
+ * The "≈ marks" are NOT official - the PDFs give no weightage. They are
+ * Acumen's estimates from recent papers (client decision, Nov 2026) and are
+ * editable per subject in admin (Course syllabus). General Aptitude (15 marks)
+ * and the ~13 marks of Engineering Mathematics come from the exam pattern.
+ */
+type SyllabusRow = [subject: string, weightage: string, topics: string[]];
+
+const GA_ROW: SyllabusRow = [
+  "General Aptitude",
+  "15 marks",
+  ["Verbal aptitude", "Quantitative aptitude", "Analytical aptitude", "Spatial aptitude"],
+];
+
+export const OFFICIAL_SYLLABUS: Record<string, SyllabusRow[]> = {
+  ME: [
+    GA_ROW,
+    ["Engineering Mathematics", "≈ 13 marks", [
+      "Linear algebra: matrix algebra, systems of linear equations, eigenvalues and eigenvectors",
+      "Calculus: limits, continuity, differentiability, mean value theorems",
+      "Definite, improper, double and triple integrals",
+      "Partial and total derivatives, Taylor series, maxima and minima, Fourier series",
+      "Gradient, divergence, curl; line, surface and volume integrals; Gauss, Stokes and Green's theorems",
+      "Differential equations: first order, higher order with constant coefficients, Euler-Cauchy",
+      "Initial and boundary value problems, Laplace transforms",
+      "Heat, wave and Laplace's equations",
+      "Complex variables: analytic functions, Cauchy-Riemann, Cauchy's integral theorem, Taylor and Laurent series",
+      "Probability and statistics: conditional probability, mean, median, mode, standard deviation",
+      "Random variables; binomial, Poisson and normal distributions",
+      "Numerical methods: algebraic equations, trapezoidal and Simpson's rules, single and multi-step ODE methods",
+    ]],
+    ["Engineering Mechanics", "≈ 4–6 marks", [
+      "Free-body diagrams and equilibrium",
+      "Friction: rolling resistance, belt-pulley, brakes, clutches, screw jack, wedge, vehicles",
+      "Plane trusses and frames",
+      "Virtual work",
+      "Kinematics and dynamics of rigid bodies in plane motion",
+      "Impulse and momentum (linear and angular) and energy formulations",
+    ]],
+    ["Mechanics of Materials", "≈ 7–9 marks", [
+      "Stress and strain, elastic constants",
+      "2D stress and strain transformation, Mohr's circle",
+      "Thin-walled pressure vessels",
+      "Shear force and bending moment diagrams",
+      "Bending and shear stresses, shear centre",
+      "Deflection of beams",
+      "Torsion of circular shafts",
+      "Euler's theory of columns",
+      "Energy methods, thermal stresses",
+      "Strain gauges and rosettes",
+      "Mechanical properties: toughness, hardness, impact strength",
+    ]],
+    ["Theory of Machines", "≈ 5–7 marks", [
+      "Displacement, velocity and acceleration analysis of plane mechanisms",
+      "Dynamic analysis of linkages",
+      "Cams",
+      "Gears and gear trains",
+      "Flywheels and governors",
+      "Balancing of reciprocating and rotating masses",
+      "Gyroscope",
+    ]],
+    ["Vibrations", "≈ 2–4 marks", [
+      "Free and forced vibration: single and two degrees of freedom",
+      "Damping estimation and effects",
+      "Vibration isolation, transmissibility ratio, resonance",
+      "Critical speeds of shafts",
+      "Control systems: PID controller, transfer function",
+    ]],
+    ["Machine Design", "≈ 4–6 marks", [
+      "Design for static and dynamic loading",
+      "Failure theories",
+      "Fatigue strength and the S-N diagram",
+      "Bolted, riveted and welded joints",
+      "Shafts, gears, belt drives",
+      "Rolling and sliding contact bearings",
+      "Brakes, clutches and springs",
+    ]],
+    ["Fluid Mechanics", "≈ 7–9 marks", [
+      "Fluid properties, fluid statics, forces on submerged bodies",
+      "Stability of floating bodies",
+      "Control-volume analysis of mass, momentum and energy",
+      "Fluid acceleration; differential equations of continuity and momentum",
+      "Velocity potential, Bernoulli's equation",
+      "Dimensional analysis",
+      "Viscous flow, boundary layer, elementary turbulent flow",
+      "Flow through pipes; head losses in pipes, bends and fittings",
+      "One-dimensional compressible flow; converging and converging-diverging nozzles",
+    ]],
+    ["Heat Transfer", "≈ 5–7 marks", [
+      "Modes of heat transfer; 1D conduction, thermal resistance, electrical analogy",
+      "Fins",
+      "Unsteady conduction, lumped parameter system",
+      "Thermal boundary layer; free and forced convection, correlations",
+      "Boiling and condensation",
+      "Heat exchangers: LMTD and NTU methods",
+      "Radiation: Stefan-Boltzmann, Wien's law, black and grey surfaces, view factors, radiation networks",
+    ]],
+    ["Thermodynamics", "≈ 4–6 marks", [
+      "Systems and processes",
+      "Properties of pure substances; ideal and real gases",
+      "Zeroth, first and second laws",
+      "Work, heat, energy and entropy changes",
+      "Closed and open system analysis",
+      "Property charts and tables",
+      "Availability and irreversibility; thermodynamic relations",
+    ]],
+    ["Applications (Power, IC Engines, RAC, Turbomachinery)", "≈ 5–7 marks", [
+      "Vapour and gas power cycles; regeneration and reheat",
+      "IC engines: Otto, Diesel and dual cycles",
+      "Combustion basics: air-fuel ratio, equivalence ratio",
+      "Refrigeration and heat pump cycles",
+      "Moist air properties, psychrometric chart and processes",
+      "Turbomachinery: impulse and reaction, velocity diagrams",
+      "Pelton, Francis and Kaplan turbines; steam and gas turbines",
+      "Compressors, pumps and pump characteristics",
+    ]],
+    ["Engineering Materials", "≈ 2–3 marks", [
+      "Crystal structure of common metals",
+      "Phase diagrams, heat treatment",
+      "Metals, alloys, polymers, composites and ceramics",
+      "Engineering and true stress-strain diagrams",
+    ]],
+    ["Casting, Forming and Joining", "≈ 4–6 marks", [
+      "Casting processes; patterns, moulds and cores",
+      "Solidification, riser and gating design, casting defects",
+      "Plastic deformation and yield criteria; hot and cold working",
+      "Bulk and sheet forming, load estimation",
+      "Powder metallurgy",
+      "Welding, brazing, soldering; solid-state welding, adhesive bonding",
+      "Non-destructive testing",
+    ]],
+    ["Machining and Machine Tool Operations", "≈ 3–5 marks", [
+      "Machining operations and machine tools",
+      "Single and multi-point cutting tools; ASA and ORS tool geometry",
+      "Mechanics of machining",
+      "Tool materials, tool life and wear; economics of machining",
+      "Abrasive and non-traditional machining",
+      "Work holding, jigs and fixtures",
+    ]],
+    ["Additive Manufacturing", "≈ 1–2 marks", [
+      "Types of additive manufacturing processes",
+      "Advantages, limitations and applications",
+    ]],
+    ["Metrology and Inspection", "≈ 2–3 marks", [
+      "Limits, fits and tolerances",
+      "Linear and angular measurements, comparators",
+      "Interferometry; form and finish measurement",
+      "Alignment and testing; tolerance analysis",
+      "Coordinate measuring machine (CMM)",
+    ]],
+    ["Computer Aided Manufacturing and Automation", "≈ 1–2 marks", [
+      "CAD/CAM and their integration",
+      "NC/CNC machines and CNC programming",
+      "Pneumatic, electro-pneumatic and hydraulic actuators",
+      "Programmable logic controllers",
+    ]],
+    ["Production Planning and Control", "≈ 2–3 marks", [
+      "Work study, productivity, forecasting",
+      "Aggregate production planning, scheduling, MRP",
+      "Six sigma, lean manufacturing",
+      "Inventory control: deterministic models, safety stock",
+      "Quality and reliability for product lifecycle",
+    ]],
+    ["Operations Research", "≈ 2–3 marks", [
+      "Linear programming, simplex method",
+      "Transportation and assignment",
+      "Network flow models",
+      "Simple queuing models",
+      "PERT and CPM",
+    ]],
+  ],
+
+  CE: [
+    GA_ROW,
+    ["Engineering Mathematics", "≈ 13 marks", [
+      "Linear algebra: matrix algebra, linear equations, eigenvalues and eigenvectors",
+      "Calculus: limits, continuity, mean value theorems, maxima and minima, Taylor series",
+      "Definite and indefinite integrals; area and volume",
+      "Partial and total derivatives; gradient, divergence, curl; line, surface and volume integrals",
+      "Ordinary differential equations: first order, higher order with constant coefficients, Euler-Cauchy, IVP and BVP",
+      "Partial differential equations: Fourier series, separation of variables, 1D diffusion, wave and 2D Laplace equations",
+      "Probability and statistics: axioms, conditional probability, descriptive statistics",
+      "Random variables: PMF, PDF, CDF; Poisson and normal distributions; linear regression",
+      "Numerical methods: error analysis, algebraic equations, Newton's and Lagrange polynomials",
+      "Numerical differentiation; trapezoidal and Simpson's rules; single and multi-step ODE methods",
+    ]],
+    ["Engineering Mechanics", "≈ 2–3 marks", [
+      "System of forces, free-body diagrams, equilibrium",
+      "Internal forces in structures",
+      "Friction and its applications",
+      "Centre of mass",
+    ]],
+    ["Solid Mechanics", "≈ 6–8 marks", [
+      "Bending moment and shear force in determinate beams",
+      "Transformation of stress, Mohr's circle",
+      "Simple stress-strain relationships",
+      "Simple bending theory; flexural and shear stresses, shear centre",
+      "Uniform torsion",
+      "Combined stresses",
+      "Column buckling",
+    ]],
+    ["Structural Analysis", "≈ 4–6 marks", [
+      "Principle of superposition",
+      "Virtual work, Castigliano's second theorem",
+      "Deflections of determinate beams, frames and trusses",
+      "Indeterminate structures: consistent deformations, slope-deflection, moment distribution",
+      "Influence lines and moving loads",
+      "Stiffness matrix method",
+      "Determinate arches and cables",
+    ]],
+    ["Concrete Structures", "≈ 4–6 marks", [
+      "Working stress and limit state design",
+      "Design and detailing of beams, slabs, columns and isolated footings",
+      "Bond and development length",
+    ]],
+    ["Steel Structures", "≈ 3–5 marks", [
+      "Working stress and limit state design",
+      "Tension and compression members, beams, beam-columns, column bases",
+      "Simple and eccentric connections, beam-column connections",
+      "Plastic analysis of beams and portal frames",
+    ]],
+    ["Geotechnical Engineering", "≈ 14–17 marks", [
+      "Three-phase system, phase relationships, index properties",
+      "Unified and Indian standard soil classification",
+      "Permeability; seepage, flow nets, uplift, piping, capillarity, seepage force",
+      "Effective stress and quicksand condition",
+      "Compaction; one-dimensional consolidation, time rate of consolidation",
+      "Shear strength, Mohr's circle, stress-strain of clays and sands, stress paths",
+      "Sub-surface investigation: boreholes, sampling, plate load, SPT and CPT",
+      "Earth pressure: Rankine and Coulomb",
+      "Slope stability: finite and infinite slopes, Bishop's method",
+      "Sheet piles",
+      "Stress distribution: Boussinesq's theory, pressure bulbs",
+      "Shallow foundations: Terzaghi and Meyerhof bearing capacity, water table effect",
+      "Combined footing and raft foundation; contact pressure; settlement",
+      "Deep foundations: pile capacity, pile load test, lateral loads, group efficiency, negative skin friction",
+      "Ground improvement techniques",
+    ]],
+    ["Fluid Mechanics", "≈ 4–5 marks", [
+      "Fluid properties, fluid statics",
+      "Continuity, momentum and energy equations",
+      "Potential flow; laminar and turbulent flow",
+      "Flow in pipes, pipe networks",
+      "Boundary layer; lift and drag",
+    ]],
+    ["Hydraulics", "≈ 4–5 marks", [
+      "Forces on immersed bodies",
+      "Flow measurement in channels and pipes",
+      "Dimensional analysis and hydraulic similitude",
+      "Channel hydraulics: specific energy, critical flow, hydraulic jump",
+      "Uniform and gradually varied flow, water surface profiles",
+      "Prismatic and mobile channels, rapidly varied flow",
+      "Sharp crested weirs",
+    ]],
+    ["Hydrology", "≈ 2–3 marks", [
+      "Hydrologic cycle, precipitation, evaporation, evapotranspiration, infiltration",
+      "Streamflow measurement, unit hydrographs",
+      "Reservoir capacity, flood estimation and routing",
+      "Surface runoff models",
+      "Groundwater: well hydraulics, aquifers, Darcy's law",
+    ]],
+    ["Irrigation", "≈ 2–3 marks", [
+      "Irrigation systems and methods",
+      "Crop water requirements: duty, delta, evapotranspiration",
+      "Gravity dams and spillways",
+      "Lined and unlined canals; weirs on permeable foundation",
+      "Cross drainage and river training structures",
+      "Earthen dams, seepage through dams, well irrigation",
+    ]],
+    ["Environmental Engineering: Water and Waste Water", "≈ 6–8 marks", [
+      "Water quality standards and index",
+      "Unit processes and operations",
+      "Water requirement and distribution",
+      "Drinking water treatment",
+      "Sewerage system design, domestic wastewater quantity",
+      "Primary, secondary and tertiary treatment",
+      "Effluent standards; sludge treatment and disposal; reuse of treated sewage",
+    ]],
+    ["Air Pollution", "≈ 2–3 marks", [
+      "Pollutants, sources and impacts",
+      "Air pollution control",
+      "Air quality standards, air quality index",
+    ]],
+    ["Municipal Solid Wastes", "≈ 2–3 marks", [
+      "Characteristics, generation, collection and transport",
+      "Reuse, recycling, energy recovery, treatment and disposal",
+      "Landfill design and operation",
+    ]],
+    ["Transportation Infrastructure", "≈ 2–4 marks", [
+      "Geometric design of roads (IRC): cross-section, sight distances, alignment",
+      "Railway track: speed and cant",
+      "Airport runway length and corrections; taxiway design",
+    ]],
+    ["Highway Pavements", "≈ 2–3 marks", [
+      "Highway materials and tests",
+      "Bituminous paving mixes",
+      "Flexible and rigid pavement design (IRC)",
+    ]],
+    ["Traffic Engineering", "≈ 2–3 marks", [
+      "Traffic studies: flow, speed, peak hour factor, accidents",
+      "Traffic flow parameters and fundamental relationships",
+      "Traffic signs; signal design by Webster's method",
+      "Intersections and interchanges",
+      "Highway capacity and level of service",
+    ]],
+    ["Transportation Planning", "≈ 1–2 marks", [
+      "Four-step travel demand modelling",
+      "Trip generation, trip distribution, mode choice, traffic assignment",
+    ]],
+    ["Geomatics Engineering", "≈ 3–5 marks", [
+      "Plane and geodetic surveying, GNSS surveying",
+      "Errors and their adjustment",
+      "Maps: scale, coordinate system",
+      "Levelling and trigonometric levelling",
+      "Traversing, triangulation, total station",
+      "Topographic, cadastral and engineering surveys",
+      "Cartography and map projections",
+      "Photogrammetry: scale, flying height, parallax, camera calibration",
+    ]],
+    ["Construction Materials", "≈ 2–3 marks", [
+      "Steel: composition and properties",
+      "Cement: hydration, microstructure, admixtures",
+      "Concrete: constituents, mix design, short and long-term properties",
+    ]],
+    ["Construction Management", "≈ 2–3 marks", [
+      "Types of construction projects",
+      "Estimation and costing: long wall-short wall, centre line, analysis of rates",
+      "AOA and AON networks, PERT and CPM",
+      "Project updating and monitoring",
+      "Construction equipment",
+      "Types of contracts",
+    ]],
+  ],
+
+  CSE: [
+    GA_ROW,
+    ["Discrete Mathematics", "≈ 6–8 marks", [
+      "Propositional and first order logic",
+      "Sets, relations, functions, partial orders and lattices",
+      "Monoids, groups",
+      "Graphs: connectivity, matching, colouring",
+      "Combinatorics: counting, recurrence relations, generating functions",
+    ]],
+    ["Engineering Mathematics", "≈ 5–7 marks", [
+      "Linear algebra: matrices, determinants, linear equations, eigenvalues, LU decomposition",
+      "Calculus: limits, continuity, differentiability, maxima and minima, mean value theorem, integration",
+      "Probability and statistics: random variables; uniform, normal, exponential, Poisson and binomial distributions",
+      "Mean, median, mode, standard deviation; conditional probability, Bayes theorem",
+    ]],
+    ["Digital Logic", "≈ 4–6 marks", [
+      "Boolean algebra and minimization: algebraic, K-map, tabular",
+      "Combinational and sequential circuits",
+      "Number representation and arithmetic (fixed and floating point)",
+    ]],
+    ["Computer Organization and Architecture", "≈ 6–9 marks", [
+      "Instruction set and addressing modes",
+      "ALU design",
+      "Control unit: hardwired and microprogrammed",
+      "Memory hierarchy, cache memory mapping",
+      "I/O interface: interrupt and DMA",
+      "Instruction pipelining, pipeline hazards",
+    ]],
+    ["Programming and Data Structures", "≈ 8–11 marks", [
+      "Programming in C",
+      "Recursion",
+      "Arrays, stacks, queues, linked lists",
+      "Trees, binary search trees, binary heaps",
+      "Graphs",
+    ]],
+    ["Algorithms", "≈ 7–10 marks", [
+      "Searching, sorting, hashing",
+      "Asymptotic worst case time and space complexity",
+      "Greedy, dynamic programming, divide-and-conquer",
+      "Graph traversals, minimum spanning trees, shortest paths",
+    ]],
+    ["Theory of Computation", "≈ 6–8 marks", [
+      "Regular expressions and finite automata",
+      "Context-free grammars and push-down automata",
+      "Regular and context-free languages, pumping lemma",
+      "Turing machines and undecidability",
+    ]],
+    ["Compiler Design", "≈ 3–5 marks", [
+      "Lexical analysis, parsing",
+      "Syntax-directed translation",
+      "Runtime environments",
+      "Intermediate code generation",
+      "Local optimisation",
+      "Data flow analysis: constant propagation, liveness, common subexpression elimination",
+    ]],
+    ["Operating System", "≈ 7–10 marks", [
+      "System calls, processes, threads",
+      "Inter-process communication, concurrency and synchronization",
+      "Deadlock",
+      "CPU and I/O scheduling",
+      "Memory management and virtual memory",
+      "File systems",
+    ]],
+    ["Databases", "≈ 6–8 marks", [
+      "ER model",
+      "Relational algebra, tuple calculus, SQL",
+      "Integrity constraints, normal forms",
+      "File organization, indexing (B and B+ trees)",
+      "Transactions and concurrency control",
+    ]],
+    ["Computer Networks", "≈ 6–9 marks", [
+      "Layering; circuit, packet and virtual circuit switching; performance metrics",
+      "Data link layer: error detection, MAC, Ethernet",
+      "Distance vector and link state routing",
+      "IPv4: fragmentation, CIDR, NAT",
+      "TCP flow and congestion control, socket API",
+      "DNS and HTTP",
+    ]],
+  ],
+
+  EE: [
+    GA_ROW,
+    ["Engineering Mathematics", "≈ 13 marks", [
+      "Linear algebra: matrix algebra, linear equations, eigenvalues and eigenvectors",
+      "Calculus: mean value theorems, integral calculus, definite and improper integrals",
+      "Partial derivatives, maxima and minima, multiple integrals, Fourier series",
+      "Vector identities, directional derivatives; line, surface and volume integrals",
+      "Stokes, Gauss, divergence and Green's theorems",
+      "Differential equations: first and higher order, variation of parameters, Cauchy and Euler equations",
+      "Initial and boundary value problems; PDEs, separation of variables",
+      "Complex variables: analytic functions, Cauchy's integral theorem and formula, Taylor and Laurent series, residue theorem",
+      "Probability and statistics: sampling theorems, conditional probability, mean, median, mode, standard deviation",
+      "Random variables; discrete and continuous, Poisson, normal and binomial distributions",
+      "Correlation and regression analysis",
+    ]],
+    ["Electric Circuits", "≈ 8–11 marks", [
+      "Network elements: ideal and dependent sources; R, L, C, M",
+      "KCL, KVL, node and mesh analysis",
+      "Thevenin, Norton, superposition, maximum power transfer",
+      "Transient response of DC and AC networks",
+      "Sinusoidal steady state, resonance",
+      "Two-port networks",
+      "Balanced three-phase circuits, star-delta transformation",
+      "Complex power and power factor",
+    ]],
+    ["Electromagnetic Fields", "≈ 3–5 marks", [
+      "Coulomb's law, electric field intensity and flux density, Gauss's law, divergence",
+      "Fields and potential of point, line, plane and spherical charges",
+      "Dielectric medium; capacitance of simple configurations",
+      "Biot-Savart's law, Ampere's law, curl, Faraday's law, Lorentz force",
+      "Inductance, MMF, reluctance, magnetic circuits",
+      "Self and mutual inductance",
+    ]],
+    ["Signals and Systems", "≈ 6–8 marks", [
+      "Continuous and discrete time signals; shifting and scaling",
+      "Linear time invariant and causal systems",
+      "Fourier series of periodic signals",
+      "Sampling theorem",
+      "Fourier transform, Laplace transform and z-transform",
+      "RMS and average values of periodic waveforms",
+    ]],
+    ["Electrical Machines", "≈ 10–13 marks", [
+      "Single-phase transformer: equivalent circuit, phasors, OC/SC tests, regulation, efficiency",
+      "Three-phase transformers: connections, vector groups, parallel operation; auto-transformer",
+      "Electromechanical energy conversion",
+      "DC machines: separately excited, series and shunt; characteristics, speed control",
+      "Three-phase induction machines: torque-speed, tests, equivalent circuit, starting, speed control",
+      "Single-phase induction motors",
+      "Synchronous machines: cylindrical and salient pole, regulation, parallel operation, starting",
+      "Losses and efficiency",
+    ]],
+    ["Power Systems", "≈ 10–13 marks", [
+      "Power generation; AC and DC transmission",
+      "Transmission lines and cables",
+      "Economic load dispatch",
+      "Series and shunt compensation",
+      "Electric field distribution and insulators; distribution systems",
+      "Per-unit quantities, bus admittance matrix",
+      "Gauss-Seidel and Newton-Raphson load flow",
+      "Voltage and frequency control, power factor correction",
+      "Symmetrical components; symmetrical and unsymmetrical faults",
+      "Over-current, differential, directional and distance protection; circuit breakers",
+      "System stability, equal area criterion",
+    ]],
+    ["Control Systems", "≈ 7–9 marks", [
+      "Mathematical modelling, feedback, transfer function",
+      "Block diagrams and signal flow graphs",
+      "Transient and steady-state analysis of LTI systems",
+      "Routh-Hurwitz and Nyquist stability",
+      "Bode plots, root loci",
+      "Lag, lead and lead-lag compensators; P, PI and PID controllers",
+      "State space model and solution of state equations",
+    ]],
+    ["Electrical and Electronic Measurements", "≈ 4–6 marks", [
+      "Bridges and potentiometers",
+      "Measurement of voltage, current, power, energy and power factor",
+      "Instrument transformers",
+      "Digital voltmeters and multi-meters",
+      "Phase, time and frequency measurement",
+      "Oscilloscopes, error analysis",
+    ]],
+    ["Analog and Digital Electronics", "≈ 7–9 marks", [
+      "Diode circuits: clipping, clamping, rectifiers",
+      "Amplifiers: biasing, equivalent circuit, frequency response",
+      "Oscillators and feedback amplifiers",
+      "Op-amps: characteristics and applications",
+      "Active filters: Sallen Key, Butterworth; VCOs and timers",
+      "Combinational and sequential logic, multiplexers, demultiplexers",
+      "Schmitt triggers, sample and hold, A/D and D/A converters",
+    ]],
+    ["Power Electronics", "≈ 7–9 marks", [
+      "V-I characteristics and gating of thyristor, MOSFET, IGBT",
+      "DC-DC converters: buck, boost, buck-boost",
+      "Uncontrolled rectifiers: single and three-phase",
+      "Voltage and current commutated thyristor converters",
+      "Bidirectional AC-DC voltage source converters",
+      "Line current harmonics; power factor and distortion factor",
+      "Voltage and current source inverters, sinusoidal PWM",
+    ]],
+  ],
+
+  EC: [
+    GA_ROW,
+    ["Engineering Mathematics", "≈ 13 marks", [
+      "Linear algebra: vector space, basis, linear dependence, matrix algebra, eigenvalues, rank, linear equations",
+      "Calculus: mean value theorems, integral calculus, definite and improper integrals",
+      "Partial derivatives, maxima and minima, multiple integrals; line, surface and volume integrals; Taylor series",
+      "Differential equations: Euler-Cauchy, nonhomogeneous, variation of parameters",
+      "PDEs, variable separable method, initial and boundary value problems",
+      "Vector analysis: gradient, divergence, curl; Gauss, Green's and Stokes' theorems",
+      "Complex analysis: analytic functions, Cauchy's theorem and formula, series, Taylor and Laurent, residue theorem",
+      "Probability and statistics: combinatorial probability; binomial, Poisson, exponential and normal distributions",
+      "Joint and conditional probability; correlation and regression",
+    ]],
+    ["Networks, Signals and Systems", "≈ 12–15 marks", [
+      "Node and mesh analysis; superposition, Thevenin, Norton, reciprocity",
+      "Sinusoidal steady state: phasors, complex power, maximum power transfer",
+      "RL, RC and RLC circuits; Laplace transform solutions",
+      "Two-port parameters, wye-delta transformation",
+      "LTI systems: causality, stability, impulse response, convolution",
+      "Poles and zeros, frequency response, group and phase delay",
+      "Fourier series and transform; Nyquist sampling and reconstruction",
+      "DTFT, DFT, z-transform; FIR and IIR filter design",
+    ]],
+    ["Electronic Devices", "≈ 6–9 marks", [
+      "Energy bands; intrinsic and extrinsic semiconductors",
+      "Equilibrium carrier concentration; direct and indirect band-gap",
+      "Carrier transport: diffusion and drift current, mobility, resistivity",
+      "Generation and recombination; Poisson and continuity equations",
+      "P-N junction, Zener diode, BJT",
+      "MOS capacitor, MOSFET, scaling in MOSFETs",
+      "LED, photo diode and solar cell",
+    ]],
+    ["Analog Circuits", "≈ 9–12 marks", [
+      "Diode circuits: clipping, clamping, rectifiers",
+      "BJT and MOSFET amplifiers: biasing, AC coupling, small signal, frequency response",
+      "Current mirrors and differential amplifiers",
+      "Op-amp circuits: amplifiers, summers, differentiators, integrators",
+      "Active filters, Schmitt trigger, oscillators",
+      "Dominant-pole (Miller) compensation, phase margin",
+    ]],
+    ["Digital Circuits", "≈ 8–10 marks", [
+      "Number representations: binary, integer and floating-point",
+      "Combinatorial circuits: Boolean algebra, K-map minimization, logic gates, static CMOS",
+      "Arithmetic circuits, code converters, multiplexers, decoders",
+      "Sequential circuits: latches, flip-flops, counters, shift registers, finite state machines",
+      "Propagation delay, setup and hold time, critical path",
+      "Sample and hold, ADCs and DACs",
+      "Semiconductor memories: ROM, SRAM, DRAM",
+      "Computer organization: instructions, addressing modes, ALU, data-path, control unit, pipelining",
+    ]],
+    ["Control Systems", "≈ 7–9 marks", [
+      "Control system components, feedback, transfer function",
+      "Block diagrams and signal flow graphs",
+      "Transient and steady-state analysis of LTI systems; frequency response",
+      "Routh-Hurwitz and Nyquist criteria",
+      "Bode and root-locus plots",
+      "Compensators, PID controller",
+      "State variable model and solution",
+    ]],
+    ["Communications", "≈ 10–12 marks", [
+      "Random processes: autocorrelation, PSD, white noise, filtering",
+      "AM and FM: modulation, demodulation, spectra; superheterodyne receivers",
+      "Information theory: entropy, source coding, mutual information, channel capacity",
+      "PCM, DPCM; ASK, PSK, FSK, QAM; bandwidth",
+      "Inter-symbol interference; MAP and ML detection, matched filter",
+      "SNR and BER",
+      "Error correction: Hamming codes, CRC",
+    ]],
+    ["Electromagnetics", "≈ 7–9 marks", [
+      "Maxwell's equations, boundary conditions, wave equation, Poynting vector",
+      "Plane waves: reflection, refraction, polarization",
+      "Phase and group velocity, propagation through media, skin depth",
+      "Transmission lines: characteristic impedance, matching, S-parameters, Smith chart",
+      "Rectangular and circular waveguides",
+      "Light propagation in optical fibres",
+      "Dipole and monopole antennas, linear antenna arrays",
+    ]],
+  ],
+
+  CH: [
+    GA_ROW,
+    ["Engineering Mathematics", "≈ 13 marks", [
+      "Linear algebra: matrix algebra, linear equations, eigenvalues and eigenvectors",
+      "Calculus: limits, continuity, Taylor series, mean value theorem, definite and improper integrals",
+      "Partial and total derivatives, maxima and minima",
+      "Gradient, divergence, curl; line, surface and volume integrals; Stokes, Gauss and Green's theorems",
+      "Differential equations: first and higher order, Cauchy and Euler equations, IVP and BVP",
+      "Laplace transforms; 1D heat, wave and Laplace equations",
+      "Complex numbers, polar form",
+      "Probability and statistics: conditional probability, mean, median, mode, standard deviation",
+      "Random variables; Poisson, normal and binomial distributions",
+      "Fundamentals of AI/ML: linear regression, principal component analysis (PCA)",
+      "Numerical methods: algebraic equations, trapezoidal and Simpson's rules, ODE methods, finite differences",
+    ]],
+    ["Process Calculations", "≈ 4–6 marks", [
+      "Steady and unsteady mass and energy balances",
+      "Multiphase, multi-component, reacting and non-reacting systems",
+      "Tie components",
+      "Recycle, bypass and purge",
+      "Gibbs phase rule, degree of freedom analysis",
+    ]],
+    ["Thermodynamics", "≈ 6–8 marks", [
+      "Laws of thermodynamics; open and closed systems",
+      "Entropy and chemical potential",
+      "Pure substances: equations of state, residual properties",
+      "Mixtures: partial molar properties, fugacity, excess properties, activity coefficients",
+      "Phase equilibria: predicting VLE",
+      "Chemical reaction equilibrium",
+    ]],
+    ["Fluid Mechanics and Mechanical Operations", "≈ 10–13 marks", [
+      "Newtonian and non-Newtonian fluids; fluid statics, surface tension",
+      "Fluid kinematics; continuity, motion and mechanical energy equations",
+      "Friction factors; dimensional analysis and similitude",
+      "Inviscid flow: Euler equation",
+      "Pipe flow: velocity profile, pressure drop, Bernoulli, flow meters; pumps",
+      "Turbulent flow; boundary layer theory",
+      "Flow past immersed bodies, packed and fluidized beds",
+      "Particle size and distribution; size reduction and classification",
+      "Free and hindered settling; centrifuges and cyclones",
+      "Thickening, clarification, filtration, agitation and mixing",
+    ]],
+    ["Heat Transfer", "≈ 7–9 marks", [
+      "Equation of energy",
+      "Steady and unsteady conduction, convection and radiation",
+      "Thermal boundary layer and heat transfer coefficients",
+      "Boiling, condensation and evaporation",
+      "Heat exchangers and evaporators: types and calculations",
+      "Design of double pipe and shell-and-tube exchangers; single and multiple effect evaporators",
+    ]],
+    ["Mass Transfer", "≈ 10–12 marks", [
+      "Fick's laws, molecular diffusion",
+      "Mass transfer coefficients; film, penetration and surface renewal theories",
+      "Momentum, heat and mass transfer analogies",
+      "Stage-wise and continuous contacting; stage efficiencies; HTU and NTU",
+      "Distillation, absorption, leaching, liquid-liquid extraction",
+      "Drying, humidification, dehumidification",
+      "Adsorption, membrane separations",
+    ]],
+    ["Chemical Reaction Engineering", "≈ 10–12 marks", [
+      "Theories of reaction rates; homogeneous kinetics",
+      "Interpretation of kinetic data",
+      "Single and multiple reactions in ideal reactors",
+      "Enzyme kinetics: Michaelis-Menten and Monod models",
+      "Non-ideal reactors: RTD, single parameter model",
+      "Non-isothermal reactors",
+      "Heterogeneous catalytic kinetics, diffusion effects, catalyst deactivation",
+    ]],
+    ["Instrumentation and Process Control", "≈ 6–8 marks", [
+      "Measurement of process variables; sensors and transducers",
+      "P&ID equipment symbols",
+      "Process modelling and linearization; state-space models",
+      "Transfer functions and dynamic responses; inverse response",
+      "Process reaction curve; P, PI and PID controllers; control valves",
+      "Closed loop stability, frequency response, controller tuning",
+      "Cascade and feed forward control",
+    ]],
+    ["Plant Design and Economics", "≈ 4–6 marks", [
+      "Process economics, cost estimation, depreciation",
+      "Total annualized cost, cost indices",
+      "Rate of return, payback period, discounted cash flow",
+      "Optimization in process design; sizing heat exchangers and multistage contactors",
+      "Batch plant scheduling",
+    ]],
+    ["Chemical Technology", "≈ 3–5 marks", [
+      "Inorganic chemicals: synthesis gas, sulfuric acid, phosphoric acid, chlor-alkali",
+      "Fertilizers: ammonia, urea",
+      "Natural products: pulp and paper, sugar and ethanol",
+      "Petroleum refining and petrochemicals: ethyl benzene, styrene, ethylene oxide",
+      "Polymerization: polyethylene and polyester",
+    ]],
+  ],
+};
+
+/** Official GATE 2027 syllabus PDFs (IIT Madras), by branch code. */
+export const SYLLABUS_PDF: Record<string, string> = {
+  ME: "https://gate2027.iitm.ac.in/static/doc/GATE2027_Syllabus/ME_GATE2027_Syllabus.pdf",
+  CE: "https://gate2027.iitm.ac.in/static/doc/GATE2027_Syllabus/CE_GATE2027_Syllabus.pdf",
+  CSE: "https://gate2027.iitm.ac.in/static/doc/GATE2027_Syllabus/CS_GATE2027_Syllabus.pdf",
+  EE: "https://gate2027.iitm.ac.in/static/doc/GATE2027_Syllabus/EE_GATE2027_Syllabus.pdf",
+  EC: "https://gate2027.iitm.ac.in/static/doc/GATE2027_Syllabus/EC_GATE2027_Syllabus.pdf",
+  CH: "https://gate2027.iitm.ac.in/static/doc/GATE2027_Syllabus/CH_GATE2027_Syllabus.pdf",
+};
 
 export const courses: Course[] = [
   ...GATE_COURSES.map((c, i) => ({
@@ -1177,6 +1786,7 @@ export const courses: Course[] = [
     alt_text: `${c.title} coaching at Acumen Gate Academy`,
     meta_title: `${c.title} Coaching in Vadodara & Online | Acumen Gate Academy`,
     meta_description: `${c.title} coaching at Acumen Gate Academy: full syllabus, offline batches in Vadodara and live online batches, fees, start dates and a free demo class.`,
+    syllabus_pdf_url: SYLLABUS_PDF[c.code] ?? "",
     visible: true,
     sort_order: i + 1,
   })),
@@ -1207,6 +1817,7 @@ export const courses: Course[] = [
     meta_title: "GPSC Coaching for Engineers in Vadodara | Acumen Gate Academy",
     meta_description:
       "GPSC coaching for Class 1, 2 and 3 engineering posts: general studies, current affairs and technical subjects, at Acumen Gate Academy, Vadodara.",
+    syllabus_pdf_url: "",
     visible: true,
     sort_order: GATE_COURSES.length + 1,
   },
@@ -1222,16 +1833,12 @@ const GPSC_SUBJECTS: Array<[string, string, string[]]> = [
 
 export const courseSubjects: CourseSubject[] = [
   ...GATE_COURSES.flatMap((c) =>
-    [APTITUDE, MATHS, ...c.subjects].map(([subject, weightage, topics], j) => ({
+    (OFFICIAL_SYLLABUS[c.code] ?? []).map(([subject, weightage, topics], j) => ({
       id: `subject-${c.slug}-${j + 1}`,
       course_id: `course-${c.slug}`,
       subject,
-      // GATE CS folds discrete mathematics into its maths section.
-      weightage: c.code === "CSE" && subject === "Engineering Mathematics" ? "≈ 13 marks (with discrete maths)" : weightage,
-      topics:
-        c.code === "CSE" && subject === "Engineering Mathematics"
-          ? ["Linear algebra", "Calculus", "Probability and statistics"].join("\n")
-          : topics.join("\n"),
+      weightage,
+      topics: topics.join("\n"),
       visible: true,
       sort_order: j + 1,
     })),

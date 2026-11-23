@@ -75,7 +75,12 @@ card photo, and what Google shows. The **Branch** decides which batches appear o
 the page.
 
 The syllabus is in **Course syllabus**, grouped by course: one row per subject,
-with its topics (one per line) and typical marks.
+with its topics (one per line) and typical marks. It follows the official GATE
+2027 syllabus; the marks are our own estimates, so adjust them freely.
+
+Each GATE course page has a **Download official syllabus** button. Its link is
+the **Official syllabus PDF link** field in **Course pages** - paste the new
+link each year when the organising IIT publishes the next syllabus.
 
 ### The free demo class
 

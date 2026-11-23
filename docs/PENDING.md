@@ -96,8 +96,12 @@ admin screens are empty.
 
 ### A7. Review the sample content added for the course pages
 Added Nov 2026 as **sample data**, all admin-editable:
-- **Syllabus "typical marks"** per subject: approximate ranges from recent
-  GATE papers. The faculty should check them, branch by branch.
+- **Syllabus (updated 23 Nov 2026):** subjects and topics for all six GATE
+  papers now follow the official GATE 2027 syllabus PDFs from IIT Madras,
+  word for word (machine-checked against the PDF text), and each course page
+  links to its PDF. The **"≈ marks" per subject are still Acumen's
+  estimates**, not official - the client will adjust them in admin
+  (Course syllabus).
 - **Course overviews, highlights and taglines** - written from what the SRS
   says about Acumen. The client should confirm they're accurate.
 - **The 23 new FAQs** (GATE exam, courses, demo, fees, online). GATE facts

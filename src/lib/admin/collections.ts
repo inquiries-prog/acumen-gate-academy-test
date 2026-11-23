@@ -203,6 +203,13 @@ export const collections: CollectionDef[] = [
       { name: "highlights", label: "Highlights", type: "longtext", help: "One per line. Shown as a ticked list." },
       { name: "who_should_join", label: "Who should join", type: "longtext", help: "One per line." },
       {
+        name: "syllabus_pdf_url",
+        label: "Official syllabus PDF link",
+        type: "text",
+        placeholder: "https://gate2027.iitm.ac.in/...pdf",
+        help: "Opens when students press 'Download official syllabus'. Paste the new link each year when the organising IIT publishes it. Leave blank to hide the button.",
+      },
+      {
         name: "image_url",
         label: "Card photo",
         type: "image",

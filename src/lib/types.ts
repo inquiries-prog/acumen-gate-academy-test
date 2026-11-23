@@ -127,6 +127,8 @@ export interface Course {
   alt_text: string;
   meta_title: string;
   meta_description: string;
+  /** Link to the official syllabus PDF (opened in a new tab). Blank hides the button. */
+  syllabus_pdf_url: string;
   visible: boolean;
   sort_order: number;
 }

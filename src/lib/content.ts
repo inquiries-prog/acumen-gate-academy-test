@@ -148,8 +148,18 @@ export async function getBatchesForBranchCode(code: string): Promise<Batch[]> {
     );
 }
 
+/**
+ * Visible courses. A database that has not yet run migration 0005 has no
+ * syllabus_pdf_url column; those rows fall back to the starting link for the
+ * same course, so the "Download official syllabus" button works either way.
+ */
 export const getCourses = cache(async (): Promise<Course[]> =>
-  (await readTable<Course>("courses", D.courses)).filter((c) => c.visible),
+  (await readTable<Course>("courses", D.courses))
+    .filter((c) => c.visible)
+    .map((c) => ({
+      ...c,
+      syllabus_pdf_url: c.syllabus_pdf_url ?? D.courses.find((d) => d.slug === c.slug)?.syllabus_pdf_url ?? "",
+    })),
 );
 
 export async function getCourse(slug: string): Promise<Course | null> {

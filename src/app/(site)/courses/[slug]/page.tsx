@@ -12,6 +12,7 @@ import CourseSectionNav from "@/components/courses/CourseSectionNav";
 import DemoCtaBand from "@/components/courses/DemoCtaBand";
 import ExamPattern from "@/components/courses/ExamPattern";
 import SyllabusAccordion from "@/components/courses/SyllabusAccordion";
+import { SyllabusDownloadCard } from "@/components/courses/SyllabusDownload";
 import DemoVideoTile from "@/components/home/DemoVideoTile";
 import MentorsSection from "@/components/home/MentorsSection";
 import Reveal from "@/components/ui/Reveal";
@@ -181,7 +182,11 @@ export default async function CoursePage({ params }: Params) {
               </dl>
             </Reveal>
 
-            <CourseHeroActions courseTitle={course.title} branchOption={branchOption} />
+            <CourseHeroActions
+              courseTitle={course.title}
+              branchOption={branchOption}
+              syllabusUrl={course.syllabus_pdf_url}
+            />
           </div>
 
           <div className="lg:justify-self-end lg:w-full">
@@ -287,9 +292,11 @@ export default async function CoursePage({ params }: Params) {
               </p>
               {isGate && (
                 <p className="mt-4 text-xs leading-relaxed text-muted">
-                  Marks are approximate ranges from recent papers and vary from year to year.
+                  Subjects and topics follow the official GATE 2027 syllabus. Marks are Acumen&apos;s approximate
+                  estimates from recent papers and vary from year to year.
                 </p>
               )}
+              <SyllabusDownloadCard url={course.syllabus_pdf_url} paper={course.title} />
             </Reveal>
             <SyllabusAccordion subjects={subjects} />
           </div>

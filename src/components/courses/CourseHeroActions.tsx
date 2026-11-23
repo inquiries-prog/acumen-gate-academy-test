@@ -5,14 +5,17 @@ import WhatsAppLink from "@/components/site/WhatsAppLink";
 import Reveal from "@/components/ui/Reveal";
 import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
 import GateCountdown from "./GateCountdown";
+import { SyllabusDownloadLink } from "./SyllabusDownload";
 
 /** Course page hero: the live countdown and the secondary contact actions. */
 export default function CourseHeroActions({
   courseTitle,
   branchOption,
+  syllabusUrl = "",
 }: {
   courseTitle: string;
   branchOption?: string;
+  syllabusUrl?: string;
 }) {
   const { settings, openEnquiry } = useSiteUI();
   return (
@@ -35,6 +38,7 @@ export default function CourseHeroActions({
         >
           Request a callback
         </button>
+        <SyllabusDownloadLink url={syllabusUrl} className="text-white/90 hover:text-white" />
       </div>
     </Reveal>
   );

@@ -3,6 +3,7 @@ import { PedagogyIcon } from "@/components/art/Icons";
 import BranchArt from "@/components/courses/BranchArt";
 import CoursesExplorer from "@/components/courses/CoursesExplorer";
 import CoursesHeroActions from "@/components/courses/CoursesHeroActions";
+import { SyllabusDownloadGrid } from "@/components/courses/SyllabusDownload";
 import DemoCtaBand from "@/components/courses/DemoCtaBand";
 import GateGuide from "@/components/courses/GateGuide";
 import FaqAccordion from "@/components/about/FaqAccordion";
@@ -162,6 +163,24 @@ export default async function CoursesPage() {
             className="mb-10"
           />
           <CoursesExplorer items={items} />
+
+          {/* The official syllabus for every paper, straight from the source. */}
+          <div className="mt-16 rounded-3xl border border-line bg-offwhite p-6 sm:p-8">
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-red">Official GATE 2027 syllabus</p>
+                <h3 className="mt-2 text-xl sm:text-2xl">Download the syllabus for your paper</h3>
+                <p className="mt-1.5 text-sm text-body">The official PDFs published by IIT Madras, the organising institute.</p>
+              </div>
+            </div>
+            <div className="mt-6">
+              <SyllabusDownloadGrid
+                items={courses
+                  .filter((c) => c.category === "gate")
+                  .map((c) => ({ code: c.branch_code, title: c.short_title || c.title, url: c.syllabus_pdf_url }))}
+              />
+            </div>
+          </div>
         </div>
       </section>
 
