@@ -126,6 +126,7 @@ export async function runSeed(supabase: SupabaseClient): Promise<SeedResult> {
     await fill("testimonials", strip(D.testimonials));
     await fill("result_years", strip(D.resultYears));
     await fill("news_posts", strip(D.newsPosts));
+    await fill("key_dates", strip(D.keyDates));
     await fill("ecosystem_cards", strip(D.ecosystemCards));
     await fill("centers", strip(D.centers));
     await fillGroups("faqs", strip(D.faqs), "category");

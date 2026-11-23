@@ -58,6 +58,7 @@ const groups: { heading: string; items: NavItem[] }[] = [
       { href: "/admin/c/faq", label: "FAQ page" },
       { href: "/admin/results", label: "Results page" },
       { href: "/admin/c/news", label: "News & Updates" },
+      { href: "/admin/c/key-dates", label: "Important dates" },
     ],
   },
   {

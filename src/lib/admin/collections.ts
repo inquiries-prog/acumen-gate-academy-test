@@ -352,6 +352,29 @@ export const collections: CollectionDef[] = [
       },
       { name: "published_at", label: "Date", type: "date", required: true },
       {
+        name: "category",
+        label: "Category",
+        type: "select",
+        options: [
+          { value: "gate", label: "GATE Exam" },
+          { value: "psu", label: "PSU & Jobs" },
+          { value: "results", label: "Results" },
+          { value: "acumen", label: "Acumen News" },
+        ],
+      },
+      {
+        name: "featured",
+        label: "Feature this post at the top of News & Updates",
+        type: "boolean",
+        help: "The newest featured post gets the big spot. Untick older ones when you feature a new one.",
+      },
+      {
+        name: "cover_url",
+        label: "Cover image",
+        type: "image",
+        help: "Optional. Without one, the post gets its category's illustrated cover.",
+      },
+      {
         name: "excerpt",
         label: "One-line summary",
         type: "textarea",
@@ -364,6 +387,41 @@ export const collections: CollectionDef[] = [
         type: "boolean",
         help: "Turn off to save a draft nobody can see yet.",
       },
+    ],
+  },
+  {
+    slug: "key-dates",
+    table: "key_dates",
+    title: "Important dates",
+    singular: "date",
+    description:
+      "The upcoming deadlines tracker on News & Updates, each with a live countdown. Dates that have passed disappear from the website on their own.",
+    titleField: "title",
+    subtitleField: "date",
+    orderBy: { column: "date" },
+    fields: [
+      { name: "title", label: "What happens", type: "text", required: true, placeholder: "GATE 2027 admit cards" },
+      { name: "date", label: "Date", type: "date", required: true },
+      { name: "detail", label: "One-line detail", type: "text" },
+      {
+        name: "kind",
+        label: "Type",
+        type: "select",
+        options: [
+          { value: "exam", label: "GATE exam" },
+          { value: "psu", label: "PSU & jobs" },
+          { value: "acumen", label: "Acumen (batches, demos, seminars)" },
+        ],
+      },
+      {
+        name: "confirmed",
+        label: "This date is officially confirmed",
+        type: "boolean",
+        help: "Leave unticked to show an 'Expected' tag until the official date is announced.",
+      },
+      { name: "link_url", label: "Link (optional)", type: "text", placeholder: "https://..." },
+      { name: "link_label", label: "Link text", type: "text", placeholder: "Official website" },
+      visibleField,
     ],
   },
   {

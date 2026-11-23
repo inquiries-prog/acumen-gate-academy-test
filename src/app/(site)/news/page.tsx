@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import NewsList from "@/components/news/NewsList";
+import NewsMagazine from "@/components/news/NewsMagazine";
 import FinalCta from "@/components/site/FinalCta";
 import AmbientGlow from "@/components/ui/AmbientGlow";
 import Reveal from "@/components/ui/Reveal";
-import { getNewsPosts, getPageSeo } from "@/lib/content";
+import { getKeyDates, getNewsPosts, getPageSeo } from "@/lib/content";
 
 /**
  * Content comes from the database, so this page must not stay frozen at the
@@ -32,13 +32,13 @@ export async function generateMetadata(): Promise<Metadata> {
  * page is worse than no news page, so posting has to stay low-friction.
  */
 export default async function NewsPage() {
-  const posts = await getNewsPosts();
+  const [posts, dates] = await Promise.all([getNewsPosts(), getKeyDates()]);
 
   return (
     <>
       <section className="relative isolate overflow-hidden border-b border-line bg-white">
         <AmbientGlow />
-        <div className="container-site relative py-16 md:py-24">
+        <div className="container-site relative py-14 md:py-20">
           <Reveal className="max-w-3xl">
             <p className="eyebrow">
               <span className="h-1.5 w-1.5 rounded-full bg-red" aria-hidden="true" />
@@ -55,7 +55,7 @@ export default async function NewsPage() {
         </div>
       </section>
 
-      <NewsList posts={posts} />
+      <NewsMagazine posts={posts} dates={dates} />
 
       <FinalCta source="News page CTA" />
     </>

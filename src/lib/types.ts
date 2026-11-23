@@ -214,6 +214,8 @@ export interface ResultEntry {
   sort_order: number;
 }
 
+export type NewsCategory = "gate" | "psu" | "results" | "acumen";
+
 export interface NewsPost {
   id: string;
   slug: string;
@@ -222,6 +224,27 @@ export interface NewsPost {
   content: string;
   published_at: string;
   published: boolean;
+  category: NewsCategory;
+  /** Optional cover image; without one the post gets its category's cover art. */
+  cover_url: string;
+  /** The big story at the top of /news (the newest featured post wins). */
+  featured: boolean;
+}
+
+/** An upcoming deadline in the News & Updates dates tracker. */
+export interface KeyDate {
+  id: string;
+  title: string;
+  /** YYYY-MM-DD. Past dates drop off the tracker automatically. */
+  date: string;
+  detail: string;
+  kind: "exam" | "psu" | "acumen";
+  /** False shows an "Expected" tag (not yet confirmed by the official body). */
+  confirmed: boolean;
+  link_url: string;
+  link_label: string;
+  visible: boolean;
+  sort_order: number;
 }
 
 export interface AboutBlock {

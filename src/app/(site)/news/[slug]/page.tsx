@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import NewsCover from "@/components/news/NewsCover";
 import FinalCta from "@/components/site/FinalCta";
+import { NEWS_CATEGORIES } from "@/lib/defaults";
 import { getNewsPost, getNewsPosts } from "@/lib/content";
-import { formatDate, toParagraphs } from "@/lib/utils";
+import { formatDate, readingMinutes, toParagraphs } from "@/lib/utils";
 
 /**
  * Content comes from the database, so this page must not stay frozen at the
@@ -59,8 +61,20 @@ export default async function NewsPostPage({ params }: Params) {
           ← All updates
         </Link>
 
-        <p className="mt-6 text-xs font-semibold uppercase tracking-wide text-muted">
-          {formatDate(post.published_at)}
+        <NewsCover
+          category={post.category}
+          coverUrl={post.cover_url}
+          alt={post.title}
+          priority
+          sizes="(max-width: 768px) 100vw, 768px"
+          className="mt-6 aspect-[16/7] rounded-3xl border border-line"
+        />
+
+        <p className="mt-7 flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted">
+          <span className="rounded-full bg-red/[0.08] px-2.5 py-1 font-bold text-red">
+            {NEWS_CATEGORIES.find((c) => c.key === post.category)?.label ?? "Update"}
+          </span>
+          {formatDate(post.published_at)} · {readingMinutes(post.content)} min read
         </p>
         <h1 className="mt-3 text-display-md">{post.title}</h1>
 

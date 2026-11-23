@@ -113,6 +113,12 @@ Added Nov 2026 as **sample data**, all admin-editable:
   (GATE is usually the first weekends of February). Update in admin once the
   official date is announced.
 - **Demo time slots** (Sat 11 AM online, etc.) - placeholders.
+- **News & Updates (Nov 2026):** five sample posts (GATE 2027 syllabus,
+  GATE 2026 results, PSU recruitment via GATE, exam pattern, free demo
+  classes) written only from facts already verified on the site, and four
+  "Expected" dates in the important dates tracker (GATE 2027 admit cards
+  7 Jan, exam 6 Feb, results 19 Mar, PSU season April) - replace with the
+  official dates once IIT Madras publishes them.
 - **What happens in a demo class** (live lecture + doubt slot + study plan) -
   needs the client's confirmation that this is how demos run.
 

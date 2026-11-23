@@ -23,6 +23,7 @@ import type {
   Faq,
   FormOption,
   GalleryImage,
+  KeyDate,
   LegalPage,
   Mentor,
   NewsPost,
@@ -231,11 +232,20 @@ export const getResultEntries = cache(async (): Promise<ResultEntry[]> => {
   return rows.filter((e) => e.visible);
 });
 
+/** Before migration 0006 posts have no category/cover/featured: default them. */
 export const getNewsPosts = cache(async (): Promise<NewsPost[]> =>
-  (
-    await readTable<NewsPost>("news_posts", D.newsPosts, { column: "published_at", ascending: false })
-  ).filter((p) => p.published),
+  (await readTable<NewsPost>("news_posts", D.newsPosts, { column: "published_at", ascending: false }))
+    .filter((p) => p.published)
+    .map((p) => ({ ...p, category: p.category ?? "psu", cover_url: p.cover_url ?? "", featured: p.featured ?? false })),
 );
+
+/** Upcoming dates only (today onwards), soonest first. */
+export const getKeyDates = cache(async (): Promise<KeyDate[]> => {
+  const today = new Date().toISOString().slice(0, 10);
+  return (await readTable<KeyDate>("key_dates", D.keyDates, { column: "date" }))
+    .filter((d) => d.visible && String(d.date).slice(0, 10) >= today)
+    .map((d) => ({ ...d, date: String(d.date).slice(0, 10) }));
+});
 
 export async function getNewsPost(slug: string): Promise<NewsPost | null> {
   return (await getNewsPosts()).find((p) => p.slug === slug) ?? null;

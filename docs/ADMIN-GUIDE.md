@@ -125,6 +125,18 @@ of stale news is worse than no news page, so it's better to post short and often
 Tip: when a big notification drops (ONGC, BHEL, CPCB), posting the same day is
 what gets you found, because that's when students are searching.
 
+### News & Updates and important dates
+
+Each post in **News & Updates** has a **Category** (GATE Exam, PSU & Jobs,
+Results, Acumen News), an optional **Cover image** (without one it gets its
+category's illustration), and **Feature this post** - the newest featured post
+gets the big spot at the top of the page.
+
+**Important dates** is the "Don't miss" tracker beside the posts, each with a
+live countdown. Add a date, and tick *officially confirmed* once the official
+body announces it (until then it shows an "Expected" tag). Dates that have
+passed disappear on their own.
+
 ### Upload result photos and newspaper clippings
 
 **Result & press images**.

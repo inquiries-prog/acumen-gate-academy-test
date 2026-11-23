@@ -38,7 +38,7 @@ What does **not** work without a database:
 In the Supabase dashboard, open **SQL Editor → New query**, paste the whole of
 `supabase/RUN-THIS-IN-SUPABASE.sql`, and press **Run**.
 
-That file is the five migrations concatenated:
+That file is the six migrations concatenated:
 
 | File | What it does |
 |---|---|
@@ -47,6 +47,7 @@ That file is the five migrations concatenated:
 | `supabase/migrations/0003_storage.sql` | The `media` image bucket and its access rules |
 | `supabase/migrations/0004_courses_demo_faq.sql` | Course pages, course syllabus, several batches per branch, FAQ categories, free demo registrations, GATE countdown and demo settings |
 | `supabase/migrations/0005_syllabus_pdf.sql` | Official syllabus PDF link per course (fills the six GATE 2027 links) |
+| `supabase/migrations/0006_news_magazine.sql` | News categories, cover images and featured flag; the `key_dates` table for the important dates tracker |
 
 **Upgrading a database set up before 0004?** Run only
 `supabase/migrations/0004_courses_demo_faq.sql`, then `npm run seed` (2.5). It

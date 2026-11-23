@@ -28,6 +28,8 @@ import type {
   GalleryImage,
   LegalPage,
   Mentor,
+  KeyDate,
+  NewsCategory,
   NewsPost,
   PageSeo,
   PedagogyPoint,
@@ -475,6 +477,170 @@ export const resultEntries: ResultEntry[] = RESULTS_2026.map(([file, name, air, 
   sort_order: i + 1,
 }));
 
+// --- News & Updates categories, in tab order ----------------------------
+export const NEWS_CATEGORIES: Array<{ key: NewsCategory; label: string }> = [
+  { key: "gate", label: "GATE Exam" },
+  { key: "psu", label: "PSU & Jobs" },
+  { key: "results", label: "Results" },
+  { key: "acumen", label: "Acumen News" },
+];
+
+/**
+ * SAMPLE posts (Nov 2026) so the magazine layout has something to show. Every
+ * fact in them is already verified elsewhere on the site - the official GATE
+ * 2027 syllabus PDFs, the client's own GATE 2026 success posts, and the exam
+ * pattern. No recruitment dates or vacancy numbers are invented. Edit or
+ * delete them in admin (News & Updates). See PENDING A7.
+ */
+const SAMPLE_NEWS: NewsPost[] = [
+  {
+    id: "news-gate-2027-syllabus",
+    slug: "gate-2027-syllabus-released-download-official-pdfs",
+    title: "GATE 2027 syllabus is out: download the official PDF for your paper",
+    excerpt:
+      "IIT Madras, the organising institute for GATE 2027, has published the syllabus for every paper. Here is where to find yours and how to use it.",
+    content: [
+      "IIT Madras is the organising institute for GATE 2027, and it has published the official syllabus for each GATE paper as a PDF on the GATE 2027 website.",
+      "",
+      "The syllabus is the one document that tells you exactly what can be asked. Every GATE paper has a General Aptitude section, and most engineering papers also include an Engineering Mathematics section, followed by the core subjects of the branch, set out section by section.",
+      "",
+      "How to use it: print the PDF for your paper and tick off each topic as you finish it - first when you learn it, then again when you have solved previous-year questions on it. Topics you cannot tick twice are where your next week of study should go.",
+      "",
+      "On Acumen's course pages, the syllabus for Mechanical, Civil, Computer Science, Electrical, Electronics and Chemical Engineering follows these official PDFs subject by subject, and each course page has a button to download the official PDF directly from IIT Madras.",
+    ].join("\n"),
+    published_at: "2026-11-23",
+    published: true,
+    category: "gate",
+    cover_url: "",
+    featured: true,
+  },
+  {
+    id: "news-gate-2026-results",
+    slug: "gate-2026-results-acumen-students",
+    title: "GATE 2026: Acumen students secure All India Ranks from 52 to 1941",
+    excerpt:
+      "From AIR 52 to AIR 1941, our GATE 2026 students across branches - including two who ranked in two papers. Meet them on the Results page.",
+    content: [
+      "GATE 2026 results brought a proud season for Acumen Gate Academy. Our best rank this year is AIR 52, and 22 of our students shared an All India Rank with us, from AIR 52 to AIR 1941.",
+      "",
+      "Some students went further and wrote two papers: Shreyansh secured AIR 52 and AIR 425, and Neer Choksi secured AIR 267 and AIR 1814 in Civil and Environmental. Several students also ranked in Environmental Science, including Rohit (AIR 500), Keval (AIR 683) and Pramod (AIR 776).",
+      "",
+      "Behind every rank is a year of classes, weekly tests and mentoring - and a student who kept going. You can see every one of our GATE 2026 champions, with their rank, on the Results page.",
+    ].join("\n"),
+    published_at: "2026-03-25",
+    published: true,
+    category: "results",
+    cover_url: "",
+    featured: false,
+  },
+  {
+    id: "news-psu-gate-scores",
+    slug: "how-psus-use-gate-scores-for-recruitment",
+    title: "How public sector companies use GATE scores to hire engineers",
+    excerpt:
+      "Many PSUs shortlist engineers on their GATE score instead of a separate written test. Here is how that usually works - and what to check in every notification.",
+    content: [
+      "Many public sector undertakings (PSUs) recruit engineers through their GATE score rather than holding a separate written exam. Companies such as IOCL, NTPC, BHEL, ONGC and POWERGRID have used GATE scores in recent recruitment cycles.",
+      "",
+      "How it usually works: the PSU publishes a notification for specific branches, you apply on the PSU's own website with your GATE registration number, and shortlisting is done on your GATE score, often followed by a group discussion and interview.",
+      "",
+      "What to check in every notification: which GATE year's score is accepted (usually the current year only), the eligible branches and GATE paper codes, the age limit and any category relaxations, and the last date to apply. These change between companies and between years.",
+      "",
+      "The practical lesson is simple: a strong GATE score can open M.Tech admissions and PSU recruitment at the same time, so plan for a rank, not just for qualifying.",
+    ].join("\n"),
+    published_at: "2026-10-15",
+    published: true,
+    category: "psu",
+    cover_url: "",
+    featured: false,
+  },
+  {
+    id: "news-gate-pattern",
+    slug: "gate-exam-pattern-mcq-msq-nat-negative-marking",
+    title: "GATE exam pattern explained: MCQ, MSQ, NAT and negative marking",
+    excerpt:
+      "Three hours, 65 questions, 100 marks - and negative marking on only one type of question. A quick guide to how GATE is marked.",
+    content: [
+      "GATE is a three-hour computer-based test with 65 questions worth 100 marks. General Aptitude carries 15 marks; the remaining 85 marks cover your subject paper, of which engineering mathematics is usually about 13 marks.",
+      "",
+      "There are three types of question. Multiple choice questions (MCQ) have one correct option out of four. Multiple select questions (MSQ) have one or more correct options, and you must choose all of them. Numerical answer type questions (NAT) have no options - you type the answer.",
+      "",
+      "Negative marking applies only to MCQs: a wrong answer costs one third of a mark on a 1-mark question and two thirds on a 2-mark question. MSQs and NATs carry no negative marking, so they should never be left blank if you have a reasonable answer.",
+      "",
+      "Knowing this changes how you attempt the paper: be careful with MCQs you are unsure of, and attempt every MSQ and NAT you can.",
+    ].join("\n"),
+    published_at: "2026-09-10",
+    published: true,
+    category: "gate",
+    cover_url: "",
+    featured: false,
+  },
+  {
+    id: "news-free-demo",
+    slug: "free-gate-demo-classes-open",
+    title: "Free GATE demo classes are open - online and at our Vadodara centre",
+    excerpt:
+      "Sit in on a real live lecture from your branch, ask your doubts, and get a study plan - free, with no obligation to enroll.",
+    content: [
+      "Not sure which batch is right for you, or whether our teaching suits the way you learn? Book a free demo class.",
+      "",
+      "In a demo you attend a real lecture on a core topic from your branch, taught by an Acumen mentor, followed by a short doubt-clearing slot. Afterwards a counsellor can walk you through a study plan and the batch that fits your college schedule.",
+      "",
+      "Demo classes run online and at our Vadodara centre. Booking takes under a minute - tap 'Free Demo Class' anywhere on the website and our team will call you to confirm a time.",
+    ].join("\n"),
+    published_at: "2026-11-01",
+    published: true,
+    category: "acumen",
+    cover_url: "",
+    featured: false,
+  },
+];
+
+/**
+ * SAMPLE dates for the News & Updates tracker (Nov 2026). The official GATE
+ * 2027 schedule is published by IIT Madras; until then these follow GATE's
+ * usual pattern and are marked "Expected" (confirmed: false). Dates in the
+ * past drop off the tracker automatically. Admin-editable (Important dates).
+ */
+export const keyDates: KeyDate[] = [
+  {
+    title: "GATE 2027 admit cards",
+    date: "2027-01-07",
+    detail: "Download from the GATE 2027 portal (GOAPS).",
+    kind: "exam",
+    confirmed: false,
+    link_url: "https://gate2027.iitm.ac.in/",
+    link_label: "GATE 2027 website",
+  },
+  {
+    title: "GATE 2027 exam begins",
+    date: "2027-02-06",
+    detail: "Usually held over the first two weekends of February.",
+    kind: "exam",
+    confirmed: false,
+    link_url: "https://gate2027.iitm.ac.in/",
+    link_label: "GATE 2027 website",
+  },
+  {
+    title: "GATE 2027 results",
+    date: "2027-03-19",
+    detail: "Scorecards follow soon after; scores stay valid for three years.",
+    kind: "exam",
+    confirmed: false,
+    link_url: "",
+    link_label: "",
+  },
+  {
+    title: "PSU recruitment season",
+    date: "2027-04-01",
+    detail: "PSUs typically open GATE-based applications after results. Watch this page for notifications.",
+    kind: "psu",
+    confirmed: false,
+    link_url: "",
+    link_label: "",
+  },
+].map((d, i) => ({ id: `date-${i + 1}`, ...d, visible: true, sort_order: i + 1 }) as KeyDate);
+
 // --- SRS 7.3: the CPCB seed post, written from the facts given in the SRS --
 export const newsPosts: NewsPost[] = [
   {
@@ -496,7 +662,11 @@ export const newsPosts: NewsPost[] = [
     ].join("\n"),
     published_at: "2025-08-01",
     published: true,
+    category: "psu",
+    cover_url: "",
+    featured: false,
   },
+  ...SAMPLE_NEWS,
 ];
 
 // --- SRS 7.2: About Us copy ------------------------------------------------

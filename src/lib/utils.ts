@@ -140,3 +140,8 @@ export function formatPrice(amount: number): string {
     maximumFractionDigits: 2,
   }).format(amount);
 }
+
+/** Rough reading time in minutes, at ~200 words a minute (never under 1). */
+export function readingMinutes(text: string): number {
+  return Math.max(1, Math.round(text.trim().split(/\s+/).length / 200));
+}
