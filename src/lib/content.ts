@@ -229,7 +229,9 @@ export const getResultEntries = cache(async (): Promise<ResultEntry[]> => {
     );
     return rows.filter((e) => e.visible).map((e) => ({ ...e, year_id: idFor.get(e.year_id) ?? e.year_id }));
   }
-  return rows.filter((e) => e.visible);
+  return rows
+    .filter((e) => e.visible)
+    .map((e) => ({ ...e, photo_is_post: e.photo_is_post ?? true, review_note: e.review_note ?? "" }));
 });
 
 /** Before migration 0006 posts have no category/cover/featured: default them. */

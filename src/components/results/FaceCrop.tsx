@@ -27,6 +27,7 @@ export default function FaceCrop({
   size,
   className = "",
   priority = false,
+  isPost = true,
 }: {
   src: string;
   alt: string;
@@ -34,7 +35,35 @@ export default function FaceCrop({
   size: number;
   className?: string;
   priority?: boolean;
+  /** False for a plain portrait: fill the circle, favouring the top (faces). */
+  isPost?: boolean;
 }) {
+  // No photo yet: the student's initials, so a card never shows a blank disc.
+  if (!src) {
+    const initials = alt
+      .split(",")[0]
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((w) => w[0]?.toUpperCase())
+      .join("");
+    return (
+      <span className={`relative grid aspect-square place-items-center overflow-hidden rounded-full bg-red/[0.08] ${className}`}>
+        <span className="font-display text-[clamp(14px,30%,40px)] font-extrabold text-red" aria-label={alt}>
+          {initials || "A"}
+        </span>
+      </span>
+    );
+  }
+  if (!isPost) {
+    return (
+      <span className={`relative block aspect-square overflow-hidden rounded-full bg-offwhite ${className}`}>
+        {src && (
+          <Image src={src} alt={alt} fill priority={priority} sizes={`${Math.ceil(size * 2)}px`} className="object-cover object-[50%_22%]" />
+        )}
+      </span>
+    );
+  }
   return (
     <span className={`relative block aspect-square overflow-hidden rounded-full bg-offwhite ${className}`}>
       {src && (

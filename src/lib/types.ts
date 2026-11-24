@@ -212,6 +212,10 @@ export interface ResultEntry {
   air: string;
   visible: boolean;
   sort_order: number;
+  /** True: an Acumen success post (the face is cut from its circle). False: a plain portrait. */
+  photo_is_post: boolean;
+  /** Team-only flag shown in admin (e.g. a possible duplicate). Never public. */
+  review_note: string;
 }
 
 export type NewsCategory = "gate" | "psu" | "results" | "acumen";

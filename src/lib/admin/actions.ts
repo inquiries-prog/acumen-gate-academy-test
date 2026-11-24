@@ -365,6 +365,8 @@ export async function saveResultEntry(
       air: String(formData.get("air") ?? "").trim(),
       visible: formData.get("visible") === "on",
       sort_order: Number(formData.get("sort_order") ?? 0) || 0,
+      photo_is_post: formData.get("photo_is_post") === "on",
+      ...(formData.get("clear_review_note") === "on" ? { review_note: "" } : {}),
     };
 
     const supabase = client();

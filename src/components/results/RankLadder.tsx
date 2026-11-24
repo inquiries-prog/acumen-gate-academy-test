@@ -143,7 +143,7 @@ export default function RankLadder({ entries, yearLabel }: { entries: ResultEntr
                   style={up ? { top: AV, height: stalk } : { bottom: AV, height: stalk }}
                 />
                 <span className="relative block h-[52px] w-[52px] rounded-full ring-[3px] ring-white shadow-card transition-transform duration-300 group-hover:scale-125 group-hover:shadow-lifted">
-                  <FaceCrop src={p.entry.image_url} alt="" size={52} />
+                  <FaceCrop isPost={p.entry.photo_is_post !== false} src={p.entry.image_url} alt="" size={52} />
                 </span>
                 <span
                   className={`absolute left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md px-1.5 py-0.5 font-display text-[11px] font-extrabold ${
@@ -189,7 +189,7 @@ export default function RankLadder({ entries, yearLabel }: { entries: ResultEntr
                     {inBand.map((r) => (
                       <li key={r.entry.id}>
                         <button type="button" onClick={() => open(r.i)} className="flex w-14 flex-col items-center gap-1">
-                          <FaceCrop src={r.entry.image_url} alt="" size={56} className="w-14 ring-2 ring-line" />
+                          <FaceCrop isPost={r.entry.photo_is_post !== false} src={r.entry.image_url} alt="" size={56} className="w-14 ring-2 ring-line" />
                           <span className="w-full truncate text-center text-[10.5px] font-semibold text-charcoal">
                             {r.entry.student_name.split(" ")[0]}
                           </span>

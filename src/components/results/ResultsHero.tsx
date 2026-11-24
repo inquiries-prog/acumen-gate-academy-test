@@ -103,7 +103,7 @@ export default function ResultsHero({
                         className={`absolute -inset-1.5 rounded-full ${first ? "bg-red-sheen animate-pulse" : "bg-white/20"}`}
                         aria-hidden="true"
                       />
-                      <FaceCrop src={entry.image_url} alt={entry.alt_text || entry.student_name} size={170} priority className="relative ring-4 ring-charcoal" />
+                      <FaceCrop isPost={entry.photo_is_post !== false} src={entry.image_url} alt={entry.alt_text || entry.student_name} size={170} priority className="relative ring-4 ring-charcoal" />
                     </div>
                     <p className="mt-3 truncate font-display text-sm font-bold text-white sm:text-base">{entry.student_name}</p>
                     <p className={`font-display text-lg font-extrabold sm:text-xl ${first ? "text-red" : "text-white"}`}>

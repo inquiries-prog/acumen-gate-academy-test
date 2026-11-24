@@ -475,6 +475,8 @@ export const resultEntries: ResultEntry[] = RESULTS_2026.map(([file, name, air, 
   air,
   visible: true,
   sort_order: i + 1,
+  photo_is_post: true,
+  review_note: "",
 }));
 
 // --- News & Updates categories, in tab order ----------------------------

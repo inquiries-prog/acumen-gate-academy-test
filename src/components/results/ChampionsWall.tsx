@@ -194,7 +194,7 @@ export default function ChampionsWall({ years, entries }: { years: ResultYear[];
                             best !== null && best <= 500 ? "bg-red-sheen" : "bg-line"
                           }`}
                         />
-                        <FaceCrop src={e.image_url} alt={e.alt_text || e.student_name} size={130} className="relative ring-[3px] ring-white" />
+                        <FaceCrop isPost={e.photo_is_post !== false} src={e.image_url} alt={e.alt_text || e.student_name} size={130} className="relative ring-[3px] ring-white" />
                       </span>
                       <span className="mt-3 line-clamp-1 font-display text-[15px] font-bold text-charcoal">{e.student_name}</span>
                       {airs.length ? (

@@ -106,7 +106,13 @@ the rank ladder, the milestone tiles and the wall of champions all come from
 those entries. For each student add their name, **AIR** (two ranks for two
 papers, e.g. `52 & 425`; leave blank if they qualified without a rank to
 share), branch if you like, and their success post as the photo - the page
-cuts the face out of the circle on the post automatically.
+cuts the face out of the circle on the post automatically. For an ordinary
+photo instead, untick **This photo is an Acumen success post**.
+
+A yellow **⚠ flag** on a student is a note for the team only (never shown on
+the website) - for example a possible duplicate from a bulk import. Check it,
+then tick **Checked - remove the flag** and save. Hidden students show a
+**Hidden** tag; tick *Show this student on the website* to publish them.
 
 1. **+ Add a year** — e.g. "GATE 2027". You can add years forever.
 2. Click the year, then **+ Add a student** for each result.

@@ -226,9 +226,17 @@ export default function ResultsEditor({
                         )}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-bold text-charcoal">
+                        <p className="flex items-center gap-2 truncate text-sm font-bold text-charcoal">
                           {entry.student_name}
+                          {!entry.visible && (
+                            <span className="rounded bg-offwhite px-1.5 py-0.5 text-[10px] font-bold text-muted">Hidden</span>
+                          )}
                         </p>
+                        {entry.review_note && (
+                          <p className="mt-1 rounded bg-amber-100 px-2 py-1 text-[11px] font-semibold leading-snug text-amber-900">
+                            ⚠ {entry.review_note}
+                          </p>
+                        )}
                         <p className="truncate text-xs text-muted">
                           {[entry.air && `AIR ${entry.air}`, entry.branch, entry.university]
                             .filter(Boolean)
@@ -379,6 +387,31 @@ function EntryFields({ entry }: { entry?: ResultEntry }) {
         value={entry?.image_url ?? ""}
         folder="results"
       />
+
+      <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-line bg-white p-3.5">
+        <input
+          type="checkbox"
+          name="photo_is_post"
+          defaultChecked={entry?.photo_is_post ?? true}
+          className="mt-0.5 h-5 w-5 shrink-0 accent-[#E31E24]"
+        />
+        <span>
+          <span className="block text-sm font-semibold text-charcoal">This photo is an Acumen success post</span>
+          <span className="mt-0.5 block text-xs text-muted">
+            Ticked: the page cuts the face out of the circle on the post. Unticked: an ordinary photo, shown as it is.
+          </span>
+        </span>
+      </label>
+
+      {entry?.review_note && (
+        <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 p-3.5">
+          <input type="checkbox" name="clear_review_note" className="mt-0.5 h-5 w-5 shrink-0 accent-[#E31E24]" />
+          <span>
+            <span className="block text-sm font-semibold text-amber-900">Checked - remove the flag</span>
+            <span className="mt-0.5 block text-xs text-amber-900/80">{entry.review_note}</span>
+          </span>
+        </label>
+      )}
 
       <div>
         <label className="field-label">Photo description</label>
