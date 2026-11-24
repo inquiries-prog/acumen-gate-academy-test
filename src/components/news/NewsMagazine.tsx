@@ -70,8 +70,8 @@ export default function NewsMagazine({
       <div className="grid gap-10 lg:grid-cols-[1fr_340px] lg:gap-12">
         <div className="min-w-0">
           {/* ------------------------------------------- tabs + search */}
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div role="group" aria-label="Category" className="no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5 sm:mx-0 sm:px-0">
+          <div className="flex flex-col gap-3">
+            <div role="group" aria-label="Category" className="no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
               {[{ key: "all" as const, label: "All updates" }, ...present.map((c) => ({ key: c, label: LABEL[c] }))].map((c) => (
                 <button
                   key={c.key}
@@ -86,7 +86,7 @@ export default function NewsMagazine({
                 </button>
               ))}
             </div>
-            <label className="relative block sm:w-60">
+            <label className="relative block sm:max-w-sm">
               <span className="sr-only">Search updates</span>
               <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted">
                 <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
