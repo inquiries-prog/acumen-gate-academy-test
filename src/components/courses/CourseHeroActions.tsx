@@ -12,16 +12,21 @@ export default function CourseHeroActions({
   courseTitle,
   branchOption,
   syllabusUrl = "",
+  showCountdown = true,
+  syllabusLabel,
 }: {
   courseTitle: string;
   branchOption?: string;
   syllabusUrl?: string;
+  /** The GATE countdown; off for non-GATE courses. */
+  showCountdown?: boolean;
+  syllabusLabel?: string;
 }) {
   const { settings, openEnquiry } = useSiteUI();
   return (
     <Reveal delay={200} className="mt-8">
-      <GateCountdown date={settings.gate_exam_date} label={settings.gate_exam_label} tone="dark" />
-      <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3 text-sm">
+      {showCountdown && <GateCountdown date={settings.gate_exam_date} label={settings.gate_exam_label} tone="dark" />}
+      <div className={`${showCountdown ? "mt-6" : ""} flex flex-wrap gap-x-6 gap-y-3 text-sm`}>
         <WhatsAppLink
           message={`Hi, I'd like to know more about the ${courseTitle} course.`}
           className="inline-flex items-center gap-2 font-semibold text-white/90 hover:text-white"
@@ -38,7 +43,7 @@ export default function CourseHeroActions({
         >
           Request a callback
         </button>
-        <SyllabusDownloadLink url={syllabusUrl} className="text-white/90 hover:text-white" />
+        <SyllabusDownloadLink url={syllabusUrl} label={syllabusLabel} className="text-white/90 hover:text-white" />
       </div>
     </Reveal>
   );

@@ -17,10 +17,11 @@ import { useSiteUI } from "./SiteUI";
  * or a click on the chevron. The label itself is a link to /courses, so a
  * click always lands somewhere useful. Escape closes it and returns focus.
  *
- * Panel: the six GATE branches as tiles with their artwork, then the format
- * shortcuts (classroom / online), GPSC, and a free demo card with the
- * countdown - one place that answers "what do you teach, how, and how do I
- * try it".
+ * Panel: the six GATE branches as tiles with their artwork, then GPSC as its
+ * own wide card (it is a different exam, so it should not hide among the
+ * format shortcuts), the classroom / online shortcuts, and a free demo card
+ * with the countdown - one place that answers "what do you teach, how, and
+ * how do I try it".
  */
 export default function CoursesMenu({ active }: { active: boolean }) {
   const { courses, openDemo, settings } = useSiteUI();
@@ -136,7 +137,20 @@ export default function CoursesMenu({ active }: { active: boolean }) {
                 ))}
               </ul>
 
-              <div className="mt-4 grid grid-cols-3 gap-2 border-t border-line pt-4">
+              {other.length > 0 && (
+                <div className="mt-4 border-t border-line pt-4">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-muted">Gujarat state government jobs</p>
+                  <ul className="mt-2.5 space-y-2">
+                    {other.map((c, i) => (
+                      <li key={c.slug} className="animate-reveal" style={{ animationDelay: `${260 + i * 40}ms` }}>
+                        <GpscMenuCard slug={c.slug} title={c.title} />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <div className="mt-3 grid grid-cols-2 gap-2">
                 <Link href="/courses?mode=offline" onClick={() => announceCoursesMode("offline")} className="rounded-xl bg-offwhite px-3 py-2.5 transition-colors hover:bg-red/[0.06]">
                   <span className="block text-sm font-bold text-charcoal">🏫 Classroom</span>
                   <span className="block text-[11px] text-muted">Vadodara centre</span>
@@ -145,12 +159,6 @@ export default function CoursesMenu({ active }: { active: boolean }) {
                   <span className="block text-sm font-bold text-charcoal">💻 Live online</span>
                   <span className="block text-[11px] text-muted">Anywhere in India</span>
                 </Link>
-                {other.map((c) => (
-                  <Link key={c.slug} href={`/courses/${c.slug}`} className="rounded-xl bg-offwhite px-3 py-2.5 transition-colors hover:bg-red/[0.06]">
-                    <span className="block text-sm font-bold text-charcoal">🏛️ {c.short_title || c.title}</span>
-                    <span className="block text-[11px] text-muted">State engineering posts</span>
-                  </Link>
-                ))}
               </div>
             </div>
 
@@ -188,9 +196,49 @@ export default function CoursesMenu({ active }: { active: boolean }) {
   );
 }
 
+/**
+ * GPSC as a wide card: dark, with its artwork and the posts it leads to, so it
+ * reads as a course in its own right next to the GATE branches.
+ */
+function GpscMenuCard({ slug, title, compact = false }: { slug: string; title: string; compact?: boolean }) {
+  return (
+    <Link
+      href={`/courses/${slug}`}
+      className={`group/gpsc relative isolate flex items-center gap-3.5 overflow-hidden rounded-2xl bg-charcoal bg-dark-sheen text-white transition-all duration-300 ease-smooth hover:shadow-lifted ${
+        compact ? "p-3" : "p-3.5 pr-4 hover:-translate-y-0.5"
+      }`}
+    >
+      <span aria-hidden="true" className="pointer-events-none absolute -right-8 -top-10 h-28 w-28 rounded-full bg-red/35 blur-2xl transition-opacity duration-500 group-hover/gpsc:opacity-100 opacity-60" />
+      <span
+        className={`relative grid shrink-0 place-items-center overflow-hidden rounded-xl bg-white/[0.08] ring-1 ring-white/10 transition-transform duration-300 ease-smooth group-hover/gpsc:scale-105 ${
+          compact ? "h-11 w-12" : "h-14 w-16"
+        }`}
+      >
+        <BranchArt code="GPSC" tone="dark" className="h-full w-full" animated={false} />
+      </span>
+      <span className="relative min-w-0 flex-1">
+        <span className="flex items-center gap-2">
+          <span className="rounded-md bg-red px-1.5 py-0.5 font-display text-[10px] font-extrabold text-white shadow-red-glow">GPSC</span>
+          <span className="truncate text-sm font-bold">{compact ? "GPSC for engineers" : title}</span>
+        </span>
+        <span className="mt-1 block truncate text-[11px] text-white/65">
+          {compact ? "AE · DyEE · GES · Class 1 & 2" : "Assistant Engineer · Deputy Executive Engineer · GES · Class 1 & 2"}
+        </span>
+      </span>
+      <span className="relative grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white/10 transition-all duration-300 group-hover/gpsc:translate-x-0.5 group-hover/gpsc:bg-red">
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M4 10h11m0 0l-4.5-4.5M15 10l-4.5 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </span>
+    </Link>
+  );
+}
+
 /** The same list inside the full-screen mobile menu. */
 export function MobileCoursesList() {
   const { courses } = useSiteUI();
+  const gate = courses.filter((c) => c.category === "gate");
+  const other = courses.filter((c) => c.category !== "gate");
   return (
     <ul className="grid grid-cols-2 gap-2 pb-4 animate-slideUp">
       <li className="col-span-2">
@@ -198,17 +246,22 @@ export function MobileCoursesList() {
           All courses <span aria-hidden="true">→</span>
         </Link>
       </li>
-      {courses.map((c) => (
+      {gate.map((c) => (
         <li key={c.slug}>
           <Link
             href={`/courses/${c.slug}`}
             className="flex items-center gap-2.5 rounded-xl border border-line bg-white px-3 py-2.5 text-sm font-semibold text-charcoal active:bg-offwhite"
           >
             <span className="rounded-md bg-charcoal px-1.5 py-0.5 font-display text-[10px] font-extrabold text-white">
-              {c.category === "gpsc" ? "GPSC" : c.branch_code}
+              {c.branch_code}
             </span>
             <span className="truncate">{c.short_title || c.title}</span>
           </Link>
+        </li>
+      ))}
+      {other.map((c) => (
+        <li key={c.slug} className="col-span-2">
+          <GpscMenuCard slug={c.slug} title={c.title} compact />
         </li>
       ))}
       <li>

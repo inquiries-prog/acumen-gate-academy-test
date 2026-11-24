@@ -44,7 +44,15 @@ export function SyllabusDownloadCard({ url, paper }: { url: string; paper: strin
 }
 
 /** A small inline link, for the course page hero. */
-export function SyllabusDownloadLink({ url, className = "" }: { url: string; className?: string }) {
+export function SyllabusDownloadLink({
+  url,
+  label = "Official syllabus (PDF)",
+  className = "",
+}: {
+  url: string;
+  label?: string;
+  className?: string;
+}) {
   if (!url) return null;
   return (
     <a
@@ -54,7 +62,7 @@ export function SyllabusDownloadLink({ url, className = "" }: { url: string; cla
       className={`inline-flex items-center gap-2 font-semibold underline-offset-4 hover:underline ${className}`}
     >
       <PdfIcon className="h-5 w-5" />
-      Official syllabus (PDF)
+      {label}
     </a>
   );
 }

@@ -82,6 +82,15 @@ Each GATE course page has a **Download official syllabus** button. Its link is
 the **Official syllabus PDF link** field in **Course pages** - paste the new
 link each year when the organising IIT publishes the next syllabus.
 
+The **GPSC course page** is different. As well as the usual overview, syllabus
+and batches, it explains what GPSC is, the Class 1, 2 and 3 posts (with pay
+levels), eligibility, the exam patterns (GES Civil, AE/DyEE and the general
+Class 1-2 exam) and how our GPSC classes run, with links to the official GPSC
+syllabus PDFs. Its syllabus rows, tagline and overview are edited in admin as
+usual. The reference sections are fixed text in `src/lib/gpsc.ts`: ask your
+developer to update that file when GPSC changes a pattern or publishes new
+syllabus PDFs.
+
 ### The free demo class
 
 Every "Free Demo" button opens the same side panel. In **Banner, hero, demo &

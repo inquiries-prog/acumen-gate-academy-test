@@ -6,6 +6,7 @@ import CoursesHeroActions from "@/components/courses/CoursesHeroActions";
 import { SyllabusDownloadGrid } from "@/components/courses/SyllabusDownload";
 import DemoCtaBand from "@/components/courses/DemoCtaBand";
 import GateGuide from "@/components/courses/GateGuide";
+import { GpscSpotlight } from "@/components/courses/gpsc/GpscSections";
 import FaqAccordion from "@/components/about/FaqAccordion";
 import ComparisonTable from "@/components/home/ComparisonTable";
 import AmbientGlow from "@/components/ui/AmbientGlow";
@@ -50,6 +51,7 @@ export default async function CoursesPage() {
   );
 
   const gateCodes = courses.filter((c) => c.category === "gate").map((c) => c.branch_code);
+  const gpscCourse = courses.find((c) => c.category === "gpsc");
 
   const schema = {
     "@context": "https://schema.org",
@@ -163,6 +165,12 @@ export default async function CoursesPage() {
             className="mb-10"
           />
           <CoursesExplorer items={items} />
+
+          {gpscCourse && (
+            <div id="gpsc" className="mt-16 scroll-mt-32">
+              <GpscSpotlight slug={gpscCourse.slug} />
+            </div>
+          )}
 
           {/* The official syllabus for every paper, straight from the source. */}
           <div id="syllabus-downloads" className="mt-16 scroll-mt-32 rounded-3xl border border-line bg-offwhite p-6 sm:p-8">

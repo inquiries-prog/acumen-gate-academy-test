@@ -11,6 +11,13 @@ import CourseMobileBar from "@/components/courses/CourseMobileBar";
 import CourseSectionNav from "@/components/courses/CourseSectionNav";
 import DemoCtaBand from "@/components/courses/DemoCtaBand";
 import ExamPattern from "@/components/courses/ExamPattern";
+import {
+  GpscAbout,
+  GpscClasses,
+  GpscExamPattern,
+  GpscOfficialDocs,
+  GpscProgram,
+} from "@/components/courses/gpsc/GpscSections";
 import SyllabusAccordion from "@/components/courses/SyllabusAccordion";
 import { SyllabusDownloadCard } from "@/components/courses/SyllabusDownload";
 import DemoVideoTile from "@/components/home/DemoVideoTile";
@@ -28,6 +35,8 @@ import {
   getPedagogyPoints,
 } from "@/lib/content";
 import { DEMO_VIDEO_ID, DEMO_VIDEO_START } from "@/lib/defaults";
+import { GPSC_FAQS } from "@/lib/gpsc";
+import type { Faq } from "@/lib/types";
 import { toLines } from "@/lib/utils";
 
 /** Content comes from the database; see the note on the homepage. */
@@ -78,6 +87,7 @@ export default async function CoursePage({ params }: Params) {
   const branch = branches.find((b) => b.code === course.branch_code) ?? null;
   const branchOption = branch ? `${branch.name} (${branch.code})` : undefined;
   const isGate = course.category === "gate";
+  const isGpsc = course.category === "gpsc";
   const highlights = toLines(course.highlights);
   const whoFor = toLines(course.who_should_join);
   const fees = batches.map((b) => Number(b.fees ?? 0)).filter((f) => f > 0);
@@ -93,7 +103,18 @@ export default async function CoursePage({ params }: Params) {
       .map(async (c) => ({ course: c, batches: await getBatchesForBranchCode(c.branch_code) })),
   );
 
-  const sections = [
+  const sections = isGpsc
+    ? [
+        { id: "overview", label: "Overview" },
+        { id: "about-gpsc", label: "What is GPSC" },
+        { id: "classes", label: "Class 1 · 2 · 3" },
+        { id: "exam-pattern", label: "Exam pattern" },
+        ...(subjects.length ? [{ id: "syllabus", label: "Syllabus" }] : []),
+        { id: "how-it-works", label: "Our classes" },
+        { id: "batches", label: "Batches & fees" },
+        { id: "faq", label: "FAQs" },
+      ]
+    : [
     { id: "overview", label: "Overview" },
     ...(subjects.length ? [{ id: "syllabus", label: "Syllabus" }] : []),
     ...(isGate ? [{ id: "exam-pattern", label: "Exam pattern" }] : []),
@@ -102,7 +123,18 @@ export default async function CoursePage({ params }: Params) {
     { id: "faq", label: "FAQs" },
   ];
 
-  const courseFaqs = faqs.filter((f) => ["courses", "fees", "demo"].includes(f.category)).slice(0, 8);
+  // GPSC: its own questions first, then fees and the demo.
+  const gpscFaqs: Faq[] = GPSC_FAQS.map((f, i) => ({
+    id: `gpsc-faq-${i + 1}`,
+    category: "courses",
+    question: f.q,
+    answer: f.a,
+    visible: true,
+    sort_order: i + 1,
+  }));
+  const courseFaqs = isGpsc
+    ? [...gpscFaqs, ...faqs.filter((f) => ["fees", "demo"].includes(f.category)).slice(0, 2)]
+    : faqs.filter((f) => ["courses", "fees", "demo"].includes(f.category)).slice(0, 8);
 
   const schema = {
     "@context": "https://schema.org",
@@ -155,6 +187,12 @@ export default async function CoursePage({ params }: Params) {
                     Complete GATE syllabus
                   </span>
                 )}
+                {isGpsc &&
+                  ["Class 1 & Class 2 posts", "AE · DyEE · GES", "Official GPSC syllabus"].map((t) => (
+                    <span key={t} className="rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-white/90 ring-1 ring-white/15">
+                      {t}
+                    </span>
+                  ))}
               </div>
 
               <h1 className="mt-5 text-display-lg text-white">{course.title}</h1>
@@ -168,12 +206,20 @@ export default async function CoursePage({ params }: Params) {
 
             <Reveal delay={120}>
               <dl className="mt-8 grid max-w-2xl grid-cols-2 gap-3 sm:grid-cols-4">
-                {[
-                  { k: "Subjects", v: subjects.length ? String(subjects.length) : "-" },
-                  { k: "Topics", v: String(subjects.reduce((n, s) => n + toLines(s.topics).length, 0) || "-") },
-                  { k: "Batches", v: batches.length ? String(batches.length) : "Soon" },
-                  { k: "Duration", v: batches[0]?.duration || "12 months" },
-                ].map((f) => (
+                {(isGpsc
+                  ? [
+                      { k: "Stages", v: "3" },
+                      { k: "Classes", v: "1 · 2 · 3" },
+                      { k: "Subjects", v: subjects.length ? String(subjects.length) : "-" },
+                      { k: "Branches", v: "CE · ME · EE" },
+                    ]
+                  : [
+                      { k: "Subjects", v: subjects.length ? String(subjects.length) : "-" },
+                      { k: "Topics", v: String(subjects.reduce((n, s) => n + toLines(s.topics).length, 0) || "-") },
+                      { k: "Batches", v: batches.length ? String(batches.length) : "Soon" },
+                      { k: "Duration", v: batches[0]?.duration || "12 months" },
+                    ]
+                ).map((f) => (
                   <div key={f.k} className="rounded-2xl bg-white/[0.07] px-4 py-3 ring-1 ring-white/10">
                     <dt className="text-[10px] font-bold uppercase tracking-[0.14em] text-white/50">{f.k}</dt>
                     <dd className="mt-1 font-display text-xl font-extrabold text-white">{f.v}</dd>
@@ -186,6 +232,8 @@ export default async function CoursePage({ params }: Params) {
               courseTitle={course.title}
               branchOption={branchOption}
               syllabusUrl={course.syllabus_pdf_url}
+              showCountdown={isGate}
+              syllabusLabel={isGpsc ? "Official GPSC syllabus" : undefined}
             />
           </div>
 
@@ -275,9 +323,17 @@ export default async function CoursePage({ params }: Params) {
         )}
       </section>
 
+      {isGpsc && (
+        <>
+          <GpscAbout />
+          <GpscClasses />
+          <GpscExamPattern />
+        </>
+      )}
+
       {/* -------------------------------------------------------- syllabus */}
       {subjects.length > 0 && (
-        <section id="syllabus" className="section section-alt scroll-mt-40">
+        <section id="syllabus" className={`section scroll-mt-40 ${isGpsc ? "" : "section-alt"}`}>
           <div className="container-site grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
             <Reveal variant="left" className="lg:sticky lg:top-40 lg:self-start">
               <p className="eyebrow">
@@ -288,7 +344,7 @@ export default async function CoursePage({ params }: Params) {
               <p className="lede mt-4">
                 {isGate
                   ? "Subject by subject, with the marks each one typically carries in recent GATE papers - so you can see where the paper's weight really sits."
-                  : "General studies and the technical side, taught together so both papers move forward at once."}
+                  : "General studies, engineering aptitude, your branch and the mains language papers - condensed from the official GPSC syllabus, with the stage each one belongs to."}
               </p>
               {isGate && (
                 <p className="mt-4 text-xs leading-relaxed text-muted">
@@ -296,7 +352,11 @@ export default async function CoursePage({ params }: Params) {
                   estimates from recent papers and vary from year to year.
                 </p>
               )}
-              <SyllabusDownloadCard url={course.syllabus_pdf_url} paper={course.title} />
+              {isGpsc ? (
+                <GpscOfficialDocs />
+              ) : (
+                <SyllabusDownloadCard url={course.syllabus_pdf_url} paper={course.title} />
+              )}
             </Reveal>
             <SyllabusAccordion subjects={subjects} />
           </div>
@@ -319,8 +379,10 @@ export default async function CoursePage({ params }: Params) {
         </section>
       )}
 
+      {isGpsc && <GpscProgram alt />}
+
       {/* --------------------------------------------------------- batches */}
-      <section id="batches" className="section section-alt scroll-mt-40">
+      <section id="batches" className={`section scroll-mt-40 ${isGpsc ? "" : "section-alt"}`}>
         <div className="container-site">
           <SectionHeading
             eyebrow="Batches & fees"
@@ -349,8 +411,12 @@ export default async function CoursePage({ params }: Params) {
       <div id="faq" className="scroll-mt-40">
         <FaqAccordion
           faqs={courseFaqs}
-          heading="Before you enroll"
-          lede="Batches, fees and GST, and what happens in a free demo class."
+          heading={isGpsc ? "GPSC questions, answered" : "Before you enroll"}
+          lede={
+            isGpsc
+              ? "Eligibility, the classes of posts, negative marking, and preparing for GATE and GPSC together."
+              : "Batches, fees and GST, and what happens in a free demo class."
+          }
         />
       </div>
 
