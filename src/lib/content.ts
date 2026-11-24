@@ -238,7 +238,14 @@ export const getResultEntries = cache(async (): Promise<ResultEntry[]> => {
 export const getNewsPosts = cache(async (): Promise<NewsPost[]> =>
   (await readTable<NewsPost>("news_posts", D.newsPosts, { column: "published_at", ascending: false }))
     .filter((p) => p.published)
-    .map((p) => ({ ...p, category: p.category ?? "psu", cover_url: p.cover_url ?? "", featured: p.featured ?? false })),
+    .map((p) => ({
+      ...p,
+      category: p.category ?? "psu",
+      cover_url: p.cover_url ?? "",
+      featured: p.featured ?? false,
+      // Before migration 0008: on for the GATE 2027 syllabus post only.
+      syllabus_links: p.syllabus_links ?? p.slug === "gate-2027-syllabus-released-download-official-pdfs",
+    })),
 );
 
 /** Upcoming dates only (today onwards), soonest first. */

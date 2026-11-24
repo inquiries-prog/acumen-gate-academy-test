@@ -165,7 +165,7 @@ export default async function CoursesPage() {
           <CoursesExplorer items={items} />
 
           {/* The official syllabus for every paper, straight from the source. */}
-          <div className="mt-16 rounded-3xl border border-line bg-offwhite p-6 sm:p-8">
+          <div id="syllabus-downloads" className="mt-16 scroll-mt-32 rounded-3xl border border-line bg-offwhite p-6 sm:p-8">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-red">Official GATE 2027 syllabus</p>

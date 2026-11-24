@@ -515,6 +515,7 @@ const SAMPLE_NEWS: NewsPost[] = [
     category: "gate",
     cover_url: "",
     featured: true,
+    syllabus_links: true,
   },
   {
     id: "news-gate-2026-results",
@@ -534,6 +535,7 @@ const SAMPLE_NEWS: NewsPost[] = [
     category: "results",
     cover_url: "",
     featured: false,
+    syllabus_links: false,
   },
   {
     id: "news-psu-gate-scores",
@@ -555,6 +557,7 @@ const SAMPLE_NEWS: NewsPost[] = [
     category: "psu",
     cover_url: "",
     featured: false,
+    syllabus_links: false,
   },
   {
     id: "news-gate-pattern",
@@ -576,6 +579,7 @@ const SAMPLE_NEWS: NewsPost[] = [
     category: "gate",
     cover_url: "",
     featured: false,
+    syllabus_links: false,
   },
   {
     id: "news-free-demo",
@@ -595,6 +599,7 @@ const SAMPLE_NEWS: NewsPost[] = [
     category: "acumen",
     cover_url: "",
     featured: false,
+    syllabus_links: false,
   },
 ];
 
@@ -667,6 +672,7 @@ export const newsPosts: NewsPost[] = [
     category: "psu",
     cover_url: "",
     featured: false,
+    syllabus_links: false,
   },
   ...SAMPLE_NEWS,
 ];

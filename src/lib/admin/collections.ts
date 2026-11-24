@@ -369,6 +369,12 @@ export const collections: CollectionDef[] = [
         help: "The newest featured post gets the big spot. Untick older ones when you feature a new one.",
       },
       {
+        name: "syllabus_links",
+        label: "Show 'download the syllabus' buttons on this post",
+        type: "boolean",
+        help: "Adds a row of buttons, one per GATE course, each opening that course's syllabus and official PDF.",
+      },
+      {
         name: "cover_url",
         label: "Cover image",
         type: "image",

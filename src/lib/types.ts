@@ -233,6 +233,8 @@ export interface NewsPost {
   cover_url: string;
   /** The big story at the top of /news (the newest featured post wins). */
   featured: boolean;
+  /** Show "download the syllabus" buttons (one per GATE course) on the post page. */
+  syllabus_links: boolean;
 }
 
 /** An upcoming deadline in the News & Updates dates tracker. */

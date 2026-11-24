@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import FeaturedStory from "@/components/news/FeaturedStory";
 import NewsMagazine from "@/components/news/NewsMagazine";
 import FinalCta from "@/components/site/FinalCta";
 import AmbientGlow from "@/components/ui/AmbientGlow";
@@ -33,12 +34,14 @@ export async function generateMetadata(): Promise<Metadata> {
  */
 export default async function NewsPage() {
   const [posts, dates] = await Promise.all([getNewsPosts(), getKeyDates()]);
+  // The newest post marked featured (else the newest post) leads the page.
+  const featured = posts.find((p) => p.featured) ?? posts[0];
 
   return (
     <>
       <section className="relative isolate overflow-hidden border-b border-line bg-white">
         <AmbientGlow />
-        <div className="container-site relative py-14 md:py-20">
+        <div className="container-site relative grid items-center gap-10 py-14 md:py-20 lg:grid-cols-[1fr_minmax(0,500px)] lg:gap-14">
           <Reveal className="max-w-3xl">
             <p className="eyebrow">
               <span className="h-1.5 w-1.5 rounded-full bg-red" aria-hidden="true" />
@@ -52,10 +55,15 @@ export default async function NewsPage() {
               terms of what they actually mean for your preparation.
             </p>
           </Reveal>
+          {featured && (
+            <Reveal variant="right" distance="lg" delay={120}>
+              <FeaturedStory post={featured} />
+            </Reveal>
+          )}
         </div>
       </section>
 
-      <NewsMagazine posts={posts} dates={dates} />
+      <NewsMagazine posts={posts} dates={dates} featuredId={featured?.id} />
 
       <FinalCta source="News page CTA" />
     </>

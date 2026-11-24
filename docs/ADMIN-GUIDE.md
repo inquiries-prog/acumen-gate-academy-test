@@ -136,7 +136,9 @@ what gets you found, because that's when students are searching.
 Each post in **News & Updates** has a **Category** (GATE Exam, PSU & Jobs,
 Results, Acumen News), an optional **Cover image** (without one it gets its
 category's illustration), and **Feature this post** - the newest featured post
-gets the big spot at the top of the page.
+gets the big spot at the top of the page, beside the heading. Tick **Show
+'download the syllabus' buttons** on a post to end it with one button per GATE
+course, each opening that course's syllabus and official PDF.
 
 **Important dates** is the "Don't miss" tracker beside the posts, each with a
 live countdown. Add a date, and tick *officially confirmed* once the official

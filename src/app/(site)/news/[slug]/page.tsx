@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import NewsCover from "@/components/news/NewsCover";
+import BranchArt from "@/components/courses/BranchArt";
 import FinalCta from "@/components/site/FinalCta";
 import { NEWS_CATEGORIES } from "@/lib/defaults";
-import { getNewsPost, getNewsPosts } from "@/lib/content";
+import { getCourses, getNewsPost, getNewsPosts } from "@/lib/content";
 import { formatDate, readingMinutes, toParagraphs } from "@/lib/utils";
 
 /**
@@ -43,6 +44,7 @@ export default async function NewsPostPage({ params }: Params) {
   const { slug } = await params;
   const post = await getNewsPost(slug);
   if (!post) notFound();
+  const gateCourses = post.syllabus_links ? (await getCourses()).filter((c) => c.category === "gate") : [];
 
   const schema = {
     "@context": "https://schema.org",
@@ -91,6 +93,43 @@ export default async function NewsPostPage({ params }: Params) {
             </p>
           ))}
         </div>
+
+        {gateCourses.length > 0 && (
+          <section aria-labelledby="syllabus-links" className="mt-10 rounded-3xl border border-line bg-offwhite p-5 sm:p-7">
+            <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-red">Official syllabus PDFs</p>
+            <h2 id="syllabus-links" className="mt-2 text-xl sm:text-2xl">
+              Download the syllabus for your paper
+            </h2>
+            <p className="mt-1.5 text-sm text-body">
+              Pick your branch: the course page shows the full syllabus and the official PDF download.
+            </p>
+            <ul className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {gateCourses.map((c) => (
+                <li key={c.slug}>
+                  <Link
+                    href={`/courses/${c.slug}#syllabus`}
+                    className="group flex h-full items-center gap-3 rounded-2xl border border-line bg-white p-3 shadow-chip transition-all duration-300 ease-smooth hover:-translate-y-0.5 hover:border-red/30 hover:shadow-card"
+                  >
+                    <span className="h-11 w-11 shrink-0 rounded-xl bg-offwhite">
+                      <BranchArt code={c.branch_code} className="h-full w-full" animated={false} />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block font-display text-sm font-extrabold text-charcoal group-hover:text-red">
+                        {c.short_title || c.title}
+                      </span>
+                      <span className="block text-[11px] font-semibold text-muted">
+                        {c.branch_code === "CSE" ? "CS" : c.branch_code} syllabus + PDF →
+                      </span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <Link href="/courses#syllabus-downloads" className="btn-primary mt-5 w-full sm:w-auto">
+              See all courses and syllabus PDFs
+            </Link>
+          </section>
+        )}
       </article>
 
       <FinalCta
