@@ -25,13 +25,21 @@ const PAGE = 24;
 export default function ChampionsWall({ years, entries }: { years: ResultYear[]; entries: ResultEntry[] }) {
   const { push, openDemo } = useSiteUI();
   const withEntries = years.filter((y) => entries.some((e) => e.year_id === y.id));
-  const [yearId, setYearId] = useState((withEntries[0] ?? years[0])?.id ?? "");
+  // "all" (every year together) is the default view.
+  const [yearId, setYearId] = useState<string>(withEntries.length > 1 ? "all" : (withEntries[0] ?? years[0])?.id ?? "");
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
   const [shown, setShown] = useState(PAGE);
 
   const year = years.find((y) => y.id === yearId);
-  const ofYear = useMemo(() => sortByRank(entries.filter((e) => e.year_id === yearId)), [entries, yearId]);
+  const labelOf = (id: string) => years.find((y) => y.id === id)?.label ?? "";
+  const ofYear = useMemo(
+    () =>
+      sortByRank(
+        entries.filter((e) => (yearId === "all" ? withEntries.some((y) => y.id === e.year_id) : e.year_id === yearId)),
+      ),
+    [entries, yearId, withEntries],
+  );
   const counts = {
     all: ofYear.length,
     ranked: ofYear.filter((e) => bestAir(e) !== null).length,
@@ -84,8 +92,23 @@ export default function ChampionsWall({ years, entries }: { years: ResultYear[];
             <p className="lede mt-4">Ranked students first, in rank order. Tap anyone to see their success post.</p>
           </Reveal>
 
-          {years.length > 1 && (
+          {years.length > 1 && withEntries.length > 0 && (
             <div role="group" aria-label="Year" className="no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5 sm:mx-0 sm:px-0">
+              {withEntries.length > 1 && (
+                <button
+                  type="button"
+                  aria-pressed={yearId === "all"}
+                  onClick={() => {
+                    setYearId("all");
+                    setShown(PAGE);
+                  }}
+                  className={`shrink-0 rounded-full px-4 py-2 text-sm font-bold transition-all duration-300 ${
+                    yearId === "all" ? "bg-red text-white shadow-red-glow" : "border border-line bg-white text-charcoal hover:border-red/40"
+                  }`}
+                >
+                  All years
+                </button>
+              )}
               {years.map((y) => (
                 <button
                   key={y.id}
@@ -207,6 +230,11 @@ export default function ChampionsWall({ years, entries }: { years: ResultYear[];
                         </span>
                       )}
                       {e.branch && <span className="mt-1 line-clamp-1 text-[11px] text-muted">{e.branch}</span>}
+                      {yearId === "all" && labelOf(e.year_id) && (
+                        <span className="mt-1.5 rounded-full bg-offwhite px-2 py-0.5 text-[10px] font-bold text-charcoal">
+                          {labelOf(e.year_id)}
+                        </span>
+                      )}
                       {airs.length > 1 && <span className="mt-1 text-[10.5px] font-semibold text-body">Two papers</span>}
                     </button>
                   </li>

@@ -18,10 +18,13 @@ export default function ResultsHero({
   entries,
   yearLabel,
   statLine,
+  yearOf = {},
 }: {
   entries: ResultEntry[];
   yearLabel: string;
   statLine: string;
+  /** year_id -> "GATE 2026", to label each podium face. */
+  yearOf?: Record<string, string>;
 }) {
   const stats = resultStats(entries);
   const top = sortByRank(entries).filter((e) => bestAir(e) !== null).slice(0, 3);
@@ -33,7 +36,7 @@ export default function ResultsHero({
     stats.top100 > 0 && { value: String(stats.top100), label: "In the top 100" },
     stats.top500 > 0 && { value: String(stats.top500), label: "In the top 500" },
     stats.top1000 > 0 && { value: String(stats.top1000), label: "In the top 1000" },
-    stats.total > 0 && { value: String(stats.total), label: `Qualified ${yearLabel}` },
+    stats.total > 0 && { value: String(stats.total), label: `Students, ${yearLabel.replace(/^GATE\s*/, "GATE ")}` },
   ].filter(Boolean) as Array<{ value: string; label: string }>;
 
   return (
@@ -52,7 +55,7 @@ export default function ResultsHero({
               Every rank, <span className="text-gradient-red">a name we know.</span>
             </h1>
             <p className="mt-5 max-w-xl text-base leading-relaxed text-white/65 sm:text-lg">
-              {statLine} These are {yearLabel}&apos;s champions, each with the rank they earned.
+              {statLine} Here are our {yearLabel} champions, each with the rank they earned.
             </p>
           </Reveal>
 
@@ -109,6 +112,9 @@ export default function ResultsHero({
                     <p className={`font-display text-lg font-extrabold sm:text-xl ${first ? "text-red" : "text-white"}`}>
                       AIR {entry.air}
                     </p>
+                    {yearOf[entry.year_id] && (
+                      <p className="text-[11px] font-semibold uppercase tracking-wide text-white/50">{yearOf[entry.year_id]}</p>
+                    )}
                     <div
                       className={`mt-3 flex w-full items-start justify-center rounded-t-2xl pt-3 font-display text-3xl font-extrabold ${
                         heights[place as 1 | 2 | 3]

@@ -58,19 +58,30 @@ export default async function ResultsPage() {
     getPressStripImages(),
   ]);
 
-  // The hero and ladder feature the latest year that has results.
-  const featured = years.find((y) => entries.some((e) => e.year_id === y.id));
-  const featuredEntries = featured ? entries.filter((e) => e.year_id === featured.id) : [];
+  // Every year with results, together, by default (client request): the
+  // hero, the ladder and the wall's first tab all cover all of them, and each
+  // face carries its year. "GATE 2025 – 2026" style label for the range.
+  const withResults = years.filter((y) => entries.some((e) => e.year_id === y.id));
+  const shown = entries.filter((e) => withResults.some((y) => y.id === e.year_id));
+  const yearNums = withResults.map((y) => y.year).sort((a, b) => a - b);
+  const rangeLabel =
+    yearNums.length === 0
+      ? years[0]?.label ?? "GATE"
+      : yearNums.length === 1
+        ? withResults[0].label
+        : `GATE ${yearNums[0]} – ${yearNums[yearNums.length - 1]}`;
+  const yearOf = Object.fromEntries(years.map((y) => [y.id, y.label]));
 
   return (
     <>
       <ResultsHero
-        entries={featuredEntries}
-        yearLabel={featured?.label ?? years[0]?.label ?? "GATE"}
+        entries={shown}
+        yearLabel={rangeLabel}
+        yearOf={yearOf}
         statLine={settings.stat_line}
       />
 
-      {featured && <RankLadder entries={featuredEntries} yearLabel={featured.label} />}
+      {shown.length > 0 && <RankLadder entries={shown} yearLabel={rangeLabel} yearOf={yearOf} />}
 
       <ChampionsWall years={years} entries={entries} />
 
