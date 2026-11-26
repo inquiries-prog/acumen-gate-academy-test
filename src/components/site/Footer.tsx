@@ -33,7 +33,13 @@ export default function Footer({
   ].filter((s) => s.url);
 
   // Acumen Gate Academy is the site's own brand - the badges are the other two.
-  const partnerBadges = ecosystem.filter((c) => !c.highlighted);
+  // Their logos come from Settings (Acumen 360 / Etude 360 logo), falling back
+  // to a logo set on the ecosystem card itself.
+  const settingsLogo = (name: string) =>
+    /acumen\s*360/i.test(name) ? settings.acumen360_logo_url : /etude/i.test(name) ? settings.etude360_logo_url : "";
+  const partnerBadges = ecosystem
+    .filter((c) => !c.highlighted)
+    .map((c) => ({ ...c, logo_url: settingsLogo(c.name) || c.logo_url }));
 
   return (
     <footer
