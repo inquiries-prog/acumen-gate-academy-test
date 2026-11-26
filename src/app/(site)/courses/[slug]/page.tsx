@@ -54,7 +54,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const course = await getCourse(slug);
   if (!course) return {};
   return {
-    title: course.meta_title || course.title,
+    title: course.meta_title ? { absolute: course.meta_title } : course.title,
     description: course.meta_description || course.tagline,
     alternates: { canonical: `/courses/${course.slug}` },
   };

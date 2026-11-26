@@ -26,7 +26,7 @@ export const revalidate = 300;
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getPageSeo("/results");
   return {
-    title: seo?.meta_title,
+    title: seo?.meta_title ? { absolute: seo.meta_title } : undefined,
     description: seo?.meta_description,
     alternates: { canonical: "/results" },
   };
