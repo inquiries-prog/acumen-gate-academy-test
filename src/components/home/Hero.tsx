@@ -84,7 +84,7 @@ export default function Hero() {
       </Parallax>
 
       <div className="container-site relative">
-        <div className="grid items-start gap-10 py-10 sm:py-14 md:py-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:py-20">
+        <div className="grid items-start gap-10 py-10 sm:py-14 md:py-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:py-[clamp(2.5rem,8vh,5rem)]">
           {/* ---------------------------------------------------- copy ---- */}
           {/* A flex column, so the pieces can take a different order per
               breakpoint without existing twice. min-w-0 matters: a grid track
