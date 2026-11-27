@@ -8,7 +8,7 @@ import {
   rateLimit,
 } from "@/lib/api";
 import { PHONE_DISPLAY } from "@/lib/defaults";
-import { getMessagingProvider, notifyTeam } from "@/lib/messaging";
+import { notifyTeam, recordMessageOutcome, sendStudentMessage } from "@/lib/messaging";
 import { after } from "next/server";
 import { getServiceClient } from "@/lib/supabase";
 
@@ -51,11 +51,15 @@ export async function POST(request: Request) {
   const lead = { full_name, phone, branch, mode, preferred_slot, source };
 
   let stored = false;
+  let rowId: string | null = null;
   const supabase = getServiceClient();
   if (supabase) {
-    const { error } = await supabase.from("demo_registrations").insert(lead);
+    const { data, error } = await supabase.from("demo_registrations").insert(lead).select("id").single();
     if (error) console.error("[demo] insert failed:", error.message);
-    else stored = true;
+    else {
+      stored = true;
+      rowId = (data as { id: string } | null)?.id ?? null;
+    }
   } else {
     console.warn("[demo] Supabase not configured - registration not stored:", lead);
   }
@@ -86,17 +90,17 @@ export async function POST(request: Request) {
     return fail("We couldn't book that just now. Please call us and we'll book you in right away.", 503);
   }
 
-  const messaging = getMessagingProvider();
-  let smsSent = false;
-  try {
-    const result = await messaging.send(
-      phone,
-      `Thank you for booking a free GATE demo class with Acumen Gate Academy. Our team will call you to confirm the date and time. Questions? Call ${PHONE_DISPLAY}.`,
-    );
-    smsSent = result.ok && messaging.isLive;
-  } catch (err) {
-    console.error("[demo] confirmation message failed:", err);
+  const demoMode = mode || "Online or classroom";
+  const slot = preferred_slot || "Any time";
+  const sent = await sendStudentMessage(phone, {
+    kind: "demo",
+    params: [full_name, branch, demoMode, slot],
+    text: `Hi ${full_name}, your free demo class request for ${branch} (${demoMode}) has been received. Preferred slot: ${slot}. Our team will call you to confirm the date and time. Questions? Call ${PHONE_DISPLAY}.`,
+  });
+  if (supabase && rowId) {
+    const id = rowId;
+    after(() => recordMessageOutcome(supabase, "demo_registrations", id, sent));
   }
 
-  return ok({ smsSent });
+  return ok({ smsSent: sent.delivered, channel: sent.channel });
 }

@@ -64,10 +64,10 @@ export default async function AdminDashboard() {
     },
     {
       done: messaging.isLive,
-      label: "SMS / WhatsApp confirmations",
+      label: "WhatsApp confirmations",
       detail: messaging.isLive
         ? `Using ${messaging.name}.`
-        : "No provider chosen yet — students aren't receiving confirmation messages.",
+        : "Not switched on — students aren't receiving WhatsApp confirmations.",
     },
     {
       done: Boolean(process.env.LEAD_NOTIFICATION_EMAIL),

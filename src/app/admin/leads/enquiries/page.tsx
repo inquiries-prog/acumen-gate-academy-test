@@ -30,6 +30,7 @@ export default async function AdminEnquiriesPage() {
         { key: "enquiry_for", label: "Enquiry for" },
         { key: "heard_about", label: "Heard about us" },
         { key: "source", label: "Came from" },
+        { key: "confirmation_status", label: "WhatsApp" },
       ]}
       rows={rows}
     />

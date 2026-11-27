@@ -139,7 +139,7 @@ point only admin entries show, so add (or seed) all of them together.
 
 | # | Item | Effect while missing |
 |---|---|---|
-| B1 | SMS/WhatsApp provider (§10, §12) | Students get no confirmation message. The site correctly does *not* claim one was sent. Ongoing per-message cost — SRS §12 asks the client to confirm budget first. |
+| B1 | WhatsApp confirmations (§10) | **Built (27 Nov 2026), not switched on.** Meta Cloud API, same number as the academy's Apps Script bot (which handles replies). Waiting on: the four templates approved in WhatsApp Manager, a token + `MESSAGING_PROVIDER=meta` in Vercel, and migration 0009. See SETUP "WhatsApp confirmations". |
 | B2 | Notification email address (§12) | New leads appear in the admin panel but no email alert goes out. |
 | B3 | Acumen 360 / Etude 360 logo files (§3.2, §12) | Footer ecosystem badges show the names as text instead of logos. **Still needed** — the file supplied as `acumen 360 logo.png` was actually the Acumen Gate Academy logo, now in use as the main site logo. |
 | B4a | ~~Result images~~ | ✅ **Supplied.** 56 curated posts in `public/assets/results/` (replaced the first set of 84 on 19 Sep 2026). 24 show in the homepage carousel, all 56 on the Results page. To swap the set again: drop the new PNGs in that folder and run `npm run sync-results`. |

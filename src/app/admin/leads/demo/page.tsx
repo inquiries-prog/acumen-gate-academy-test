@@ -33,6 +33,7 @@ export default async function AdminDemoPage() {
         { key: "mode", label: "Demo" },
         { key: "preferred_slot", label: "Preferred time" },
         { key: "source", label: "Came from" },
+        { key: "confirmation_status", label: "WhatsApp" },
       ]}
       rows={rows}
     />

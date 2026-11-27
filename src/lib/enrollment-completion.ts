@@ -11,7 +11,8 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { canIssueInvoice, formatInvoiceNumber, renderInvoiceHtml } from "@/lib/invoice";
-import { getMessagingProvider, notifyTeam } from "@/lib/messaging";
+import { notifyTeam, recordMessageOutcome, sendStudentMessage } from "@/lib/messaging";
+import { PHONE_DISPLAY } from "@/lib/defaults";
 import { formatRupees } from "@/lib/payments";
 import type { Enrollment } from "@/lib/types";
 
@@ -65,16 +66,22 @@ export async function markEnrollmentPaid(
     invoice_number: invoiceNumber,
   };
 
-  if (invoiceNumber) await emailInvoice(paid, invoiceNumber);
+  const invoiceEmailed = invoiceNumber ? await emailInvoice(paid, invoiceNumber) : false;
 
-  try {
-    await getMessagingProvider().send(
-      enrollment.phone,
-      `Payment received. Welcome to Acumen Gate Academy! Your enrollment for ${enrollment.batch_label} is confirmed. Your invoice has been emailed to you. Questions? Call 098793 87738.`,
-    );
-  } catch (err) {
-    console.error("[payment] confirmation message failed:", err);
-  }
+  const amount = new Intl.NumberFormat("en-IN", { maximumFractionDigits: 2 }).format(
+    Number(enrollment.total_amount),
+  );
+  const invoiceRef = invoiceNumber || "to follow";
+  const sent = await sendStudentMessage(enrollment.phone, {
+    kind: "enrollment",
+    params: [enrollment.full_name, amount, enrollment.batch_label, invoiceRef],
+    text:
+      `Hi ${enrollment.full_name}, we have received your payment of Rs ${amount}. ` +
+      `Your enrollment in ${enrollment.batch_label} is confirmed. Invoice number: ${invoiceRef}.` +
+      (invoiceEmailed ? " Your invoice has been emailed to you." : "") +
+      ` Welcome to Acumen Gate Academy! Questions? Call ${PHONE_DISPLAY}.`,
+  });
+  await recordMessageOutcome(supabase, "enrollments", enrollment.id, sent);
 
   await notifyTeam(`PAID ENROLLMENT: ${enrollment.full_name} — ${enrollment.batch_label}`, [
     `Name: ${enrollment.full_name}`,
@@ -126,11 +133,11 @@ export async function markEnrollmentFailed(
   ]);
 }
 
-/** Emails the GST invoice to the student (SRS 11.4). */
-async function emailInvoice(enrollment: Enrollment, invoiceNumber: string): Promise<void> {
+/** Emails the GST invoice to the student (SRS 11.4). True when it went out. */
+async function emailInvoice(enrollment: Enrollment, invoiceNumber: string): Promise<boolean> {
   if (!process.env.SMTP_HOST) {
     console.warn("[payment] SMTP not configured - invoice not emailed:", invoiceNumber);
-    return;
+    return false;
   }
   try {
     const { default: nodemailer } = await import("nodemailer");
@@ -149,7 +156,9 @@ async function emailInvoice(enrollment: Enrollment, invoiceNumber: string): Prom
       subject: `Your Acumen Gate Academy tax invoice ${invoiceNumber}`,
       html: renderInvoiceHtml({ enrollment, invoiceNumber, issuedOn: new Date() }),
     });
+    return true;
   } catch (err) {
     console.error("[payment] invoice email failed:", err);
+    return false;
   }
 }

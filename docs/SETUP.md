@@ -50,6 +50,7 @@ That file is the eight migrations concatenated:
 | `supabase/migrations/0008_news_syllabus_links.sql` | A news post option that shows "download the syllabus" buttons, one per GATE course |
 | `supabase/migrations/0007_result_review.sql` | Result entries: photo type (success post or plain portrait) and a team-only review flag |
 | `supabase/migrations/0006_news_magazine.sql` | News categories, cover images and featured flag; the `key_dates` table for the important dates tracker |
+| `supabase/migrations/0009_whatsapp_confirmations.sql` | WhatsApp confirmation outcome (sent / failed and why) on every lead list and enrollment |
 
 **Upgrading a database set up before 0004?** Run only
 `supabase/migrations/0004_courses_demo_faq.sql`, then `npm run seed` (2.5). It
@@ -264,22 +265,47 @@ local testing on its own.
 `PAYMENT_PROVIDER=stub` brings back the local simulator on `/enroll/checkout`
 (no money moves), which is handy for testing the admin side without Razorpay.
 
-### SMS / WhatsApp confirmations
+### WhatsApp confirmations
 
-Not yet chosen. See [PENDING.md](./PENDING.md).
+Every enquiry, free demo booking, seminar form and successful payment sends the
+student a WhatsApp **template** through the Meta Cloud API, from the same number
+the academy's Google Apps Script bot runs on. The site only sends: replies and
+button taps go to the Apps Script webhook, which answers them as it always has.
 
 ```
-MESSAGING_PROVIDER=stub    # or: msg91, twilio
-MESSAGING_API_KEY=
-MESSAGING_SENDER_ID=
-MESSAGING_ACCOUNT_SID=     # Twilio only
+MESSAGING_PROVIDER=meta
+WHATSAPP_ACCESS_TOKEN=          # permanent System User token
+WHATSAPP_PHONE_NUMBER_ID=       # from WhatsApp Manager -> API setup
+WHATSAPP_API_VERSION=v23.0
+WHATSAPP_TEMPLATE_LANG=en
+WHATSAPP_TEMPLATE_ENQUIRY=      # blank = enquiry_received, "off" = don't send
+WHATSAPP_TEMPLATE_DEMO=         # blank = demo_class_booked
+WHATSAPP_TEMPLATE_SEMINAR=      # blank = seminar_registration
+WHATSAPP_TEMPLATE_ENROLLMENT=   # blank = enrollment_confirmed
 ```
 
-With `stub`, messages are logged, not sent — and the site does **not** tell the
-student a confirmation was sent, because it wasn't.
+**The templates must match the code exactly** - variable count and quick-reply
+buttons are set in `WHATSAPP_TEMPLATES` in `src/lib/messaging.ts`:
 
-> Indian SMS requires **DLT template registration** with TRAI before anything
-> will deliver, whichever provider is chosen. Approval takes days — start early.
+| Template | Variables | Quick-reply buttons (in this order) |
+|---|---|---|
+| `enquiry_received` | {{1}} name, {{2}} branch / what they asked about | I Have a Question · View Complete Batch Plan |
+| `demo_class_booked` | {{1}} name, {{2}} branch, {{3}} online / classroom, {{4}} preferred slot | I Have a Question · View Complete Batch Plan |
+| `seminar_registration` | {{1}} name, {{2}} college | I Have a Question |
+| `enrollment_confirmed` | {{1}} name, {{2}} amount (template writes the ₹), {{3}} batch, {{4}} invoice number | none |
+
+The button texts are the keys of `BUTTON_REPLIES` in the Apps Script webhook -
+that is how the bot knows what to reply. Rename one in either place and the tap
+gets no answer. A template whose buttons don't match what the site sends is
+rejected by Meta (error 132000).
+
+Each send's outcome is written on the lead (migration 0009) and shows in the
+admin lists as **WhatsApp: Sent / Failed - reason**. "Sent" means Meta accepted
+it; a later delivery failure is reported to the Apps Script webhook and appears
+in its *Delivery Log* sheet, not here.
+
+With `stub`, nothing is sent and the site does **not** tell the student a
+confirmation was sent.
 
 ---
 
@@ -341,7 +367,7 @@ src/
     gate-info.ts     Facts about the GATE exam itself (pattern, timeline).
     content.ts       The single read path: Supabase, falling back to defaults.
     payments.ts      Payment provider adapter + GST calculation.
-    messaging.ts     SMS/WhatsApp adapter + lead alert email.
+    messaging.ts     WhatsApp (Meta) templates + lead alert email.
     admin/           Auth, the content registry, and server actions.
 supabase/migrations/ Database schema.
 scripts/             Seeder, bulk image importer, screenshots.

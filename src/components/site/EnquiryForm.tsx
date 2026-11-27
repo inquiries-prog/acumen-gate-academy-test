@@ -17,7 +17,7 @@ import { displayPhone, telHref } from "@/lib/utils";
  * Five fields, deliberately. Email, University and Residential City were
  * removed on purpose to raise conversion and must not be added back without
  * client sign-off. Because no email is collected, confirmation to the student
- * goes by SMS/WhatsApp (SRS 10.2), never email - and the success message only
+ * goes by WhatsApp (SRS 10.2), never email - and the success message only
  * claims a message was sent when one actually was.
  *
  * Validation runs on the browser's own constraint API (`checkValidity`) but
@@ -141,7 +141,7 @@ export default function EnquiryForm({
           We&apos;ve received your enquiry. One of our counsellors will call you back within 24
           hours.
           {/* Only claimed when a message was genuinely sent (SRS 10.2). */}
-          {smsSent && " A confirmation has also been sent to your phone via SMS/WhatsApp."}
+          {smsSent && " A confirmation has also been sent to your WhatsApp."}
         </p>
         <div
           className="mt-5 flex flex-col gap-2.5 animate-reveal sm:flex-row sm:justify-center"

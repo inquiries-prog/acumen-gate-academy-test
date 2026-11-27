@@ -380,4 +380,6 @@ export interface Enrollment {
   contacted: boolean;
   created_at: string;
   paid_at: string | null;
+  /** WhatsApp confirmation outcome (migration 0009); absent before it runs. */
+  confirmation_status?: string;
 }

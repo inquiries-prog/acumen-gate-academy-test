@@ -173,6 +173,9 @@ export default function EnrollmentsTable({ rows }: { rows: Enrollment[] }) {
                   <Row label="Total" value={formatRupees(Number(row.total_amount))} />
                   <Row label="Invoice" value={row.invoice_number} />
                   <Row label="Payment reference" value={row.payment_ref} />
+                  {row.confirmation_status && (
+                    <Row label="WhatsApp confirmation" value={row.confirmation_status} />
+                  )}
                   <Row label="Billing address" value={row.billing_address} />
                 </dl>
               </li>

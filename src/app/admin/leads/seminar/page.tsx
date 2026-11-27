@@ -31,6 +31,7 @@ export default async function AdminSeminarLeadsPage() {
         { key: "city", label: "City" },
         { key: "interested_for", label: "Interested for" },
         { key: "offer_shown", label: "Offer shown" },
+        { key: "confirmation_status", label: "WhatsApp" },
       ]}
       rows={rows}
     />

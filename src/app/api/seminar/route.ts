@@ -8,8 +8,9 @@ import {
   rateLimit,
 } from "@/lib/api";
 import { getUniversities } from "@/lib/content";
-import { DEFAULT_SEMINAR_OFFER } from "@/lib/defaults";
-import { getMessagingProvider, notifyTeam } from "@/lib/messaging";
+import { DEFAULT_SEMINAR_OFFER, PHONE_DISPLAY } from "@/lib/defaults";
+import { notifyTeam, recordMessageOutcome, sendStudentMessage } from "@/lib/messaging";
+import { after } from "next/server";
 import { getServiceClient } from "@/lib/supabase";
 
 /**
@@ -66,11 +67,15 @@ export async function POST(request: Request) {
   };
 
   let stored = false;
+  let rowId: string | null = null;
   const supabase = getServiceClient();
   if (supabase) {
-    const { error } = await supabase.from("seminar_leads").insert(lead);
+    const { data, error } = await supabase.from("seminar_leads").insert(lead).select("id").single();
     if (error) console.error("[seminar] insert failed:", error.message);
-    else stored = true;
+    else {
+      stored = true;
+      rowId = (data as { id: string } | null)?.id ?? null;
+    }
   } else {
     console.warn("[seminar] Supabase not configured - lead not stored:", lead);
   }
@@ -90,15 +95,16 @@ export async function POST(request: Request) {
     return fail("We couldn't submit that just now. Please call us and we'll help right away.", 503);
   }
 
-  const messaging = getMessagingProvider();
-  try {
-    await messaging.send(
-      mobile,
-      `Thank you for attending our seminar. Your Acumen Gate Academy offer details are on their way - our team will call you within 24 hours. Questions? Call 098793 87738.`,
-    );
-  } catch (err) {
-    console.error("[seminar] confirmation message failed:", err);
-  }
+  // Sent after the response: the student is shown their offer on screen
+  // straight away and doesn't wait on the WhatsApp round-trip.
+  after(async () => {
+    const sent = await sendStudentMessage(mobile, {
+      kind: "seminar",
+      params: [full_name, university],
+      text: `Hi ${full_name}, thank you for attending the Acumen Gate Academy seminar at ${university}. Our team will call you within 24 hours with the details for your college. Questions? Call ${PHONE_DISPLAY}.`,
+    });
+    if (supabase && rowId) await recordMessageOutcome(supabase, "seminar_leads", rowId, sent);
+  });
 
   return ok({ offer });
 }

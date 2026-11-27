@@ -231,7 +231,7 @@ function DemoForm({
           style={{ animationDelay: "350ms" }}
         >
           Our team will call you shortly to confirm the date and time of your free demo class.
-          {smsSent && " A confirmation has also been sent to your phone."}
+          {smsSent && " A confirmation has also been sent to your WhatsApp."}
         </p>
         <div className="mt-6 grid gap-2.5 animate-reveal" style={{ animationDelay: "450ms" }}>
           <WhatsAppLink className="btn-whatsapp" message="Hi Acumen Gate Academy, I've just booked a free demo class.">
