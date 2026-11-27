@@ -179,10 +179,10 @@ export default function Modal({
         <div
           ref={panelRef}
           tabIndex={-1}
-          className={`relative flex w-full flex-col overflow-hidden bg-white outline-none
+          className={`relative flex w-full flex-col overflow-hidden outline-none
                       max-h-sheet animate-sheetUp sm:animate-slideUp
                       rounded-t-3xl sm:rounded-2xl
-                      ${bare ? "bg-transparent" : "shadow-lifted"}`}
+                      ${bare ? "bg-transparent" : "bg-white shadow-lifted"}`}
         >
           {!bare && (
             // Grab region: the only place a swipe-down is read from.

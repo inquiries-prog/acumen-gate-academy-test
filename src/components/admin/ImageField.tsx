@@ -2,6 +2,19 @@
 
 import { useRef, useState } from "react";
 
+export const IMAGE_ACCEPT = "image/jpeg,image/png,image/webp,image/avif,image/gif";
+
+/** Uploads one image to storage and returns its public URL (throws a readable message). */
+export async function uploadAdminImage(file: File, folder: string): Promise<string> {
+  const body = new FormData();
+  body.append("file", file);
+  body.append("folder", folder);
+  const res = await fetch("/api/admin/upload", { method: "POST", body });
+  const json = (await res.json().catch(() => ({ ok: false }))) as { ok: boolean; url?: string; error?: string };
+  if (!res.ok || !json.ok || !json.url) throw new Error(json.error || "Upload failed.");
+  return json.url;
+}
+
 /**
  * Image picker for the admin panel (SRS 9.1).
  *
@@ -34,13 +47,7 @@ export default function ImageField({
     setError(null);
     setUploading(true);
     try {
-      const body = new FormData();
-      body.append("file", file);
-      body.append("folder", folder);
-      const res = await fetch("/api/admin/upload", { method: "POST", body });
-      const json = (await res.json()) as { ok: boolean; url?: string; error?: string };
-      if (!res.ok || !json.ok || !json.url) throw new Error(json.error || "Upload failed.");
-      setUrl(json.url);
+      setUrl(await uploadAdminImage(file, folder));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed.");
     } finally {
@@ -119,7 +126,7 @@ export default function ImageField({
       <input
         ref={inputRef}
         type="file"
-        accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
+        accept={IMAGE_ACCEPT}
         className="hidden"
         onChange={(e) => {
           const file = e.target.files?.[0];

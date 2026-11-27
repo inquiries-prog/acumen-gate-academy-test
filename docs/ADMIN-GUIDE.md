@@ -149,6 +149,13 @@ gets the big spot at the top of the page, beside the heading. Tick **Show
 'download the syllabus' buttons** on a post to end it with one button per GATE
 course, each opening that course's syllabus and official PDF.
 
+**Photos inside a post:** in *The post* box, click where the photo should go and
+press **Insert image** (you can pick several at once, or drag or paste a photo
+straight into the box). Each photo appears in the box as a line starting with
+`![` — leave that line as it is. Underneath the box, every photo in the post is
+listed with a **Caption** box and a **Remove** button. On the website, visitors
+see the photos between the paragraphs and can tap one to view it full screen.
+
 **Important dates** is the "Don't miss" tracker beside the posts, each with a
 live countdown. Add a date, and tick *officially confirmed* once the official
 body announces it (until then it shows an "Expected" tag). Dates that have

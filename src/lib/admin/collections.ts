@@ -36,6 +36,8 @@ export interface FieldDef {
    * course"). Resolved on the server when the screen loads.
    */
   optionsFrom?: { table: string; value: string; label: string; orderBy?: string };
+  /** A longtext that can hold images between its paragraphs ("Insert image"). */
+  allowImages?: boolean;
 }
 
 export interface CollectionDef {
@@ -386,7 +388,14 @@ export const collections: CollectionDef[] = [
         type: "textarea",
         help: "Shown in the list before someone clicks 'Read more'.",
       },
-      { name: "content", label: "The post", type: "longtext", required: true },
+      {
+        name: "content",
+        label: "The post",
+        type: "longtext",
+        required: true,
+        allowImages: true,
+        help: "Leave a blank line between paragraphs. To add a photo, click where it should go and press 'Insert image'.",
+      },
       {
         name: "published",
         label: "Published",

@@ -6,7 +6,8 @@ import BranchArt from "@/components/courses/BranchArt";
 import FinalCta from "@/components/site/FinalCta";
 import { NEWS_CATEGORIES } from "@/lib/defaults";
 import { getCourses, getNewsPost, getNewsPosts } from "@/lib/content";
-import { formatDate, readingMinutes, toParagraphs } from "@/lib/utils";
+import NewsBody from "@/components/news/NewsBody";
+import { formatDate, readingMinutes, toBodyBlocks } from "@/lib/utils";
 
 /**
  * Content comes from the database, so this page must not stay frozen at the
@@ -46,11 +47,17 @@ export default async function NewsPostPage({ params }: Params) {
   if (!post) notFound();
   const gateCourses = post.syllabus_links ? (await getCourses()).filter((c) => c.category === "gate") : [];
 
+  const images = [
+    post.cover_url,
+    ...toBodyBlocks(post.content).flatMap((b) => (b.type === "image" ? [b.url] : [])),
+  ].filter(Boolean);
+
   const schema = {
     "@context": "https://schema.org",
     "@type": "NewsArticle",
     headline: post.title,
     description: post.excerpt,
+    ...(images.length > 0 && { image: images }),
     datePublished: post.published_at,
     author: { "@type": "Organization", name: "Acumen Gate Academy" },
     publisher: { "@type": "Organization", name: "Acumen Gate Academy" },
@@ -86,13 +93,7 @@ export default async function NewsPostPage({ params }: Params) {
           </p>
         )}
 
-        <div className="mt-6 space-y-4">
-          {toParagraphs(post.content).map((p, i) => (
-            <p key={i} className="text-[15px] leading-relaxed text-body sm:text-base">
-              {p}
-            </p>
-          ))}
-        </div>
+        <NewsBody content={post.content} title={post.title} />
 
         {gateCourses.length > 0 && (
           <section aria-labelledby="syllabus-links" className="mt-10 rounded-3xl border border-line bg-offwhite p-5 sm:p-7">
