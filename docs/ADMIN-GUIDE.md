@@ -149,12 +149,19 @@ gets the big spot at the top of the page, beside the heading. Tick **Show
 'download the syllabus' buttons** on a post to end it with one button per GATE
 course, each opening that course's syllabus and official PDF.
 
-**Photos inside a post:** in *The post* box, click where the photo should go and
-press **Insert image** (you can pick several at once, or drag or paste a photo
-straight into the box). Each photo appears in the box as a line starting with
-`![` — leave that line as it is. Underneath the box, every photo in the post is
-listed with a **Caption** box and a **Remove** button. On the website, visitors
-see the photos between the paragraphs and can tap one to view it full screen.
+**Writing a post:** *The post* box works like Word or Google Docs. The toolbar
+has a text style menu (Heading, Subheading, Normal text), **B**old, *I*talic,
+Underline, Strikethrough, small text (for fine print), bullet and numbered
+lists, indent and outdent, quote, link and divider line, plus Undo and Redo.
+The usual shortcuts work too: Ctrl+B, Ctrl+I, Ctrl+U, Ctrl+Z, and Tab /
+Shift+Tab to indent (inside a list, Tab makes a sub-point). Text pasted from
+Word or a website keeps its bold, lists and headings, and loses anything the
+site can't show, so it always matches the site's own fonts.
+
+**Photos inside a post:** click where the photo should go and press **Image**
+(you can pick several at once), or drag or paste a photo straight into the
+post. Each photo has a **Caption** box and a **Remove** button right under it.
+On the website, visitors can tap a photo to view it full screen.
 
 **Important dates** is the "Don't miss" tracker beside the posts, each with a
 live countdown. Add a date, and tick *officially confirmed* once the official

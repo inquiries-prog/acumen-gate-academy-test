@@ -312,6 +312,100 @@
     @apply text-body underline-offset-4 transition-colors hover:text-red hover:underline;
   }
 
+  /* --- News post body ------------------------------------------------------
+     One set of styles for the public post and the admin editor, so what the
+     client sees while writing is what visitors get. */
+  .post-body {
+    @apply text-[15px] leading-relaxed text-body sm:text-base;
+  }
+  .post-body > * + * {
+    @apply mt-4;
+  }
+  .post-body h2 {
+    @apply mt-9 font-display text-2xl font-extrabold leading-tight text-charcoal sm:text-[1.7rem];
+  }
+  .post-body h3 {
+    @apply mt-7 font-display text-lg font-bold leading-snug text-charcoal sm:text-xl;
+  }
+  .post-body > :first-child {
+    @apply mt-0;
+  }
+  .post-body strong,
+  .post-body b {
+    @apply font-bold text-charcoal;
+  }
+  .post-body small {
+    @apply text-[0.82em] text-muted;
+  }
+  .post-body a {
+    @apply font-semibold text-red underline decoration-red/30 underline-offset-2 hover:decoration-red;
+  }
+  .post-body ul,
+  .post-body ol {
+    @apply space-y-1.5 pl-6;
+  }
+  .post-body ul {
+    @apply list-disc;
+  }
+  .post-body ol {
+    @apply list-decimal;
+  }
+  .post-body ul ul {
+    list-style-type: circle;
+  }
+  .post-body ul ul ul {
+    list-style-type: square;
+  }
+  .post-body ol ol {
+    list-style-type: lower-alpha;
+  }
+  .post-body ol ol ol {
+    list-style-type: lower-roman;
+  }
+  .post-body li > ul,
+  .post-body li > ol {
+    @apply mt-1.5;
+  }
+  .post-body li > p {
+    @apply m-0;
+  }
+  .post-body li::marker {
+    @apply text-red;
+  }
+  .post-body blockquote {
+    @apply rounded-r-xl border-l-4 border-red bg-offwhite py-3 pl-4 pr-3 italic text-charcoal;
+  }
+  .post-body hr {
+    @apply my-8 border-line;
+  }
+  .post-body [data-indent="1"] { margin-left: 1.75rem; }
+  .post-body [data-indent="2"] { margin-left: 3.5rem; }
+  .post-body [data-indent="3"] { margin-left: 5.25rem; }
+  .post-body [data-indent="4"] { margin-left: 7rem; }
+  .post-body figure {
+    @apply my-8;
+  }
+  .post-body figure img {
+    @apply mx-auto h-auto max-h-[70vh] w-auto max-w-full rounded-2xl border border-line bg-offwhite object-contain;
+  }
+  .post-body figcaption {
+    @apply mt-2 text-center text-sm text-muted;
+  }
+  /* The editor's typing area. */
+  .post-editor .ProseMirror {
+    @apply min-h-[320px] px-4 py-4 outline-none;
+  }
+  .post-editor .ProseMirror p.is-editor-empty:first-child::before {
+    @apply pointer-events-none float-left h-0 text-muted/70;
+    content: attr(data-placeholder);
+  }
+  .post-editor figure img {
+    @apply max-h-[340px];
+  }
+  .post-editor .ProseMirror-selectednode {
+    @apply rounded-2xl ring-2 ring-red/60;
+  }
+
   /* --- Decoration --------------------------------------------------------- */
 
   /* Hairline that fades out at both ends, for section dividers. */

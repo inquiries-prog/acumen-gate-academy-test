@@ -7,7 +7,9 @@ import FinalCta from "@/components/site/FinalCta";
 import { NEWS_CATEGORIES } from "@/lib/defaults";
 import { getCourses, getNewsPost, getNewsPosts } from "@/lib/content";
 import NewsBody from "@/components/news/NewsBody";
-import { formatDate, readingMinutes, toBodyBlocks } from "@/lib/utils";
+import { formatDate, readingMinutes } from "@/lib/utils";
+import { postImages } from "@/lib/post-html";
+import { renderPostHtml } from "@/lib/post-render";
 
 /**
  * Content comes from the database, so this page must not stay frozen at the
@@ -49,7 +51,7 @@ export default async function NewsPostPage({ params }: Params) {
 
   const images = [
     post.cover_url,
-    ...toBodyBlocks(post.content).flatMap((b) => (b.type === "image" ? [b.url] : [])),
+    ...postImages(post.content),
   ].filter(Boolean);
 
   const schema = {
@@ -93,7 +95,7 @@ export default async function NewsPostPage({ params }: Params) {
           </p>
         )}
 
-        <NewsBody content={post.content} title={post.title} />
+        <NewsBody html={renderPostHtml(post.content)} title={post.title} />
 
         {gateCourses.length > 0 && (
           <section aria-labelledby="syllabus-links" className="mt-10 rounded-3xl border border-line bg-offwhite p-5 sm:p-7">

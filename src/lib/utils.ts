@@ -1,4 +1,5 @@
 import { PLACEHOLDER } from "./defaults";
+import { postText } from "./post-html";
 
 /**
  * Seed rows carry PLACEHOLDER where the SRS 12 checklist says real content is
@@ -91,31 +92,6 @@ export function toParagraphs(text: string): string[] {
     .filter(Boolean);
 }
 
-/**
- * An image placed inside admin-written text: a line of its own reading
- * `![caption](url)`. The admin editor writes these, so the client never types
- * one by hand.
- */
-export const IMAGE_LINE = /^!\[([^\]]*)\]\((\S+?)\)$/;
-
-export type BodyBlock =
-  | { type: "text"; text: string }
-  | { type: "image"; url: string; caption: string };
-
-/** Splits a post into paragraphs and images, in order. No raw HTML is allowed. */
-export function toBodyBlocks(text: string): BodyBlock[] {
-  return toParagraphs(text).map((line) => {
-    const m = line.match(IMAGE_LINE);
-    return m ? { type: "image", url: m[2], caption: m[1].trim() } : { type: "text", text: line };
-  });
-}
-
-/** Writes one image line (square brackets in the caption would break it). */
-export function imageLine(url: string, caption = ""): string {
-  // Not trimmed: the admin caption box re-reads this on every keystroke.
-  return `![${caption.replace(/[[\]\n]/g, " ")}](${url})`;
-}
-
 /** Splits an admin "one per line" field into its non-empty lines. */
 export function toLines(text: string | null | undefined): string[] {
   return (text ?? "")
@@ -168,10 +144,6 @@ export function formatPrice(amount: number): string {
 
 /** Rough reading time in minutes, at ~200 words a minute (never under 1). */
 export function readingMinutes(text: string): number {
-  const words = toParagraphs(text)
-    .filter((line) => !IMAGE_LINE.test(line))
-    .join(" ")
-    .split(/\s+/)
-    .filter(Boolean).length;
+  const words = postText(text).split(" ").filter(Boolean).length;
   return Math.max(1, Math.round(words / 200));
 }

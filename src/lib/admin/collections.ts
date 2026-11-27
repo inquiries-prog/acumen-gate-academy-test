@@ -36,8 +36,8 @@ export interface FieldDef {
    * course"). Resolved on the server when the screen loads.
    */
   optionsFrom?: { table: string; value: string; label: string; orderBy?: string };
-  /** A longtext that can hold images between its paragraphs ("Insert image"). */
-  allowImages?: boolean;
+  /** A longtext edited in the Word-style editor (formatting and photos), stored as HTML. */
+  richText?: boolean;
 }
 
 export interface CollectionDef {
@@ -393,8 +393,8 @@ export const collections: CollectionDef[] = [
         label: "The post",
         type: "longtext",
         required: true,
-        allowImages: true,
-        help: "Leave a blank line between paragraphs. To add a photo, click where it should go and press 'Insert image'.",
+        richText: true,
+        help: "Use the toolbar for headings, bold, lists and indents. To add a photo, click where it should go and press 'Image', or drag or paste one in.",
       },
       {
         name: "published",
@@ -614,11 +614,11 @@ export const collections: CollectionDef[] = [
     allowDelete: false,
     orderBy: { column: "slug" },
     notice:
-      "These pages are still empty. Paste the wording your legal adviser provides — until then the pages tell visitors to call instead.",
+      "While the Page text box is empty, the website shows our standard wording (see /privacy and /terms). To change it, paste the complete text here. Start a line with ## for a heading, ### for a sub-heading and - for a bullet point, and put **two stars** around words to make them bold.",
     fields: [
       { name: "slug", label: "Page", type: "text", hidden: true },
       { name: "title", label: "Page heading", type: "text", required: true },
-      { name: "content", label: "Page text", type: "longtext" },
+      { name: "content", label: "Page text (leave empty to use the standard wording)", type: "longtext" },
     ],
   },
 ];

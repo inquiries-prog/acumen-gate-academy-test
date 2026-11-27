@@ -2,7 +2,7 @@
 
 import { useFormStatus } from "react-dom";
 import ImageField from "./ImageField";
-import RichTextField from "./RichTextField";
+import PostEditor from "./PostEditor";
 import type { FieldDef } from "@/lib/admin/collections";
 
 /** Renders one field from a collection definition. */
@@ -62,14 +62,8 @@ export function Field({
             </option>
           ))}
         </select>
-      ) : field.type === "longtext" && field.allowImages ? (
-        <RichTextField
-          id={id}
-          name={field.name}
-          value={stringValue}
-          placeholder={field.placeholder}
-          folder={folder}
-        />
+      ) : field.type === "longtext" && field.richText ? (
+        <PostEditor name={field.name} value={stringValue} placeholder={field.placeholder} folder={folder} />
       ) : field.type === "longtext" ? (
         <textarea
           id={id}

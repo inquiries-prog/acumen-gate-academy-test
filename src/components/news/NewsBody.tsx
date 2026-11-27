@@ -1,70 +1,43 @@
 "use client";
 
-import Image from "next/image";
 import { useSiteUI } from "@/components/site/SiteUI";
 import type { GalleryImage } from "@/lib/types";
-import { toBodyBlocks } from "@/lib/utils";
 
 /**
- * A news post's text with its images where the admin placed them. Each image
- * has an optional caption, and tapping one opens it full screen with the
- * post's other images a swipe away.
+ * A news post's formatted body. `html` must already be sanitised on the
+ * server (renderPostHtml). Tapping a photo opens it full screen, with the
+ * post's other photos a swipe away.
  */
-export default function NewsBody({ content, title }: { content: string; title: string }) {
+export default function NewsBody({ html, title }: { html: string; title: string }) {
   const { push } = useSiteUI();
-  const blocks = toBodyBlocks(content);
 
-  const gallery: GalleryImage[] = blocks.flatMap((b, i) =>
-    b.type === "image"
-      ? [
-          {
-            id: `news-img-${i}`,
-            image_url: b.url,
-            alt_text: b.caption || title,
-            kind: "press" as const,
-            show_in_carousel: false,
-            show_in_news_strip: false,
-            sort_order: 0,
-          },
-        ]
-      : [],
-  );
+  function onClick(e: React.MouseEvent<HTMLDivElement>) {
+    // Only our own photos (served from this site) can open in the viewer, which
+    // uses next/image; a photo pasted in from another website just stays put.
+    const ours = (el: Element) => el.getAttribute("src")?.startsWith("/") ?? false;
+    const img = (e.target as HTMLElement).closest("figure img");
+    if (!img || !ours(img)) return;
+    const all = Array.from(e.currentTarget.querySelectorAll<HTMLImageElement>("figure img")).filter(ours);
+    const images: GalleryImage[] = all.map((el, i) => ({
+      id: `news-img-${i}`,
+      image_url: el.dataset.full || el.src,
+      alt_text: el.alt || title,
+      kind: "press",
+      show_in_carousel: false,
+      show_in_news_strip: false,
+      sort_order: 0,
+    }));
+    push({ kind: "lightbox", images, index: Math.max(0, all.indexOf(img as HTMLImageElement)) });
+  }
 
-  let n = -1;
   return (
-    <div className="mt-6 space-y-4">
-      {blocks.map((b, i) => {
-        if (b.type === "text") {
-          return (
-            <p key={i} className="text-[15px] leading-relaxed text-body sm:text-base">
-              {b.text}
-            </p>
-          );
-        }
-        const index = ++n;
-        return (
-          <figure key={i} className="!my-8">
-            <button
-              type="button"
-              onClick={() => push({ kind: "lightbox", images: gallery, index })}
-              className="group block w-full overflow-hidden rounded-2xl border border-line bg-offwhite focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red"
-              aria-label={`View image full screen${b.caption ? `: ${b.caption}` : ""}`}
-            >
-              <Image
-                src={b.url}
-                alt={b.caption || title}
-                width={1200}
-                height={800}
-                sizes="(max-width: 768px) 100vw, 768px"
-                className="mx-auto h-auto max-h-[70vh] w-auto max-w-full object-contain transition-transform duration-500 ease-smooth group-hover:scale-[1.01]"
-              />
-            </button>
-            {b.caption && (
-              <figcaption className="mt-2 text-center text-sm text-muted">{b.caption}</figcaption>
-            )}
-          </figure>
-        );
-      })}
-    </div>
+    // Clicks are delegated to the photos inside; the photos are not focusable
+    // links, so this is a pointer convenience on top of readable content.
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+    <div
+      className="post-body mt-6 [&_figure_img[src^='/']]:cursor-zoom-in"
+      onClick={onClick}
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
   );
 }
