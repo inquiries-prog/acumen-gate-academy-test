@@ -9,6 +9,7 @@
 
 import { cache } from "react";
 import * as D from "./defaults";
+import { PRIVACY_POLICY, TERMS_AND_CONDITIONS } from "./legal-content";
 import { getPublicClient, getServiceClient } from "./supabase";
 import type {
   AboutBlock,
@@ -303,7 +304,16 @@ export const getPageSeo = cache(async (path: string): Promise<PageSeo | null> =>
   return rows.find((r) => r.path === path) ?? D.pageSeo.find((r) => r.path === path) ?? null;
 });
 
+const STANDARD_LEGAL_TEXT: Record<string, string> = {
+  privacy: PRIVACY_POLICY,
+  terms: TERMS_AND_CONDITIONS,
+};
+
 export const getLegalPage = cache(async (slug: string): Promise<LegalPage | null> => {
   const rows = await readTable<LegalPage>("legal_pages", D.legalPages, { column: "slug" });
-  return rows.find((r) => r.slug === slug) ?? null;
+  const row = rows.find((r) => r.slug === slug) ?? null;
+  // An empty admin box means "use our standard wording", not a blank page.
+  const standard = STANDARD_LEGAL_TEXT[slug] ?? "";
+  if (row && row.content.trim()) return row;
+  return row ? { ...row, content: standard } : standard ? { slug, title: "", content: standard } : null;
 });

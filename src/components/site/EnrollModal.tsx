@@ -288,6 +288,17 @@ export default function EnrollModal({
             <FieldIcon name="lock" className="[&_svg]:h-[18px] [&_svg]:w-[18px]" />
             Pay {formatPrice(fees.total)} securely
           </button>
+          <p className="-mt-2 text-center text-xs leading-relaxed text-muted">
+            By paying you agree to our{" "}
+            <a href="/terms" target="_blank" rel="noopener" className="font-semibold text-charcoal underline hover:text-red">
+              Terms &amp; Conditions
+            </a>{" "}
+            (including the refund policy) and{" "}
+            <a href="/privacy" target="_blank" rel="noopener" className="font-semibold text-charcoal underline hover:text-red">
+              Privacy Policy
+            </a>
+            .
+          </p>
 
           <div className="flex flex-wrap items-center justify-center gap-1.5">
             {["UPI", "Cards", "Net banking", "Wallets"].map((m) => (
